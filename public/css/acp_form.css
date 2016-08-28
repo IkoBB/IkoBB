@@ -1,0 +1,19 @@
+input[type="text"].form-control, input[type="password"].form-control, textarea.form-control {
+    background-color: rgba(0, 0, 0, 0);
+    /* Border */
+    border: 1px solid #5C5858;
+    /* Box Shadow */
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    /* Border Radius */
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+input[type="text"].form-control:focus, input[type="text"].form-control:active, input[type="password"].form-control:focus, input[type="password"].form-control:active, textarea.form-control:focus, textarea.form-control:active {
+    /* Border */
+    border: 1px solid #00897b;
+    /* Box Shadow */
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
