@@ -360,6 +360,57 @@ class Iko_User
         );
     }
 
+    function recent_activity($user)
+    {
+        global $MYSQL, $IKO, $LANG;
+        $return = '';
+        if (isset($user)) {
+            $MYSQL->bind('post_user', $user);
+            $query = $MYSQL->query("SELECT origin_node, post_type, title_friendly, post_title, post_time, origin_thread FROM {prefix}forum_posts WHERE post_user = :post_user ORDER BY post_time DESC LIMIT 15");
+            foreach ($query as $activity) {
+                $MYSQL->bind('id', $activity['origin_node']);
+                $parent_node = $MYSQL->query("SELECT allowed_usergroups FROM {prefix}forum_node WHERE id = :id");
+                $allowed = explode(',', $parent_node['0']['allowed_usergroups']);
+                if (in_array($IKO->sess->data['user_group'], $allowed)) {
+                    //User created thread
+                    if ($activity['post_type'] == "1") {
+
+                        $return .= str_replace(
+                            array(
+                                '%url%',
+                                '%title%',
+                                '%date%'
+                            ),
+                            array(
+                                SITE_URL . '/thread.php/' . $activity['title_friendly'] . '.' . $activity['id'],
+                                $activity['post_title'],
+                                date('F j, Y', $activity['post_time'])
+                            ),
+                            $LANG['bb']['members']['posted_thread']
+                        );
+                    } else {
+                        //User replied to thread
+                        $thread = thread($activity['origin_thread']);
+                        $return .= str_replace(
+                            array(
+                                '%url%',
+                                '%title%',
+                                '%date%'
+                            ),
+                            array(
+                                SITE_URL . '/thread.php/' . $thread['title_friendly'] . '.' . $thread['id'] . '#post-' . $thread['id'],
+                                $thread['post_title'],
+                                date('F j, Y', $activity['post_time'])
+                            ),
+                            $LANG['bb']['members']['replied_to']
+                        );
+                    }
+                }
+            }
+        }
+        return $return;
+    }
+
 
 }
 

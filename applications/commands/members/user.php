@@ -81,44 +81,8 @@ if (isset($user) && isset($userg) && isset($page_title)) {
         $MYSQL->query("INSERT INTO {prefix}user_comments (comment, writer, profile_owner, timestamp) VALUES (:comment, :writer, :profile_owner, UNIX_TIMESTAMP(NOW()))");
     }
 
-    //Recent activity protocol
-    $recent_activity = '';
-    $MYSQL->bind('post_user', $query['0']['id']);
-    $query = $MYSQL->query("SELECT * FROM {prefix}forum_posts WHERE post_user = :post_user ORDER BY post_time DESC LIMIT 15");
-    foreach ($query as $ac) {
-        //User created thread
-        if ($ac['post_type'] == "1") {
-            $recent_activity .= str_replace(
-                array(
-                    '%url%',
-                    '%title%',
-                    '%date%'
-                ),
-                array(
-                    SITE_URL . '/thread.php/' . $ac['title_friendly'] . '.' . $ac['id'],
-                    $ac['post_title'],
-                    date('F j, Y', $ac['post_time'])
-                ),
-                $LANG['bb']['members']['posted_thread']
-            );
-        } else {
-            //User replied to thread
-            $thread = thread($ac['origin_thread']);
-            $recent_activity .= str_replace(
-                array(
-                    '%url%',
-                    '%title%',
-                    '%date%'
-                ),
-                array(
-                    SITE_URL . '/thread.php/' . $thread['title_friendly'] . '.' . $thread['id'] . '#post-' . $thread['id'],
-                    $thread['post_title'],
-                    date('F j, Y', $ac['post_time'])
-                ),
-                $LANG['bb']['members']['replied_to']
-            );
-        }
-    }
+    //Recent activity
+    $recent_activity = $IKO->user->recent_activity($query['0']['id']);
 
     //Moderation tools
     $mod_tools = '';
