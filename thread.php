@@ -29,6 +29,7 @@ if ($PGET->s(true)) {
 
         $user = $IKO->user($query['0']['post_user']);
         $node = node($query['0']['origin_node']);
+
         $time_post = simplify_time($query['0']['post_time'], @$IKO->sess->data['location']);
         $user_joined = simplify_time($user['date_joined'], @$IKO->sess->data['location']);
 

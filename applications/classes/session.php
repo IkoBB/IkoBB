@@ -74,6 +74,10 @@ class Iko_Session
             );*/
 
             date_default_timezone_set($this->data['set_timezone']);
+
+            $location = location($this->data['location']);
+            $this->data['location'] = $location['iso'];
+
             /*if ($this->data['chosen_theme'] == "0") {
                 $IKO->tpl->setTheme($IKO->data['site_theme']);
             } else {
