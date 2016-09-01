@@ -7,8 +7,12 @@ if (!defined('BASEPATH')) {
     die();
 }
 
-/*
+/**
  * Conversion
+ * @author N8boy
+ * @param $bytes
+ * @param int $precision
+ * @return string
  */
 function bytesToSize($bytes, $precision = 2)
 {
@@ -32,68 +36,40 @@ function bytesToSize($bytes, $precision = 2)
     }
 }
 
-/*
- * Forum statistics.
+/**
+ * Counts the number of threads
+ * @author
+ * @return int
  */
 function stat_threads()
 {
     global $MYSQL;
-    $query = $MYSQL->query("SELECT * FROM
-                              {prefix}forum_posts
-                              WHERE
-                              post_type = 1");
-    return number_format(count($query));
+    $query = $MYSQL->query("SELECT id FROM {prefix}forum_posts WHERE post_type = 1");
+    return count($query);
 }
 
+/**
+ * Counts the number of posts
+ * @return int
+ */
 function stat_posts()
 {
     global $MYSQL;
-    $query = $MYSQL->query("SELECT * FROM
-                              {prefix}forum_posts
-                              WHERE
-                              post_type = 2");
-    return number_format(count($query));
+    $query = $MYSQL->query("SELECT id FROM {prefix}forum_posts WHERE post_type = 2");
+    return count($query);
 }
 
 function stat_users()
 {
     global $MYSQL;
-    $query = $MYSQL->query("SELECT * FROM
-                              {prefix}users");
-    return number_format(count($query));
+    $query = $MYSQL->query("SELECT id FROM {prefix}users");
+    return count($query);
 }
 
-/*
- * Users that are online over the past 24 hours.
- * time >= session_time
+/**
+ * Who was online in the last 10 minutes?
+ * @return string
  */
-/*function users_online() {
-  global $MYSQL, $IKO;
-  $time  = strtotime("-1 day");
-  $time  = time();
-  $query = $MYSQL->query("SELECT * FROM {prefix}sessions ORDER BY session_time DESC");
-  $users = array();
-  foreach( $query as $u ) {
-    if( $u['session_time'] < $time ) {
-      if( !in_array($u['logged_user'], $users) ) {
-        $users[] = $u['logged_user'];
-      }
-    }
-  }
-  //die(var_dump($users));
-
-  $total = array();
-  foreach( $users as $u ) {
-    $us = $IKO->user($u);
-    $total[] = '<a href="' . SITE_URL . '/members.php/cmd/user/id/' . $us['id'] . '">' . $us['username_style'] . '</a>';
-  }
-  //die(var_dump($total));
-  if( !empty($total) ) {
-    return implode(', ', $total);
-  } else {
-    return 'None';
-  }
-}*/
 function users_online()
 {
     global $MYSQL, $IKO;
@@ -121,20 +97,17 @@ function users_online()
     }
 }
 
-/*
+/**
  * List themes for theme changer.
+ * @return array
+ * @array
+ * - int id
+ * - string change_link
+ * - string theme_name
  */
 function listThemes()
 {
     global $MYSQL;
-    /*if (BASEPATH == "Staff") {
-        $directory = scandir('../public/themes');
-    } else {
-        $directory = scandir('public/themes');
-    }
-    unset($directory['0']);
-    unset($directory['1']); //unset($directory['2']);//Remove ".", ".." and "index.html"
-    */
     $query = $MYSQL->query("SELECT * FROM {prefix}themes");
     $return = array();
     foreach ($query as $t) {
@@ -152,9 +125,11 @@ function listThemes()
     return $return;
 }
 
-/*
+/**
  * Cleans string.
- * Does not escape with MySQL because the MySQL Library already does that.
+ * Does not escape with MySQL because the MySQL Library already does that
+ * @param $string
+ * @return mixed|string
  */
 function clean($string)
 {
@@ -174,18 +149,24 @@ function clean($string)
     return $string;
 }
 
+/**
+ * Redirects to given url
+ * @param $url
+ */
 function redirect($url)
 {
     header('Location: ' . $url);
     exit;
 }
 
-/*
+/**
  * Generate hex-encoded pseudo-random bytes.
  *
  * The function first tries to read from a secure randomness source. If neither the
  * OpenSSL extension nor the Mcrypt extension nor direct access to /dev/urandom is
  * available, it falls back to mt_rand().
+ * @param $length
+ * @return string
  */
 function randomHexBytes($length)
 {
@@ -213,6 +194,10 @@ function randomHexBytes($length)
     return bin2hex($raw_bytes);
 }
 
+/**
+ * @param int $length
+ * @return string
+ */
 function randomString($length = 16)
 {
     trigger_error('The function randomString() is deprecated. Use randomHexBytes() instead.', E_USER_WARNING);
@@ -225,32 +210,41 @@ function randomString($length = 16)
     return $randomString;
 }
 
+/**
+ * @param $string
+ * @return string
+ */
 function title_friendly($string)
 {
     return strtolower(preg_replace("![^a-z0-9]+!i", "_", $string));
 }
 
-/*
+/**
  * Password Encryption
+ * @param $password
+ * @return bool|false|string
  */
 function encrypt($password)
 {
     return password_hash($password, PASSWORD_BCRYPT, array('cost' => USER_PASSWORD_HASH_COST));
 }
 
-/*
- * Moderator Functions.
+/**
+ * Moderator Functions
+ * @return int
  */
 function modReportInteger()
 {
     global $MYSQL;
-    $query = $MYSQL->query("SELECT * FROM {prefix}reports");
+    $query = $MYSQL->query("SELECT id FROM {prefix}reports");
 
     return count($query);
 }
 
-/*
- * Check if username and email exists.
+/**
+ * Check if username exists
+ * @param $username
+ * @return bool
  */
 function usernameExists($username)
 {
@@ -265,6 +259,11 @@ function usernameExists($username)
     }
 }
 
+/**
+ * Check if email exists
+ * @param $email
+ * @return bool
+ */
 function emailTaken($email)
 {
     global $MYSQL;
@@ -278,6 +277,11 @@ function emailTaken($email)
     }
 }
 
+/**
+ * Check if email is valid
+ * @param $email
+ * @return bool
+ */
 function validEmail($email)
 {
     if (preg_match('/^[a-z0-9_\.-]+@([a-z0-9]+([\-]+[a-z0-9]+)*\.)+[a-z]{2,7}$/i', $email)) {
@@ -287,13 +291,18 @@ function validEmail($email)
     }
 }
 
+/**
+ * Check if user is banned
+ * @param $email
+ * @return bool
+ */
 function userBanned($email)
 {
     global $MYSQL;
     $MYSQL->bind('user_email', $email);
-    $a = $MYSQL->query("SELECT * FROM {prefix}users WHERE user_email = :user_email");
+    $a = $MYSQL->query("SELECT unban_time, ban_reason, is_banned FROM {prefix}users WHERE user_email = :user_email");
     $MYSQL->bind('username', $email);
-    $b = $MYSQL->query("SELECT * FROM {prefix}users WHERE username = :username");
+    $b = $MYSQL->query("SELECT unban_time, ban_reason, is_banned FROM {prefix}users WHERE username = :username");
 
     $a = ($a) ? $a : $b;
 
@@ -307,13 +316,19 @@ function userBanned($email)
     }
 }
 
+/**
+ * Check if user is activated
+ * @param $email
+ * @return bool
+ * ToDo: Why is this here? Should be in user class or not?
+ */
 function userActivated($email)
 {
     global $MYSQL;
     $MYSQL->bind('user_email', $email);
-    $a = $MYSQL->query("SELECT * FROM {prefix}users WHERE user_email = :user_email");
+    $a = $MYSQL->query("SELECT user_disabled FROM {prefix}users WHERE user_email = :user_email");
     $MYSQL->bind('username', $email);
-    $b = $MYSQL->query("SELECT * FROM {prefix}users WHERE username = :username");
+    $b = $MYSQL->query("SELECT user_disabled FROM {prefix}users WHERE username = :username");
 
     $a = ($a) ? $a : $b;
 
@@ -324,6 +339,13 @@ function userActivated($email)
     }
 }
 
+/**
+ * Check if user exists / Login
+ * @param $email
+ * @param $password
+ * @param bool $rehash_if_necessary
+ * @return bool
+ */
 function userExists($email, $password, $rehash_if_necessary = true)
 {
     global $MYSQL;
@@ -375,6 +397,11 @@ function userExists($email, $password, $rehash_if_necessary = true)
     return $login_successful;
 }
 
+/**
+ * Check if usergroupExists
+ * @param $name
+ * @return bool
+ */
 function usergroupExists($name)
 {
     global $MYSQL;
@@ -387,8 +414,11 @@ function usergroupExists($name)
     }
 }
 
-/*
- * Get details for a thread.
+/**
+ * Get details for a thread
+ * @param $id
+ * @param null $callback
+ * @return mixed
  */
 function thread($id, $callback = null)
 {
@@ -403,6 +433,11 @@ function thread($id, $callback = null)
     }
 }
 
+/**
+ * @param $id
+ * @param null $callback
+ * @return mixed
+ */
 function node($id, $callback = null)
 {
     global $MYSQL;
@@ -416,6 +451,10 @@ function node($id, $callback = null)
     }
 }
 
+/**
+ * @param $id
+ * @return mixed
+ */
 function category($id)
 {
     global $MYSQL;
@@ -424,8 +463,10 @@ function category($id)
     return $query['0'];
 }
 
-/*
- * Delete a folder with contents in it.
+/**
+ * Delete a folder with contents in it
+ * @param $dir
+ * @return bool
  */
 function rrmdir($dir)
 {
@@ -439,8 +480,8 @@ function rrmdir($dir)
     }
 }
 
-/*
- * Include all installed extensions.
+/**
+ * Include all installed extensions
  */
 function include_extensions()
 {
@@ -451,8 +492,9 @@ function include_extensions()
     }
 }
 
-/*
+/**
  * Forum Listings
+ * @return array
  */
 function list_forums()
 {
@@ -469,8 +511,38 @@ function list_forums()
     return $return;
 }
 
-/*
+/**
+ * Get location data from location ID
+ * @author N8boy
+ * @return array;
+ * @array
+ *  - iso
+ *  - language
+ */
+
+function location($location_id = 233)
+{
+    global $MYSQL;
+
+    if (is_int($location_id)) {
+        try {
+            $MYSQL->bind('id', $location_id);
+            $query = $MYSQL->query("SELECT iso, language FROM {prefix}countries WHERE id = :id");
+            return $query['0'];
+        } catch (PDOException $e) {
+            $this->ExceptionLog($e->getMessage());
+            return false;
+        }
+    } else {
+        return false;
+    }
+
+
+}
+
+/**
  * Features to tell time.
+ * @author N8boy
  * @return array;
  * @array
  *  - tooltip
@@ -527,8 +599,11 @@ function simplify_time($timestamp, $location = 'EN')
     return $return;
 }
 
-/* Function which counts the replies of a conversation
- * by N8boy
+/**
+ * Function which counts the replies of a conversation
+ * @author N8boy
+ * @param $origin_massage_id
+ * @return string
  */
 function amount_replies($origin_massage_id)
 {
@@ -540,6 +615,11 @@ function amount_replies($origin_massage_id)
     }
 }
 
+/**
+ * Transforms an input int (1 or 2) to male and female symbols
+ * @param $in
+ * @return string
+ */
 function gender($in)
 {
     if ($in == 1) {
@@ -552,6 +632,11 @@ function gender($in)
     return $out;
 }
 
+/**
+ * Transforms a date in a age
+ * @param $date
+ * @return false|string
+ */
 function birthday_to_age($date)
 {
     $year = substr($date, 0, 4);
@@ -571,8 +656,15 @@ function birthday_to_age($date)
         return $calc_year;
 }
 
+/**
+ * Shows the date according location
+ * @param $date
+ * @param string $location
+ * @return string
+ */
 function localized_date($date, $location = 'EN')
 {
+
     global $LANG;
     if (is_numeric($date) === false)
         $date = strtotime($date);
@@ -587,6 +679,10 @@ function localized_date($date, $location = 'EN')
         return $LANG['date']['month_' . $month] . ' ' . $day . ', ' . $year;
 }
 
+/**
+ * @param $input
+ * @return mixed
+ */
 function nl2brPre($input)
 {
     $input = preg_replace('%\n%i', '<br/>', $input);
@@ -597,6 +693,11 @@ function nl2brPre($input)
     return $input;
 }
 
+/**
+ * Transforms a emoji to a text
+ * @param $input
+ * @return mixed|string
+ */
 function emoji_to_text($input)
 {
     global $ICONS;
