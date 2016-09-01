@@ -536,8 +536,19 @@ function location($location_id = 233)
     } else {
         return false;
     }
+}
 
-
+function isoToID($iso)
+{
+    global $MYSQL;
+    try {
+        $MYSQL->bind('iso', $iso);
+        $query = $MYSQL->query("SELECT id FROM {prefix}countries WHERE iso = :iso");
+        return $query['0']['id'];
+    } catch (PDOException $e) {
+        $this->ExceptionLog($e->getMessage());
+        return false;
+    }
 }
 
 /**

@@ -27,7 +27,7 @@ if (isset($_POST['edit'])) {
         $tz = $_POST['timezone'];
         $about = emoji_to_text($_POST['about']);
         $birthday = $_POST['birthday'];
-        $location = $_POST['location'];
+        $location = (int)$_POST['location'];
         $gender = $_POST['gender'];
 
         if (!$email or !$tz) {
@@ -113,9 +113,9 @@ $timezones .= '</select>';
 $locations = '<select id="location" name="location">';
 foreach ($LANG['location'] as $code => $location) {
     if ($IKO->sess->data['location'] == $code) {
-        $locations .= '<option value="' . $code . '" selected="selected">' . $location . '</option>';
+        $locations .= '<option value="' . isoToID($code) . '" selected="selected">' . $location . '</option>';
     } else {
-        $locations .= '<option value="' . $code . '">' . $location . '</option>';
+        $locations .= '<option value="' . isoToID($code) . '">' . $location . '</option>';
     }
 }
 $locations .= '</select>';
