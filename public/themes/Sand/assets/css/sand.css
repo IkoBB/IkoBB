@@ -187,3 +187,7 @@ input[type="text"]::-webkit-input-placeholder, input[type="password"]::-webkit-i
 .tools {
     overflow: auto;
 }
+
+.bbCode_img {
+    max-width: 100%;
+}

@@ -125,7 +125,7 @@ class Library_Parse
 
                 $url = trim($matches[1]);
                 if ($this->checkSafeUrl($url)) {
-                    $output = '<img src="' . $url . '" alt="user-provided image">';
+                    $output = '<img src="' . $url . '" alt="user-provided image" class="bbCode_img">';
                 }
 
                 return $output;
