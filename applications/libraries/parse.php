@@ -77,7 +77,7 @@ class Library_Parse
                     ),
                     $matches[1]
                 );
-                return '<pre class="brush: c++">' . $matches[1] . '</pre>';
+                return '<pre class="brush: cpp">' . $matches[1] . '</pre>';
             },
             // codeblock with a specific brush
             '#\\[code=([^\\]]*?)\\](.*?)\\[/code\\]#uis' => function ($matches) {
@@ -92,6 +92,7 @@ class Library_Parse
                     ),
                     $matches[2]
                 );
+                $matches[1] = strtolower($matches[1]);
                 return '<pre class="brush: ' . $matches[1] . '">' . $matches[2] . '</pre>';
             },
             // flags
