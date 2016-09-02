@@ -40,6 +40,8 @@ class Iko_Core
         if (empty($query)) {
             return array();
         }
+        $location = location($query['0']['location']);
+        $query['0']['location'] = $location['iso'];
 
         $MYSQL->bind('post_user', $query['0']['id']);
         $query['0']['post_count'] = count($MYSQL->query("SELECT * FROM {prefix}forum_posts WHERE post_user = :post_user"));

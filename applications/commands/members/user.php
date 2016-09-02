@@ -204,7 +204,7 @@ if (isset($user) && isset($userg) && isset($page_title)) {
             $IKO->lib_parse->parse($user['user_signature']),
             $IKO->lib_parse->parse($user['about_user']),
             $LANG['location'][$user['location']],
-            '<span class="flag-icon flag-icon-' . strtolower($user['location']) . '"></span>',
+            '<span class="flag-icon flag-icon-' . $user['location'] . '"></span>',
             gender($user['gender']),
             birthday_to_age($user['user_birthday']),
             $recent_activity,

@@ -525,14 +525,22 @@ function location($location_id = 233)
     global $MYSQL;
 
     if (is_int($location_id)) {
-        try {
-            $MYSQL->bind('id', $location_id);
-            $query = $MYSQL->query("SELECT iso, language FROM {prefix}countries WHERE id = :id");
-            return $query['0'];
-        } catch (PDOException $e) {
-            $this->ExceptionLog($e->getMessage());
-            return false;
+        if ($location_id == 0) {
+            return array(
+                'iso' => '--',
+                'language' => '0'
+            );
+        } else {
+            try {
+                $MYSQL->bind('id', $location_id);
+                $query = $MYSQL->query("SELECT iso, language FROM {prefix}countries WHERE id = :id");
+                return $query['0'];
+            } catch (PDOException $e) {
+                $this->ExceptionLog($e->getMessage());
+                return false;
+            }
         }
+
     } else {
         return false;
     }
