@@ -514,7 +514,7 @@ function list_forums()
 /**
  * Get location data from location ID
  * @author N8boy
- * @return array;
+ * @return array|bool;
  * @array
  *  - iso
  *  - language
@@ -546,6 +546,10 @@ function location($location_id = 233)
     }
 }
 
+/**
+ * @param $iso
+ * @return bool|array
+ */
 function isoToID($iso)
 {
     global $MYSQL;
