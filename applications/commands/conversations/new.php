@@ -60,6 +60,7 @@ if (isset($_POST['create'])) {
                             $LANG['bb']['conversations']['message_sent']
                         )
                     );
+                    redirect(SITE_URL . '/conversations.php');
                 } else {
                     throw new Exception (
                         str_replace(
