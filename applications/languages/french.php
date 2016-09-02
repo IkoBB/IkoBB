@@ -239,7 +239,8 @@ $LANG = array(
     'notification' => array(
         'mention' => '%username% vous a mentinné dans un message!',
         'reply' => '%username% a répondu au sujet <strong>%thread_title%</strong>',
-        'quoted' => '%username% a cité votre message dans <strong>%thread_title%</strong>'
+        'quoted' => '%username% a cité votre message dans <strong>%thread_title%</strong>',
+        'pm' => '%username% send you a new message: <strong>%message_title%</strong>'
     ),
     'flat' => array(
         'merge_post' => '----------'

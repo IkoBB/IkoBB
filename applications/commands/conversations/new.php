@@ -60,7 +60,13 @@ if (isset($_POST['create'])) {
                             $LANG['bb']['conversations']['message_sent']
                         )
                     );
-                    redirect(SITE_URL . '/conversations.php');
+
+                    $IKO->user->notifyUser('pm', $us['id'], false, array(
+                        'username' => $IKO->sess->data['username'],
+                        'message_title' => $title,
+                        'link' => SITE_URL . '/conversations.php'
+                    ));
+
                 } else {
                     throw new Exception (
                         str_replace(
@@ -72,6 +78,9 @@ if (isset($_POST['create'])) {
                 }
 
             }
+
+            // Wait 2 seconds and redirect to conversation main page
+            header('Refresh:2;url=' . SITE_URL . '/forum.php'); // ToDO: Why is this not redirecting?
 
         }
 
@@ -114,5 +123,3 @@ $content .= $notice . '<form action="" method="POST">
                  <br />
                  ' . $FORM->build('submit', '', 'create', array('value' => $LANG['bb']['conversations']['form_send'])) . '
                </form>';
-
-?>

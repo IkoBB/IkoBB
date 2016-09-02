@@ -19,12 +19,16 @@ class Iko_User
         $this->notice_type = array(
             'mention',
             'reply',
-            'quote'
+            'quote',
+            'pm'
         );
     }
 
-    /*
-     * Change user's usergroup.
+    /**
+     * Change user's usergroup
+     * @param $user
+     * @param $group
+     * @return bool
      */
     public function changeUserGroup($user, $group)
     {
@@ -67,8 +71,11 @@ class Iko_User
         }
     }
 
-    /*
+    /**
      * Change Username
+     * @param $user
+     * @param $username
+     * @return bool
      */
     public function changeUsername($user, $username)
     {
@@ -91,8 +98,11 @@ class Iko_User
         }
     }
 
-    /*
-     * Add permission to a user.
+    /**
+     * Add permission to a user
+     * @param $user
+     * @param $permission
+     * @return bool
      */
     public function givePermission($user, $permission)
     {
@@ -125,8 +135,11 @@ class Iko_User
         }
     }
 
-    /*
-     * Remove additional permission from a user.
+    /**
+     * Remove additional permission from a user
+     * @param $user
+     * @param $permission
+     * @return bool
      */
     public function removeAddPermission($user, $permission)
     {
@@ -162,17 +175,19 @@ class Iko_User
         }
     }
 
-    /*
-     * Return user links as an array.
-     * For template use.
+    /**
+     * Return user links as an array
+     * For template use
+     * @return array
      */
     function userLinks()
     {
         return $this->user_links;
     }
 
-    /*
-     * Add link to the user links.
+    /**
+     * Add link to the user links
+     * @param array $link
      */
     public function addUserLink($link = array())
     {
@@ -181,8 +196,9 @@ class Iko_User
         }
     }
 
-    /*
-     * User messages.
+    /**
+     * User messages
+     * @return array
      */
     public function userMessages()
     {
@@ -213,8 +229,9 @@ class Iko_User
         return $return;
     }
 
-    /*
+    /**
      * Notification
+     * @return array
      */
     public function notifications()
     {
@@ -232,6 +249,9 @@ class Iko_User
         return $return;
     }
 
+    /**
+     * Delete all notifications of a user
+     */
     public function clearNotification()
     {
         global $MYSQL, $IKO;
@@ -239,6 +259,15 @@ class Iko_User
         $MYSQL->query("UPDATE {prefix}notifications SET viewed = 1 WHERE user = :user");
     }
 
+    /**
+     * Notify a user
+     * @param $type
+     * @param $user
+     * @param bool $email
+     * @param array $extra
+     * @return bool
+     * @throws Exception
+     */
     public function notifyUser($type, $user, $email = false, $extra = array())
     {
         global $MYSQL, $IKO, $LANG, $MAIL;
@@ -300,6 +329,31 @@ class Iko_User
                             $extra['thread_title']
                         ),
                         $LANG['notification']['quoted']
+                    );
+
+                    $MYSQL->bindMore(
+                        array(
+                            'notice_content' => $notice,
+                            'notice_link' => $extra['link'],
+                            'user' => $user,
+                            'time_received' => $time
+                        )
+                    );
+                    break;
+
+
+                // New private message
+                case "pm":
+                    $notice = str_replace(
+                        array(
+                            '%username%',
+                            '%message_title%'
+                        ),
+                        array(
+                            $extra['username'],
+                            $extra['message_title']
+                        ),
+                        $LANG['notification']['pm']
                     );
 
                     $MYSQL->bindMore(

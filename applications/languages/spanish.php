@@ -240,7 +240,8 @@ $LANG = array(
     'notification' => array(
         'mention' => '%username% te ha mencionado en un post!',
         'reply' => '%username% ha respondido al hilo <strong>%thread_title%</strong>',
-        'quoted' => '%username% citó tu post en <strong>%thread_title%</strong>'
+        'quoted' => '%username% citó tu post en <strong>%thread_title%</strong>',
+        'pm' => '%username% send you a new message: <strong>%message_title%</strong>'
     ),
     'flat' => array(
         'merge_post' => '----------'
