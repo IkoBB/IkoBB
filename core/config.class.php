@@ -131,16 +131,18 @@ class config extends config_loader
 	public function __construct($type, $args)
 	{
 		switch (strtolower($type)) {
-		case 'file':
-			$this->config_loader = new config_loader_file($args);
-		break;
-		case 'create':
-			$this->config_loader = null;
-			$this->create_args = $args;
-		break;
-		default:
-			throw new \Exception("Config kann nur mit als File, Mysql, Create initalisiert werden.");
-		break;
+			case 'file':
+				$this->config_loader = new config_loader_file($args);
+			break;
+
+			case 'create':
+				$this->config_loader = null;
+				$this->create_args = $args;
+			break;
+
+			default:
+				throw new \Exception("Config kann nur mit als File, Mysql, Create initalisiert werden.");
+			break;
 		}
 		$this->loadConfig();
 	}
@@ -459,31 +461,35 @@ class config_var
 	{
 		$var = null;
 		switch ($type) {
-		case 'array':
-			$var = explode("<|>", $this->wert);
-		break;
-		case 'int':
-			$var = intval($this->wert);
-		break;
-		case 'bool':
-			if ($this->wert || strtolower($this->wert) == "true") {
-				$var = true;
-			}
-			else {
-				if (!$this->wert || strtolower($this->wert) == "false") {
-					$var = false;
+			case 'array':
+				$var = explode("<|>", $this->wert);
+			break;
+
+			case 'int':
+				$var = intval($this->wert);
+			break;
+
+			case 'bool':
+				if ($this->wert || strtolower($this->wert) == "true") {
+					$var = true;
 				}
-			}
-		break;
-		case 'string':
-			$var = $this->wert;
-		break;
-		default:
-			$var = explode("<|>", $this->wert);
-			if (count($var) == 1) {
-				$var = $var[0];
-			}
-		break;
+				else {
+					if (!$this->wert || strtolower($this->wert) == "false") {
+						$var = false;
+					}
+				}
+			break;
+
+			case 'string':
+				$var = $this->wert;
+			break;
+
+			default:
+				$var = explode("<|>", $this->wert);
+				if (count($var) == 1) {
+					$var = $var[0];
+				}
+			break;
 		}
 
 		return $var;

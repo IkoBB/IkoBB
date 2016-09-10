@@ -27,18 +27,21 @@ class Core
 	public static function init($phase)
 	{
 		switch ($phase) {
-		case 0:
-			self::$basepath = self::loadPath();
-			self::$corepath = self::$basepath . "core/";
-			self::$adminpath = self::$basepath . "admin/";
-			self::$modulepath = self::$basepath . "module/";
-		break;
-		case 1:
-			self::loadPDO();
-		break;
-		default:
-			null;
-		break;
+
+			case 0:
+				self::$basepath = self::loadPath();
+				self::$corepath = self::$basepath . "core/";
+				self::$adminpath = self::$basepath . "admin/";
+				self::$modulepath = self::$basepath . "module/";
+			break;
+
+			case 1:
+				self::loadPDO();
+			break;
+
+			default:
+				null;
+			break;
 		}
 	}
 
