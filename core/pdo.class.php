@@ -13,14 +13,14 @@ use \PDO as DB;
  */
 class PDO extends DB
 {
-    /**
-     * {@inheritDoc}
-     * @see PDO::query()
-     */
-    public function query(string $statement)
-    {
-        $config = config::load("file", "core/database.conf.php");
-        $statement = str_replace("{prefix}", $config->get("prefix"), $statement);
-        parent::query($statement);
-    }
+	/**
+	 * {@inheritDoc}
+	 * @see PDO::query()
+	 */
+	public function query(string $statement)
+	{
+		$config = config::load("file", "core/database.conf.php");
+		$statement = str_replace("{prefix}", $config->get("prefix"), $statement);
+		parent::query($statement);
+	}
 }

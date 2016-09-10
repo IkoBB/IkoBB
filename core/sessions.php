@@ -11,17 +11,17 @@ namespace Iko;
  */
 class session
 {
-    private static $user_agent;
-    private static $ip;
-    private static $session_id;
-    private static $user_id;
-    private static $session_type;
+	private static $user_agent;
+	private static $ip;
+	private static $session_id;
+	private static $user_id;
+	private static $session_type;
 
-    /**
-     *
-     */
-    public static function init()
-    {
+	/**
+	 *
+	 */
+	public static function init()
+	{
 
-    }
+	}
 }
