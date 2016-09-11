@@ -17,8 +17,8 @@ abstract class modul_loader {
 	
 	public function __construct($modul) {
 		$this->class_modul = $modul;
-		$this->pre_checkFiles();
-		$this->pre_checkPDOTables();
+		$this->pre_check_Files();
+		$this->pre_check_PDO_Tables();
 	}
 	abstract protected function pre_check_PDO_Tables();
 	abstract protected function pre_check_Files();
