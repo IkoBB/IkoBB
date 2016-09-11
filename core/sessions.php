@@ -20,17 +20,32 @@ namespace Iko;
  * @author Marcel
  *
  */
+<<<<<<< HEAD
 class session {
+=======
+class session
+{
+>>>>>>> origin/master
 	private static $user_agent;
 	private static $ip;
 	private static $session_id;
 	private static $user_id;
 	private static $session_type;
+<<<<<<< HEAD
 	
 	/**
 	 * 
 	 */
 	public static function init() {
 		session_start();
+=======
+
+	/**
+	 *
+	 */
+	public static function init()
+	{
+
+>>>>>>> origin/master
 	}
 }
