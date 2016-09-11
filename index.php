@@ -19,4 +19,3 @@ namespace Iko;
 require_once 'core/core.php';
 $class = new modul("test_module");
 $class->load();
-?>
