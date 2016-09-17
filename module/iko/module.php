@@ -13,8 +13,8 @@
 namespace Iko;
 
 class core_loader extends module_loader {
-	public function __construct($modul) {
-		parent::__construct($modul);
+	public function __construct($module) {
+		parent::__construct($module);
 		echo "Test";
 	}
 	protected function pre_check_PDO_Tables() {

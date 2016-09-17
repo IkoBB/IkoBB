@@ -13,11 +13,11 @@
 namespace Iko;
 
 abstract class module_loader {
-	private $class_modul;
+	private $class_module;
 	private $checked = false;
 	
-	public function __construct($modul) {
-		$this->class_modul = $modul;
+	public function __construct($module) {
+		$this->class_module = $module;
 	}
 	public function check() {
 		if($this->pre_check_Files() &&
@@ -41,9 +41,9 @@ abstract class module_loader {
 			echo "<br>";
 			var_dump($sql);
 			if($sql === false)
-				throw new \Exception("Code #1234");
+				$result = false;
 		}
-		return true;
+		return $result;
 	}
 	public function check_Files($files = array()) {
 		$result = true;
@@ -54,11 +54,11 @@ abstract class module_loader {
 			foreach($files as $var) {
 				$filename = $this->class_modul->get_path() . $var;
 				if(!file_exists($filename)) {
-					throw new \Exception("Code #1235 " . $filename);
+					$result = false;
 				}
 			}
 		}
-		return true;
+		return $result;
 	}
 	public function load($files = array()) {
 		if(is_string($files)) {

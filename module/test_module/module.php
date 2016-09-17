@@ -13,8 +13,8 @@
 namespace TestFile;
 
 class module extends \Iko\module_loader {
-	public function __construct($modul) {
-		parent::__construct($modul);
+	public function __construct($module) {
+		parent::__construct($module);
 	}
 	protected function pre_check_PDO_Tables() {
 		$tables = array("{prefix}user", "{prefix}user_groups");

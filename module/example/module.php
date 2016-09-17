@@ -13,8 +13,8 @@
 namespace Example;
 
 class module extends \Iko\module_loader {
-	public function __construct($modul) {
-		parent::__construct($modul);
+	public function __construct($module) {
+		parent::__construct($module);
 	}
 	protected function pre_check_PDO_Tables() {
 		$tables = array("example", "{prefix}example"); //Insert your SQL Tables here. It will load over the Core{prefix} Std is: iko_
