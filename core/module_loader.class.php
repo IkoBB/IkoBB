@@ -12,13 +12,21 @@
  */
 namespace Iko;
 
-abstract class modul_loader {
+abstract class module_loader {
 	private $class_modul;
+	private $checked = false;
 	
 	public function __construct($modul) {
 		$this->class_modul = $modul;
-		$this->pre_check_Files();
-		$this->pre_check_PDO_Tables();
+	}
+	public function check() {
+		if($this->pre_check_Files() &&
+		$this->pre_check_PDO_Tables())
+		$this->checked = true;
+		return $this->is_Checked();
+	}
+	public function is_Checked() {
+		return $this->checked;
 	}
 	abstract protected function pre_check_PDO_Tables();
 	abstract protected function pre_check_Files();
@@ -35,6 +43,7 @@ abstract class modul_loader {
 			if($sql === false)
 				throw new \Exception("Code #1234");
 		}
+		return true;
 	}
 	public function check_Files($files = array()) {
 		$result = true;
@@ -49,6 +58,7 @@ abstract class modul_loader {
 				}
 			}
 		}
+		return true;
 	}
 	public function load($files = array()) {
 		if(is_string($files)) {
@@ -65,6 +75,42 @@ abstract class modul_loader {
 					if($include === false) {
 						throw new \Exception("Code #1236 " . $filename);
 					}
+				}
+			}
+		}
+	}
+	public function create_PDO_Tables($args = array(), $file = false) {
+		$files = $args;
+		if($file) {
+			$args = array();
+			$mode = "r";
+			if(is_string($files)) {
+				$files = array($files);
+			}
+			foreach($files as $var) {
+				$filename = $this->class_modul->get_path() . $var;
+				if(!file_exists($filename)) {
+						throw new \Exception("Code #1236 " . $filename);
+				}
+				$handle = fopen($filename, $mode);
+				$string = "";
+				while($read = fgets($handle)) {
+					$string .= $read;
+				}
+				fclose($handle);
+				array_push($args, $string);
+			}
+		}
+		if(is_string($args)) {
+			$args = array($args);
+		}
+		foreach($args as $var) {
+			$var = str_replace('`', '', $var);
+			echo $var;
+			if(strpos($var, "create") !== false || strpos($var, "CREATE") !== false) {
+				$state = Core::$PDO->query($var);
+				if($state === false) {
+					throw new \Exception(Core::$PDO->errorInfo());
 				}
 			}
 		}

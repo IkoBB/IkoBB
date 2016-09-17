@@ -12,7 +12,7 @@
  */
 namespace TestFile;
 
-class modul extends \Iko\modul_loader {
+class module extends \Iko\module_loader {
 	public function __construct($modul) {
 		parent::__construct($modul);
 	}

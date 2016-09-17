@@ -12,7 +12,7 @@
 */
 namespace Example;
 
-class modul extends \Iko\modul_loader {
+class module extends \Iko\module_loader {
 	public function __construct($modul) {
 		parent::__construct($modul);
 	}
@@ -24,7 +24,7 @@ class modul extends \Iko\modul_loader {
 		$files = array("example.php", "example.txt"); //Insert your needed Files here. It will load over the Core.
 		$this->check_Files($files);
 	}
-	public function load() {
+	public function load($files = array()) {
 		$files = array(
 				"test.php"
 		);

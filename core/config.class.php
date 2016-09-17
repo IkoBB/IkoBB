@@ -344,7 +344,7 @@ class config_loader_file extends config_loader{
 	}
 }
 class config_loader_pdo extends config_loader {
-	const table = "configurations";
+	const table = "configs";
 	private $prefix;
 	private $table;
 	public function __construct($args) {
