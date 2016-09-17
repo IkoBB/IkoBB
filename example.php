@@ -20,6 +20,6 @@ require_once 'core/core.php';
 $class = new modul("example");
 @$class->load();
 /**
- * For more Informatione how to create your own Modul. Go to: http://wiki.ikobb.de/index.php?title=Modul_developing
+ * For more Informatione how to create your own Modul. Go to: http://wiki.ikobb.de/index.php?title=Module_developing
  */
-echo "For more Informatione how to create your own Modul. Go to: <a href=\"http://wiki.ikobb.de/index.php?title=Modul_developing\">IkoBB Wiki Modul Developing";
+echo "For more Informatione how to create your own Modul. Go to: <a href=\"http://wiki.ikobb.de/index.php?title=Modul_developing\">IkoBB Wiki Module Developing";
