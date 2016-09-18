@@ -52,7 +52,7 @@ abstract class module_loader {
 		}
 		if(is_array($files)) {
 			foreach($files as $var) {
-				$filename = $this->class_modul->get_path() . $var;
+				$filename = $this->class_module->get_path() . $var;
 				if(!file_exists($filename)) {
 					$result = false;
 				}
@@ -66,7 +66,7 @@ abstract class module_loader {
 		}
 		if(is_array($files)) {
 			foreach($files as $var) {
-				$filename = $this->class_modul->get_path() . $var;
+				$filename = $this->class_module->get_path() . $var;
 				if(!file_exists($filename)) {
 					throw new \Exception("Code #1236 " . $filename);
 				}
@@ -90,7 +90,7 @@ abstract class module_loader {
 				$files = array($files);
 			}
 			foreach($files as $var) {
-				$filename = $this->class_modul->get_path() . $var;
+				$filename = $this->class_module->get_path() . $var;
 				if(!file_exists($filename)) {
 						throw new \Exception("Code #1236 " . $filename);
 				}
