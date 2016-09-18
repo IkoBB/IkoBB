@@ -77,7 +77,13 @@ class Core {
 	 */
 	private static function loadPDO() {
 		$config = config::load("file", self::$corepath . "database.conf.php");
-		self::$PDO = new \Iko\PDO($config->get("dns"), $config->get("username"), $config->get("password"), $config->get("options"));
+		try {
+			self::$PDO = new \Iko\PDO($config->get("dns"), $config->get("username"), $config->get("password"), $config->get("options"));
+		}catch(\PDOException $ex) {
+			echo $ex->getMessage() . "<br>";
+			exit;
+		}
+		
 	}
 }
 
