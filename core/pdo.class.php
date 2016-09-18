@@ -29,7 +29,6 @@ class PDO extends DB {
 	public function query(string $statement) {
 		$config = config::load("file", core::$corepath . "database.conf.php");
 		$statement = str_replace("{prefix}", $config->get("prefix"), $statement);
-		echo $statement;
 		return parent::query($statement);
 	}
 }

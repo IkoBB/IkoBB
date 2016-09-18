@@ -23,7 +23,10 @@ CREATE TABLE `iko_modules` (
 	PRIMARY KEY (`module_name`)
 );
 
-INSERT INTO `iko_modules` VALUES ('IkoBB', 'template', 'Template Engine', '1.0.0a', '1');
+INSERT INTO `iko_modules` VALUES ('IkoBB', 'template', 'Template Engine', '1.0.0a', '1'),
+	('IkoBB', 'user', 'User Engine', '1.0.0a', '1'),
+	('IkoBB', 'iko', 'Core Engine', '1.0.0a', '1'),
+	('IkoBB', 'forum', 'Forum Engine', '1.0.0a', '1');
 
 
 CREATE TABLE `iko_templates` (
