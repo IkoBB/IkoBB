@@ -198,23 +198,23 @@ class config extends config_loader{
  *
  */
 class config_loader_file extends config_loader{
-	private $datei = "";
+	private $file = "";
 	/**
 	 * @param unknown $args
 	 */
 	public function __construct($args) {
-		$this->datei = core::$basepath . $args;
+		$this->file = $args;
 		$this->loadConfig();
 	}
 	/**
 	 * @throws \Exception
 	 */
 	protected function loadConfig() {
-		$inc = @include $this->datei;
+		$inc = @include $this->file;
 		if($inc === false) {
 			/* $this->FirstCreateConfig();
 			$this->loadConfig(); */
-			throw new \Exception("Die Datei ist nicht vorhanden");
+			throw new \Exception("Die Datei ist nicht vorhanden. " . $this->file);
 		}
 		else {
 			$this->config = $config;
@@ -266,7 +266,7 @@ class config_loader_file extends config_loader{
 				$search = '"' . $search . '"';
 			}
 			if($this->config[$name] != $wert) {
-				$main = fopen($this->datei, "r");
+				$main = fopen($this->file, "r");
 				while($read = fgets($main)) {
 					if(strpos($read, '$config[' . $name_temp . ']') !== false) {
 						$read = str_replace($search, $wert, $read);
@@ -277,9 +277,9 @@ class config_loader_file extends config_loader{
 			}
 		}
 		if($string != "") {
-			$delete = unlink($this->datei);
+			$delete = unlink($this->file);
 			if($delete === true) {
-				$handle = fopen($this->datei, "x");
+				$handle = fopen($this->file, "x");
 				$write = fwrite($handle, $string);
 				fclose($handle);
 				if($write !== false) {
@@ -308,7 +308,7 @@ class config_loader_file extends config_loader{
 			$wert = '"' . $wert . '"';
 		}
 		if(!isset($this->config[$name])) {
-			$main = fopen($this->datei, "r");
+			$main = fopen($this->file, "r");
 			while($read = fgets($main)) {
 				if(strpos($read, '?>') !== false) {
 					if($comment != "") {
@@ -325,9 +325,9 @@ class config_loader_file extends config_loader{
 			fclose($main);
 		}
 		if($string != "") {
-			$delete = unlink($this->datei);
+			$delete = unlink($this->file);
 			if($delete === true) {
-				$handle = fopen($this->datei, "x");
+				$handle = fopen($this->file, "x");
 				$write = fwrite($handle, $string);
 				fclose($handle);
 				if($write !== false) {
