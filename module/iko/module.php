@@ -15,7 +15,6 @@ namespace Iko;
 class core_loader extends module_loader {
 	public function __construct($module) {
 		parent::__construct($module);
-		echo "Test";
 	}
 	protected function pre_check_PDO_Tables() {
 		$tables = array("{prefix}modules", "{prefix}configs"); //Insert your SQL Tables here. It will load over the Core{prefix} Std is: iko_

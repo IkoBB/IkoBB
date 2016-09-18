@@ -344,7 +344,7 @@ class config_loader_file extends config_loader{
 	}
 }
 class config_loader_pdo extends config_loader {
-	const table = "configs";
+	const table = "{prefix}configs";
 	private $prefix;
 	private $table;
 	public function __construct($args) {
@@ -387,7 +387,7 @@ class config_loader_pdo extends config_loader {
 	private function table() {
 		$var = "";
 		if($this->table != null)
-			$var = $this->table;
+			$var = "{prefix}" . $this->table;
 		else 
 			$var = self::table;
 		return $var; 
@@ -402,35 +402,35 @@ class config_loader_pdo extends config_loader {
  */
 class config_var {
 	/**
-	 * @param unknown $wert
+	 * @param unknown $var
 	 * @return NULL|string|unknown
 	 */
-	public static function getConvert($wert) {
+	public static function get_Convert($var) {
 		$conv = null;
-		if(is_array($wert)) {
-			$conv = serialize($wert);
+		if(is_array($var)) {
+			$conv = serialize($var);
 		}
-		else if(is_int($wert)) {
-			$conv = "" . $wert . "";
+		else if(is_int($var)) {
+			$conv = "" . $var . "";
 		}
-		else if(is_bool($wert)) {
-			if($wert)
+		else if(is_bool($var)) {
+			if($var)
 				$conv = "true";
 			else
 				$conv = "false";
 		}
-		else if(is_string($wert)) {
-			$conv = $wert;
+		else if(is_string($var)) {
+			$conv = $var;
 		}
-		else if(is_object($wert)) {
-			$conv = serialize($wert);
+		else if(is_object($var)) {
+			$conv = serialize($var);
 		}
 		return $conv;
 	}
 	
-	private $wert;
+	private $var;
 	private $name;
-	private $kommentar;
+	private $comment;
 	private $config_class;
 	
 	/**
@@ -439,39 +439,39 @@ class config_var {
 	 * @param string $comment
 	 * @param unknown $config_loader
 	 */
-	public function __construct($name, $wert, $comment = "", $config_loader) {
+	public function __construct($name, $var, $comment = "", $config_loader) {
 		$this->name = $name;
-		$this->wert = $wert;
-		$this->kommentar = $comment;
+		$this->var = $var;
+		$this->comment = $comment;
 		$this->config_loader = $config_loader;
 	}
 	/**
 	 * @param string $type
 	 * @return NULL|unknown
 	 */
-	public function getWert($type = "") {
+	public function get($type = "") {
 		$var = null;
 		switch ($type) {
 			case 'array':
-				$var = unserialize($this->wert);
+				$var = unserialize($this->var);
 			break;
 			case 'object':
-				$var = unserialize($this->wert);
+				$var = unserialize($this->var);
 			break;
 			case 'int':
-				$var = intval($this->wert);
+				$var = intval($this->var);
 			break;
 			case 'bool':
-				if($this->wert || strtolower($this->wert) == "true")
+				if($this->var || strtolower($this->var) == "true")
 					$var = true;
-				else if(!$this->wert || strtolower($this->wert) == "false")
+				else if(!$this->var || strtolower($this->var) == "false")
 					$var = false;
 			break;
 			case 'string':
-				$var = $this->wert;
+				$var = $this->var;
 			break;
 			default:
-				$var = $this->wert;
+				$var = $this->var;
 			break;
 		}
 		return $var;
@@ -485,7 +485,7 @@ class config_var {
 	 * @return boolean
 	 */
 	public function equals($wert) {
-		if(self::getConvert($wert) === $this->getWert())
+		if(self::get_Convert($wert) === $this->get())
 			return true;
 		else
 			return false;
@@ -503,14 +503,14 @@ class config_var {
 	/**
 	 * @return string
 	 */
-	public function getKommentar() {
-		return $this->kommentar;
+	public function get_commentary() {
+		return $this->comment;
 	}
 	/**
 	 * @param unknown $wert
 	 * @return \Iko\NULL|\Iko\unknown
 	 */
 	public function __get($wert) {
-		return $this->getWert($wert);
+		return $this->get($wert);
 	}
 }
