@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>%% title %%</title>
+</head>
+<body>
+
+
+<!-- A div where the content of the variable $template->content is inserted -->
+<div style="border: red dashed 1px; margin-bottom: 20px;">
+	%% content %%
+</div>
+
+<!-- A if construct which checks if 1 is equal to 2, which is of course not equal so the "else text" will be printed-->
+@if (1==2) <br> %% userprofile %% @else This is an "else" text. @endif
+
+<!-- In this div is a loop which counts to 10 and every time a text and a variable will be the output -->
+<div style="background-color: #99A4AC; border: double 1px orange; margin-top: 10px;">
+	@for ($i = 1; $i < 10; $i++) {{ $i }}: This text is written ten times. <br> @endfor
+</div>
+
+</body>
+</html>
