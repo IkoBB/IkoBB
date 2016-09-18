@@ -42,7 +42,7 @@ CREATE TABLE `iko_templates` (
 );
 
 INSERT INTO `iko_templates` (`template_name`, `template_author`, `template_version`, `template_directory`, `template_required_core_version`)
-VALUES ('Default Template', 'IkoBB', '0.0.1', 'default', '1.0.0a')
+VALUES ('Default Template', 'IkoBB', '0.0.1', 'default', '1.0.0a');
 
 CREATE TABLE `iko_user` (
 	`user_id`                 INT(11)      NOT NULL AUTO_INCREMENT,
