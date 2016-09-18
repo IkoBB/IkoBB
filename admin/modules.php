@@ -286,7 +286,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 		            	<h3 class="box-title">Modules Table</h3>
 					</div>
 					<div class="box-body">
-						<table id="modules-table" class="table table-bordered table-hover">
+						<table id="modules-table" class="table table-bordered table-striped table-hover">
 							<thead>
 								<tr>
 									<th>Displayname</th>
@@ -308,7 +308,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 										echo '<td><span class="label label-success">Active</span> </td>';
 									}
 									else 
-										echo '<td><span class="label label-danger">Deactived</span> </td>';
+										echo '<td><span class="label label-danger">Disabled</span> </td>';
 									echo '</tr>';
 								}
 								?>
@@ -447,10 +447,28 @@ scratch. This page gets rid of all links and provides the needed markup only.
 		$(function () {
 			$("#modules-table").DataTable({
 				"paging": false,
-				"searching": false,
-			    "ordering": true
+			    "ordering": true,
+			    "initComplete": function () {
+		            var api = this.api();
+		            api.$('td').click( function () {
+		            	var inner = this.innerHTML;
+						if(inner == '<span class="label label-success">Active</span> ') {
+							inner = "Active";
+						}
+						else if (inner == '<span class="label label-danger">Disabled</span> ') {
+							inner = 'Disabled';
+						}
+		                api.search( inner ).draw();
+		            } );
+		        }
 				});
 			});
+			$("#modules-table tbody").on( 'mouseenter', 'td', function () {
+	            var colIdx = table.cell(this).index().column;
+	            
+	            $( table.cells().nodes() ).removeClass( 'highlight' );
+	            $( table.column( colIdx ).nodes() ).addClass( 'highlight' );
+	        } );
 	</script>
 </body>
 </html>
