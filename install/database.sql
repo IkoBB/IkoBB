@@ -42,4 +42,27 @@ CREATE TABLE `iko_templates` (
 );
 
 INSERT INTO `iko_templates` (`template_name`, `template_author`, `template_version`, `template_directory`, `template_required_core_version`)
-VALUES ('Default Template', 'IkoBB', '0.0.1', 'default', '1.0.0a');
+VALUES ('Default Template', 'IkoBB', '0.0.1', 'default', '1.0.0a')
+
+CREATE TABLE `iko_user` (
+	`user_id`                 INT(11)      NOT NULL AUTO_INCREMENT,
+	`user_name`               VARCHAR(30)  NOT NULL,
+	`user_password`           TEXT         NOT NULL,
+	`user_email`              VARCHAR(320) NOT NULL,
+	`user_avatar_id`          INT(11)               DEFAULT '1',
+	`user_signature`          VARCHAR(255)          DEFAULT NULL,
+	`user_about_user`         TEXT,
+	`user_location_id`        INT(11)               DEFAULT NULL,
+	`user_gender`             TINYINT(1)            DEFAULT NULL,
+	`user_date_joined`        INT(11)      NOT NULL,
+	`user_birthday`           DATE                  DEFAULT NULL,
+	`user_chosen_template_id` INT(11)               DEFAULT '1',
+	`user_timezone_id`        INT(11)               DEFAULT '1',
+	PRIMARY KEY (`user_id`),
+	UNIQUE KEY `user_name` (`user_name`),
+	UNIQUE KEY `user_email` (`user_email`),
+	KEY `user_avatar_id` (`user_avatar_id`),
+	KEY `user_location_id` (`user_location_id`),
+	KEY `user_chosen_template_id` (`user_chosen_template_id`),
+	KEY `user_timezone_id` (`user_timezone_id`)
+);
