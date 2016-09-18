@@ -32,6 +32,6 @@ class core_loader extends module_loader {
 		$files = array(
 				
 		);
-		parent::load($files);
+		return parent::load($files);
 	}
 }

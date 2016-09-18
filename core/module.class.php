@@ -35,7 +35,7 @@ class module {
 	private $name;
 	private $displayname;
 	private $version;
-	private $is_active;
+	private $is_active = true;
 	private $loader = null;
 	public function __construct($name, $loader_name = "") {
 		$this->name = $name;
@@ -100,7 +100,7 @@ class module {
 	}
 	public function load() {
 		if($this->loader instanceof module_loader && $this->is_active && !$this->is_load)
-			$this->loader->load();
+			return $this->loader->load();
 		else
 			return false;
 	}

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * This file is part of IkoBB Forum and belongs to the module <TestFile>.
+ * This file is part of IkoBB Forum and belongs to the module <User>.
  *
  * @copyright (c) IkoBB <https://www.ikobb.de>
  * @license GNU General Public License, version 3 (GPL-3.0)
@@ -10,23 +10,23 @@
  * the LICENSE file.
  *
  */
-namespace TestFile;
+namespace Iko;
 
-class module extends \Iko\module_loader {
+class user_module_loader extends module_loader {
 	public function __construct($module) {
 		parent::__construct($module);
 	}
 	protected function pre_check_PDO_Tables() {
-		$tables = array("{prefix}user", "{prefix}user_groups");
+		$tables = array(/*"{prefix}user"*/); //Insert your SQL Tables here. It will load over the Core{prefix} Std is: iko_
 		$this->check_PDO_Tables($tables);
 	}
 	protected function pre_check_Files() {
-		$files = array("test.php", "weiteres.txt");
+		$files = array("user.class.php"); //Insert your needed Files here. It will load over the Core.
 		$this->check_Files($files);
 	}
 	public function load($files = array()) {
 		$files = array(
-				"test.php"
+				"user.class.php"
 		);
 		return parent::load($files);
 	}

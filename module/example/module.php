@@ -28,6 +28,6 @@ class module extends \Iko\module_loader {
 		$files = array(
 				"test.php"
 		);
-		parent::load($files);
+		return parent::load($files);
 	}
 }

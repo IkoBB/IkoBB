@@ -77,7 +77,9 @@ abstract class module_loader {
 					}
 				}
 			}
+			return true;
 		}
+		return false;
 	}
 	public function create_PDO_Tables($args = array(), $file = false) {
 		$files = $args;
