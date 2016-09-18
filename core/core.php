@@ -15,13 +15,13 @@
  *
  */
 namespace Iko;
-use \PDO as PDO;
 error_reporting(E_ALL);
 /**
  * @author Marcel
  *
  */
 class Core {
+	const version = "1.0.0a";
 	public static $basepath;
 	public static $adminpath;
 	public static $corepath;
