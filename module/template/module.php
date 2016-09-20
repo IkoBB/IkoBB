@@ -27,14 +27,17 @@ class template_loader extends \Iko\module_loader
 
 	protected function pre_check_Files()
 	{
-		$files = array ("template.class.php");
+		$files = array (
+			"template.class.php",
+			"parser.class.php");
 		$this->check_Files($files);
 	}
 
 	public function load($files = array ())
 	{
 		$files = array (
-			"template.class.php",);
+			"template.class.php",
+			"parser.class.php",);
 
 		return parent::load($files);
 	}
