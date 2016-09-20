@@ -75,7 +75,7 @@ abstract class config_loader implements config_interface
 	public function reload_config()
 	{
 		$this->config = array ();
-		$this->loadConfig();
+		$this->load_Config();
 	}
 
 	/**
@@ -89,6 +89,8 @@ abstract class config_loader implements config_interface
 	 * @see \Iko\config_interface::add()
 	 */
 	public abstract function add($name, $wert, $comment = "");
+
+	protected abstract function load_Config();
 }
 
 /**
@@ -156,13 +158,13 @@ class config extends config_loader
 				throw new \Exception("Config kann nur mit als File, Mysql, Create initalisiert werden.");
 			break;
 		}
-		$this->loadConfig();
+		$this->load_Config();
 	}
 
 	/**
 	 *
 	 */
-	protected function loadConfig()
+	protected function load_Config()
 	{
 		if ($this->config_loader != null) {
 			$this->config = $this->config_loader->get_config();
@@ -253,13 +255,13 @@ class config_loader_file extends config_loader
 	public function __construct($args)
 	{
 		$this->file = $args;
-		$this->loadConfig();
+		$this->load_Config();
 	}
 
 	/**
 	 * @throws \Exception
 	 */
-	protected function loadConfig()
+	protected function load_Config()
 	{
 		$inc = @include $this->file;
 		if ($inc === false) {
@@ -448,7 +450,7 @@ class config_loader_pdo extends config_loader
 
 	}
 
-	protected function loadConfig()
+	protected function load_Config()
 	{
 
 	}
