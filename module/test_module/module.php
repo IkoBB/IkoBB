@@ -4,7 +4,7 @@
  * This file is part of IkoBB Forum and belongs to the module <TestFile>.
  *
  * @copyright (c) IkoBB <https://www.ikobb.de>
- * @license GNU General Public License, version 3 (GPL-3.0)
+ * @license       GNU General Public License, version 3 (GPL-3.0)
  *
  * For full copyright and license information, please see
  * the LICENSE file.
@@ -12,22 +12,34 @@
  */
 namespace TestFile;
 
-class module extends \Iko\module_loader {
-	public function __construct($module) {
+class module extends \Iko\module_loader
+{
+	public function __construct($module)
+	{
 		parent::__construct($module);
 	}
-	protected function pre_check_PDO_Tables() {
-		$tables = array("{prefix}user", "{prefix}user_groups");
+
+	protected function pre_check_PDO_Tables()
+	{
+		$tables = array (
+			"{prefix}user",
+			"{prefix}user_groups");
 		$this->check_PDO_Tables($tables);
 	}
-	protected function pre_check_Files() {
-		$files = array("test.php", "weiteres.txt");
+
+	protected function pre_check_Files()
+	{
+		$files = array (
+			"test.php",
+			"weiteres.txt");
 		$this->check_Files($files);
 	}
-	public function load($files = array()) {
-		$files = array(
-				"test.php"
-		);
+
+	public function load($files = array ())
+	{
+		$files = array (
+			"test.php");
+
 		return parent::load($files);
 	}
 }
