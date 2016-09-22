@@ -13,6 +13,7 @@
 
 namespace Iko;
 
+use Emojione;
 
 class parser
 {
@@ -210,6 +211,8 @@ class parser
 			}
 		}
 
+		$result = self::emoji_to_image($result);
+
 		//Mentions ToDo: Wait for user profile then add link here
 		//$result = preg_replace('/@(\w+)/', '<a href="' . SITE_URL . '/members.php/cmd/user/id/$1">$1</a>', $result);
 		return $result;
@@ -224,5 +227,18 @@ class parser
 		}
 
 		return $valid_url;
+	}
+
+	public static function emoji_to_image($string)
+	{
+		$return = '';
+		$client = new Emojione\Client(new Emojione\Ruleset());
+		$client->ascii = true;
+		$client->imageType = 'svg';
+		if (isset($string)) {
+			$return = $client->toImage($string);
+		}
+
+		return $return;
 	}
 }

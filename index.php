@@ -12,10 +12,6 @@
  */
 namespace Iko;
 
-/**
- * @author Marcel
- *
- */
 require_once 'core/core.php';
 $class = new module("iko");
 
@@ -27,12 +23,14 @@ $template_loader->load();
 $template = template::get_instance();
 
 // Create 3 new parameters called content, title and userprofile. They can be accessed with blade syntax with %% content %%, %% title %% and %% userprofile %%.
-$template->content = parser::bbCodes("[noparse][b]Test[/b][/noparse] [code] Test
+$template->content = parser::bbCodes(":drool:[noparse][b]Test[/b][/noparse] [code] Test
 Neue Zeile <br /> [ol=I][*] Test
 [*]2. Test
-[/ol][/code][ol=I][*] Test
+[/ol][/code] :) :D [ol=I][*] Test
 [*]2. Test
-[/ol]");
+[/ol]
+
+:O :D :'( <3 :sob:  :bread: :flag_de: :flushed: ");
 $template->title = "Index Test title";
 $template->userprofile = "This is a user profile. It is only visible if 1=1";
 

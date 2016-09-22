@@ -29,7 +29,13 @@ class template_loader extends \Iko\module_loader
 	{
 		$files = array (
 			"template.class.php",
-			"parser.class.php");
+			"parser.class.php",
+			"lib/EmojiOne/autoload.php",
+			"lib/EmojiOne/src/Client.php",
+			"lib/EmojiOne/src/ClientInterface.php",
+			"lib/EmojiOne/src/Emojione.php",
+			"lib/EmojiOne/src/Ruleset.php",
+			"lib/EmojiOne/src/RulesetInterface.php",);
 		$this->check_Files($files);
 	}
 
@@ -37,7 +43,8 @@ class template_loader extends \Iko\module_loader
 	{
 		$files = array (
 			"template.class.php",
-			"parser.class.php",);
+			"parser.class.php",
+			"lib/EmojiOne/autoload.php",);
 
 		return parent::load($files);
 	}
