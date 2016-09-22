@@ -28,6 +28,7 @@ class Core
 	public static $adminpath;
 	public static $corepath;
 	public static $modulepath;
+	public static $currentpath;
 	public static $PDO;
 
 	/**
@@ -56,18 +57,18 @@ class Core
 	 */
 	private static function loadPath()
 	{
-		$file = dirname(__FILE__);
+		$current_file = dirname(__FILE__);
 		$win = false;
-		if (strpos($file, "\\") > 0) {
+		if (strpos($current_file, "\\") > 0) {
 			$win = true;
 		}
 		if ($win == true) {
-			$file = strtolower(str_replace("\\", "/", $file));
+			$current_file = strtolower(str_replace("\\", "/", $current_file));
 		}
-		$base = str_replace(strtolower($_SERVER['DOCUMENT_ROOT']), "", $file);
-		$base = str_replace("/core", "", $base);
-		$base = str_replace($base, "", strtolower($_SERVER['PHP_SELF']));
-		$base = explode("/", $base);
+		$base_without_doc_root = str_replace(strtolower($_SERVER['DOCUMENT_ROOT']), "", $current_file);
+		$base_without_core = str_replace("/core", "", $base_without_doc_root);
+		$base_current_file = str_replace($base_without_core, "", strtolower($_SERVER['PHP_SELF']));
+		$base = explode("/", $base_current_file);
 		$dir = "./";
 		if (count($base) > 1) {
 			for ($i = 0; $i < count($base); $i++) {
@@ -76,7 +77,8 @@ class Core
 				}
 			}
 		}
-
+		$path = $dir . substr($base_current_file, 1);
+		self::$currentpath = $path;
 		return $dir;
 	}
 
