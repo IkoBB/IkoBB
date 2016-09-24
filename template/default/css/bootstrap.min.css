@@ -1569,7 +1569,7 @@ kbd kbd {
 .li1 td {
 	background-color: #F5F5F5;
 	border: 1px solid #CCCCCC;
-	padding: 5px;
+	width: 100%;
 }
 
 pre code {
