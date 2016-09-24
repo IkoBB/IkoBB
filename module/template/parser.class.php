@@ -19,7 +19,7 @@ class parser
 {
 	public static function bbCodes($string)
 	{
-		// disable html tags
+		/** disable html tags */
 		$string = str_replace(array (
 			'<',
 			'>'), array (
@@ -62,29 +62,32 @@ class parser
 				$matches[1] = str_replace(array (
 					'[',
 					']',
-					':',), array (
+					':',
+					'<br>'), array (
 					'&#91;',
 					'&#93;',
-					'&#58;',), $matches[1]);
+					'&#58;',
+					"\n"), $matches[1]);
 
 				return self::syntax_highlighter($matches[1]);
 			},
 			/** codeblock with a specific language */
 			'#\\[code=([^\\]]*?)\\](.*?)\\[/code\\]#uis' => function ($matches) {
-				$matches[2] = str_replace(
-					array(
-						'[',
-						']',
-						':',), array (
+				$matches[2] = str_replace(array (
+					'[',
+					']',
+					':',
+					'<br>'), array (
 					'&#91;',
 					'&#93;',
-					'&#58;',),
-					$matches[2]
-				);
+					'&#58;',
+					"\n"), $matches[2]);
 				$matches[1] = strtolower($matches[1]);
 
 				return self::syntax_highlighter($matches[2], $matches[1]);
 			},
+			/** ToDO: codeblock with a specific language & line selected*/
+
 
 
 			// bold
@@ -248,19 +251,22 @@ class parser
 		return $return;
 	}
 
-	public static function syntax_highlighter($string, $language = "php", $highlight = false)
+	public static function syntax_highlighter($string, $language = "c", $highlight = false)
 	{
-		$geshi = "";
+		$return = "";
 		if (isset($string) && $string != "") {
 			$string = html_entity_decode($string);
 			$geshi = new \GeSHi($string, $language);
 			$geshi->set_header_type(GESHI_HEADER_PRE_TABLE);
+			$geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS);
 			if ($highlight != false) {
 				$geshi->highlight_lines_extra(array ($highlight));
 			}
+
+			$return = $geshi->parse_code();
+
 		}
 
-
-		return $geshi->parse_code();
+		return $return;
 	}
 }
