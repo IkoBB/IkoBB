@@ -1570,6 +1570,7 @@ kbd kbd {
 	background-color: #F5F5F5;
 	border: 1px solid #CCCCCC;
 	width: 100%;
+	padding: 5px !important;
 }
 
 pre code {

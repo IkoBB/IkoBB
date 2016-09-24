@@ -29,6 +29,9 @@ h1.title {
 	width: 250px;
 }
 
+.dropdown-menu {
+	width: 250px;
+}
 .login-form {
 	/* Padding */
 	padding: 0 5px 0 5px;
