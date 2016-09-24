@@ -37,48 +37,54 @@ class parser
 			'#\\[noparse\\](.*?)\\[/noparse\\]#uis' => function ($matches) {
 				$matches[1] = str_replace(array (
 					'[',
-					']'), array (
+					']',
+					':',), array (
 					'&#91;',
-					'&#93;'), $matches[1]);
+					'&#93;',
+					'&#58;',), $matches[1]);
 
 				return $matches[1];
 			},
-			/*Inline Code Tag
+			/** Inline Code  */
 			'#\\[tt\\](.*?)\\[/tt\\]#uis' => function ($matches) {
 				$matches[1] = str_replace(array (
 					'[',
-					']'), array (
+					']',
+					':',), array (
 					'&#91;',
-					'&#93;'), $matches[1]);
+					'&#93;',
+					'&#58;',), $matches[1]);
 
 				return '<code>' . $matches[1] . '</code>';
-			},*/
-			// codeblock without a specific brush
+			},
+			/** codeblock without a specific brush */
 			'#\\[code\\](.*?)\\[/code\\]#uis' => function ($matches) {
 				$matches[1] = str_replace(array (
 					'[',
-					']'), array (
+					']',
+					':',), array (
 					'&#91;',
-					'&#93;'), $matches[1]);
+					'&#93;',
+					'&#58;',), $matches[1]);
 
-				return '<pre>' . $matches[1] . '</pre>';
+				return self::syntax_highlighter($matches[1]);
 			},
-			/* codeblock with a specific language ToDO: Add the correct api for this
+			/** codeblock with a specific language */
 			'#\\[code=([^\\]]*?)\\](.*?)\\[/code\\]#uis' => function ($matches) {
 				$matches[2] = str_replace(
 					array(
 						'[',
-						']'
-					),
-					array(
-						'&#91;',
-						'&#93;'
-					),
+						']',
+						':',), array (
+					'&#91;',
+					'&#93;',
+					'&#58;',),
 					$matches[2]
 				);
 				$matches[1] = strtolower($matches[1]);
-				return '<pre class="brush: ' . $matches[1] . '">' . $matches[2] . '</pre>';
-			},*/
+
+				return self::syntax_highlighter($matches[2], $matches[1]);
+			},
 
 
 			// bold
@@ -211,7 +217,7 @@ class parser
 			}
 		}
 
-		$result = self::emoji_to_image($result);
+		$result = self::text_to_emoji($result);
 
 		//Mentions ToDo: Wait for user profile then add link here
 		//$result = preg_replace('/@(\w+)/', '<a href="' . SITE_URL . '/members.php/cmd/user/id/$1">$1</a>', $result);
@@ -229,7 +235,7 @@ class parser
 		return $valid_url;
 	}
 
-	public static function emoji_to_image($string)
+	public static function text_to_emoji($string)
 	{
 		$return = '';
 		$client = new Emojione\Client(new Emojione\Ruleset());
@@ -240,5 +246,21 @@ class parser
 		}
 
 		return $return;
+	}
+
+	public static function syntax_highlighter($string, $language = "php", $highlight = false)
+	{
+		$geshi = "";
+		if (isset($string) && $string != "") {
+			$string = html_entity_decode($string);
+			$geshi = new \GeSHi($string, $language);
+			$geshi->set_header_type(GESHI_HEADER_PRE_TABLE);
+			if ($highlight != false) {
+				$geshi->highlight_lines_extra(array ($highlight));
+			}
+		}
+
+
+		return $geshi->parse_code();
 	}
 }
