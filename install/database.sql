@@ -100,3 +100,11 @@ CREATE TABLE `iko_permissions` (
   KEY `iko_group_permission_id_group` (`group_permission_group_id`)
 );
 
+CREATE TABLE `iko_user_permissions` (
+  `user_permission_user_id`         int(11)   NOT NULL,
+  `user_permission_permission_id`   int(11)   NOT NULL,
+  UNIQUE KEY `group_permission_relation` (`user_permission_permission_id`,`user_permission_user_id`),
+  KEY `iko_group_permission_id_permission` (`user_permission_permission_id`),
+  KEY `iko_group_permission_id_group` (`user_permission_user_id`)
+  );
+
