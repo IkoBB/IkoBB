@@ -35,7 +35,8 @@ class template_loader extends \Iko\module_loader
 			"lib/EmojiOne/src/ClientInterface.php",
 			"lib/EmojiOne/src/Emojione.php",
 			"lib/EmojiOne/src/Ruleset.php",
-			"lib/EmojiOne/src/RulesetInterface.php",);
+			"lib/EmojiOne/src/RulesetInterface.php",
+			"lib/GeSHi/geshi.php",);
 		$this->check_Files($files);
 	}
 
@@ -44,7 +45,8 @@ class template_loader extends \Iko\module_loader
 		$files = array (
 			"template.class.php",
 			"parser.class.php",
-			"lib/EmojiOne/autoload.php",);
+			"lib/EmojiOne/autoload.php",
+			"lib/GeSHi/geshi.php",);
 
 		return parent::load($files);
 	}
