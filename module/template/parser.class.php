@@ -120,6 +120,14 @@ class parser
 			'#\\[quote=([^\\]]*?)\\](.*?)\\[/quote\]#uis' => '<blockquote>\\1 wrote: <br>\\2</blockquote>',
 			// quote with author and source
 			'#\\[quote=([^\\]]*?),([^\\]]*?)\\](.*?)\\[/quote\]#uis' => '<blockquote cite="\\2">\\1 wrote: <br>\\3</blockquote>',
+			// Table
+			'#\\[table\](.*?)\\[/table\]#uis' => '<table>\\1</table>',
+			// Table row
+			'#\\[tr\](.*?)\\[/tr\]#uis' => '<tr>\\1</tr>',
+			// Table cell
+			'#\\[td\](.*?)\\[/td\]#uis' => '<td>\\1</td>',
+			// Table head
+			'#\\[th\](.*?)\\[/th\]#uis' => '<th>\\1</th>',
 			// unordered list
 			'#\\[ul\\](.*?)\[/ul\\]#uis' => '<ul>\\1</ul>',
 			'#\\[list\\](.*?)\[/list\\]#uis' => '<ul>\\1</ul>',
