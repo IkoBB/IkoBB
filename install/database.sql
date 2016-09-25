@@ -66,3 +66,11 @@ CREATE TABLE `iko_user` (
 	KEY `user_chosen_template_id` (`user_chosen_template_id`),
 	KEY `user_timezone_id` (`user_timezone_id`)
 );
+
+CREATE TABLE `iko_usergroups` (
+  `usergroup_id` int(11) NOT NULL AUTO_INCREMENT,
+  `usergroup_name` varchar(255) NOT NULL,
+  `usergroup_style` varchar(255) NOT NULL,
+  PRIMARY KEY (`usergroup_id`),
+  UNIQUE KEY `iko_usergroups_usergroup_name_uindex` (`usergroup_name`)
+);
