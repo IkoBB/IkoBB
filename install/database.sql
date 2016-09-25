@@ -84,3 +84,11 @@ CREATE TABLE `iko_usergroups` (
   UNIQUE KEY `iko_usergroups_usergroup_name_uindex` (`usergroup_name`)
 );
 
+
+CREATE TABLE `iko_permissions` (
+  `permission_id`   int(11)       NOT NULL    AUTO_INCREMENT,
+  `permission_name` varchar(255)  NOT NULL,
+  PRIMARY KEY (`permission_id`),
+  UNIQUE KEY `iko_permissions_permission_name_uindex` (`permission_name`)
+  );
+
