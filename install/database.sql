@@ -92,3 +92,11 @@ CREATE TABLE `iko_permissions` (
   UNIQUE KEY `iko_permissions_permission_name_uindex` (`permission_name`)
   );
 
+  CREATE TABLE `iko_group_permissions` (
+  `group_permission_group_id`       int(11)   NOT NULL,
+  `group_permission_permission_id`  int(11)   NOT NULL,
+  UNIQUE KEY `group_permission_relation` (`group_permission_group_id`,`group_permission_permission_id`),
+  KEY `iko_group_permission_id_permission` (`group_permission_permission_id`),
+  KEY `iko_group_permission_id_group` (`group_permission_group_id`)
+);
+
