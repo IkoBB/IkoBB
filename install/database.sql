@@ -67,10 +67,20 @@ CREATE TABLE `iko_user` (
 	KEY `user_timezone_id` (`user_timezone_id`)
 );
 
+CREATE TABLE `iko_user_assignment` (
+  `user_assignment_id_user`   int(11)   NOT NULL,
+  `user_assignment_id_group`  int(11)   NOT NULL,
+  UNIQUE KEY `user_group_relation` (`user_assignment_id_user`,`user_assignment_id_group`),
+  KEY `iko_user_assignment_id_igroup` (`user_assignment_id_group`),
+  KEY `iko_user_assignment_id_user` (`user_assignment_id_user`)
+  );
+
+
 CREATE TABLE `iko_usergroups` (
-  `usergroup_id` int(11) NOT NULL AUTO_INCREMENT,
-  `usergroup_name` varchar(255) NOT NULL,
-  `usergroup_style` varchar(255) NOT NULL,
+  `usergroup_id`    int(11)       NOT NULL    AUTO_INCREMENT,
+  `usergroup_name`  varchar(255)  NOT NULL,
+  `usergroup_style` varchar(255)  NOT NULL,
   PRIMARY KEY (`usergroup_id`),
   UNIQUE KEY `iko_usergroups_usergroup_name_uindex` (`usergroup_name`)
 );
+
