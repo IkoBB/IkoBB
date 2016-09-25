@@ -28,7 +28,7 @@ class Core
 	public static $adminpath;
 	public static $corepath;
 	public static $modulepath;
-	public static $currentpath;
+	public static $currentfile;
 	public static $PDO;
 
 	/**
@@ -38,13 +38,10 @@ class Core
 	{
 		switch ($phase) {
 			case 0:
-				self::$basepath = self::loadPath();
-				self::$corepath = self::$basepath . "core/";
-				self::$adminpath = self::$basepath . "admin/";
-				self::$modulepath = self::$basepath . "module/";
+				self::load_paths();
 			break;
 			case 1:
-				self::loadPDO();
+				self::load_PDO();
 			break;
 			default:
 				null;
@@ -53,22 +50,11 @@ class Core
 	}
 
 	/**
-	 * @return string
+	 * @return string // Load the prefix like: ./../../
 	 */
-	private static function loadPath()
+	private static function load_path_prefix()
 	{
-		$current_file = dirname(__FILE__);
-		$win = false;
-		if (strpos($current_file, "\\") > 0) {
-			$win = true;
-		}
-		if ($win == true) {
-			$current_file = strtolower(str_replace("\\", "/", $current_file));
-		}
-		$base_without_doc_root = str_replace(strtolower($_SERVER['DOCUMENT_ROOT']), "", $current_file);
-		$base_without_core = str_replace("/core", "", $base_without_doc_root);
-		$base_current_file = str_replace($base_without_core, "", strtolower($_SERVER['PHP_SELF']));
-		$base = explode("/", $base_current_file);
+		$base = explode("/", self::load_path_current());
 		$dir = "./";
 		if (count($base) > 1) {
 			for ($i = 0; $i < count($base); $i++) {
@@ -77,15 +63,81 @@ class Core
 				}
 			}
 		}
-		$path = $dir . substr($base_current_file, 1);
-		self::$currentpath = $path;
 		return $dir;
+	}
+
+	/**
+	 * @return string // Load the Current File
+	 */
+	private static function load_path_current() {
+		$current_file = dirname(__FILE__); //Load Current Directory
+		$win = false;
+		if (strpos($current_file, "\\") > 0) { //If there is \ for a Windows based System. It will replaced with /
+			$win = true;
+		}
+		if ($win == true) {
+			$current_file = strtolower(str_replace("\\", "/", $current_file)); // \ -> /
+		}
+		$base_without_doc_root = str_replace(strtolower($_SERVER['DOCUMENT_ROOT']), "", $current_file); // Remove Document root
+		$base_without_core = str_replace("/core", "", $base_without_doc_root);
+		return str_replace($base_without_core, "", strtolower($_SERVER['PHP_SELF']));
+	}
+
+	/**
+	 * @param string $attachment
+	 * @param string $type
+	 * @param boolean $get
+	 *
+	 * @return string // Get the Path to the Current file or it will be generate a string for such other files.
+	 *                // example: Current(./my/own/website/module/test/index.php);
+	 *                // Core::get_Path("my/dir/name/myfile.php");
+	 *                // Return: ./../../my/dir/name/myfile.php");
+	 */
+	public static function get_Path($attachment = "", $type = "", $get = false)
+	{
+		switch ($type) {
+			case "admin":
+				$base_path = Core::$adminpath;
+				break;
+			case "module":
+				$base_path = Core::$modulepath;
+				break;
+			case "core":
+				$base_path = Core::$corepath;
+				break;
+			default:
+				$base_path = Core::$basepath;
+				break;
+		}
+		$base_current_file = self::load_path_current();
+		if($attachment == "") {
+			if($get) {
+				$gets = "?";
+				foreach($_GET as $key => $value) {
+					$gets .= $key . "=" . $value . "&";
+				}
+				$base_current_file .= $gets;
+			}
+			$path = $base_path . substr($base_current_file, 1);
+		}
+		else {
+			$path = $base_path . "" . $attachment;
+		}
+		return $path;
+	}
+
+	private static function load_paths() {
+		self::$basepath = self::load_path_prefix();
+		self::$corepath = self::$basepath . "core/";
+		self::$adminpath = self::$basepath . "admin/";
+		self::$modulepath = self::$basepath . "module/";
+		self::$currentfile = self::get_Path();
 	}
 
 	/**
 	 * Load PDO with /Core/Database.conf.php file over Class Config
 	 */
-	private static function loadPDO()
+	private static function load_PDO()
 	{
 		$config = config::load("file", self::$corepath . "database.conf.php");
 		try {
