@@ -48,7 +48,7 @@ CREATE TABLE `iko_user` (
 	`user_id`                 INT(11)      NOT NULL AUTO_INCREMENT,
 	`user_name`               VARCHAR(30)  NOT NULL,
 	`user_password`           TEXT         NOT NULL,
-	`user_email`              VARCHAR(320) NOT NULL,
+	`user_email`              VARCHAR(255) NOT NULL,
 	`user_avatar_id`          INT(11)               DEFAULT '1',
 	`user_signature`          VARCHAR(255)          DEFAULT NULL,
 	`user_about_user`         TEXT,
