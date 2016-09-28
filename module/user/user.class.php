@@ -1,14 +1,33 @@
 <?php
+/**
+ *
+ * This file is part of IkoBB Forum and belongs to the module <User>.
+ *
+ * @copyright (c) IkoBB <https://www.ikobb.de>
+ * @license       GNU General Public License, version 3 (GPL-3.0)
+ *
+ * For full copyright and license information, please see
+ * the LICENSE file.
+ *
+ */
 namespace Iko;
 
 class user
 {
+	const table = "{prefix}user";
+
 	private static $users = array ();
 	private static $users_exist = array ();
 
-	public static function get($user_id = 0)
+	/**
+	 * @param int  $user_id
+	 * @param bool $reload
+	 *
+	 * @return array|mixed|null
+	 */
+	public static function get ($user_id = 0, $reload = FALSE)
 	{
-		if ($user_id != 0 && $user_id != null) {
+		if ($user_id != 0 && $user_id != NULL) {
 			if (is_array($user_id)) {
 				self::exist($user_id);
 			}
@@ -17,14 +36,14 @@ class user
 			}
 			$user_array = array ();
 			foreach ($user_id as $id) {
-				if (!isset(self::$users[$id]) || self::$users[$id] == null) {
-					if (self::exist($id)) {
-						self::$users[$id] = new user($id);
-						array_push($user_array, self::$users[$id]);
+				if (!isset(self::$users[ $id ]) || self::$users[ $id ] == NULL || $reload) {
+					if (self::exist($id, $reload)) {
+						self::$users[ $id ] = new user($id);
+						array_push($user_array, self::$users[ $id ]);
 					}
 				}
 				else {
-					array_push($user_array, self::$users[$id]);
+					array_push($user_array, self::$users[ $id ]);
 				}
 			}
 			if (count($user_array) == 1) {
@@ -35,12 +54,12 @@ class user
 			}
 		}
 
-		return null;
+		return NULL;
 	}
 
-	public static function search($args = array (), $or = false) // TODO: Complete Function for Searching after single and Mutliple user
+	public static function search ($args = array (), $or = FALSE) // TODO: Complete Function for Searching after single and Mutliple user
 	{
-		$sql = "SELECT user_id FROM {prefix}user WHERE";
+		$sql = "SELECT user_id FROM " . self::table . " WHERE";
 		$equal = ($or) ? "OR" : "AND";
 		if (count($args) > 0) {
 			$string = "";
@@ -59,50 +78,59 @@ class user
 		}
 	}
 
-	public static function exist($user_id = 0, $reload = false)
+	/**
+	 * @param int  $user_id
+	 * @param bool $reload
+	 *
+	 * @return bool|mixed
+	 */
+	public static function exist ($user_id = 0, $reload = FALSE)
 	{
-		if ($user_id != 0) {
+		if ($user_id != 0 && $user_id != NULL) {
 			if (is_string($user_id) || is_int($user_id)) {
-				if (!isset(self::$users_exist[$user_id]) || $reload) {
-					$statement = Core::$PDO->prepare("SELECT user_id FROM {prefix}user WHERE user_id = :user_id");
+				if (!isset(self::$users_exist[ $user_id ]) || $reload) {
+					$statement = Core::$PDO->prepare("SELECT user_id FROM " . self::table . " WHERE user_id = :user_id");
 					$statement->bindParam('user_id', $user_id);
 					$statement->execute();
 					if ($statement->rowCount() > 0) {
-						self::$users_exist[$user_id] = true;
+						self::$users_exist[ $user_id ] = TRUE;
 
-						return true;
+						return TRUE;
 					}
 					else {
-						self::$users_exist[$user_id] = false;
+						self::$users_exist[ $user_id ] = FALSE;
 
-						return false;
+						return FALSE;
 					}
 				}
 
-				return self::$users_exist[$user_id];
+				return self::$users_exist[ $user_id ];
 			}
 			else {
 				if (is_array($user_id)) {
-					$statement = Core::$PDO->prepare("SELECT user_id FROM {prefix}user WHERE user_id = :user_id");
+					$statement = Core::$PDO->prepare("SELECT user_id FROM " . self::table . " WHERE user_id = :user_id");
 					foreach ($user_id as $id) {
-						if (!isset(self::$users_exist[$user_id]) || $reload) {
+						if (!isset(self::$users_exist[ $id ]) || $reload) {
 							$statement->bindParam('user_id', $id);
 							$statement->execute();
 							if ($statement->rowCount() > 0) {
-								self::$users_exist[$id] = true;
+								self::$users_exist[ $id ] = TRUE;
 							}
 							else {
-								self::$users_exist[$id] = false;
+								self::$users_exist[ $id ] = FALSE;
 							}
 						}
 					}
 
-					return true;
+					return TRUE;
 				}
 				else {
-					return self::$users_exist[$user_id];
+					return FALSE;
 				}
 			}
+		}
+		else {
+			return FALSE;
 		}
 	}
 
@@ -120,11 +148,20 @@ class user
 	private $user_chosen_template_id;
 	private $user_timezone_id;
 
-	protected function __construct($user_id)
+	private $groups = array ();
+
+	/**
+	 * user constructor.
+	 *
+	 * @param $user_id
+	 *
+	 * @throws \Iko\Exception
+	 */
+	protected function __construct ($user_id)
 	{
 		if (self::exist($user_id)) {
 			$statement = Core::$PDO->query("SELECT * FROM {prefix}user WHERE user_id = $user_id");
-			$fetch = $statement->fetch();
+			$fetch = $statement->fetch(PDO::FETCH_ASSOC);
 			$this->id = $fetch["user_id"];
 			$this->user_name = $fetch["user_name"];
 			$this->user_password = $fetch["user_password"];
@@ -138,13 +175,40 @@ class user
 			$this->user_birthday = $fetch["user_birthday"];
 			$this->user_chosen_template_id = $fetch["user_chosen_template_id"];
 			$this->user_timezone_id = $fetch["user_timezone_id"];
+			load_groups();
 		}
 		else {
 			throw new Exception("User does not exist: User_ID = " . $user_id . "");
 		}
 	}
 
-	public function get_user_name()
+	/**
+	 * @return mixed
+	 */
+	public function get_Id ()
+	{
+		return $this->id;
+	}
+
+	/**
+	 *
+	 */
+	private function load_groups ()
+	{
+		$statement = Core::$PDO->prepare("SELECT * FROM " . permission::user_assignment . " WHERE user_assignment_id_user = " . $this->get_ID(), array (PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
+		$statement->execute();
+		while ($fetch = $statement->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+			array_push($this->groups, group::get($fetch["user_assignment_id_group"]));
+		}
+	}
+	public function get_groups() {
+		return $this->groups;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_user_name ()
 	{
 		return $this->user_name;
 	}
