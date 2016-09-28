@@ -61,17 +61,29 @@ abstract class module_loader
 
 	public function check_Files($files = array ())
 	{
+		function check_files_exist($array,$prefix) {
+			$result = true;
+			foreach ($array as $key => $value) {
+				if(is_array($value)) {
+					if(!check_files_exist($value, $prefix .$key . "/")) {
+						$result = false;
+					}
+				}
+				else {
+					$filename = $prefix . $value;
+					if(!file_exists($filename)) {
+						$result = false;
+					}
+				}
+			}
+			return $result;
+		}
 		$result = true;
 		if (is_string($files)) {
 			$files = array ($files);
 		}
 		if (is_array($files)) {
-			foreach ($files as $var) {
-				$filename = $this->class_module->get_path() . $var;
-				if (!file_exists($filename)) {
-					$result = false;
-				}
-			}
+			check_files_exist($files, $this->class_module->get_path());
 		}
 
 		return $result;
@@ -79,23 +91,30 @@ abstract class module_loader
 
 	public function load($files = array ())
 	{
+		function load_file($array, $prefix) {
+			foreach ($array as $key => $var) {
+				if(is_array($var)) {
+					load_file($var, $prefix . $key . "/");
+				}
+				else {
+					$filename = $prefix . $var;
+					if (!file_exists($filename)) {
+						throw new \Exception("Code #1236 " . $filename);
+					}
+					else {
+						$include = @include($filename);
+						if ($include === FALSE) {
+							throw new \Exception("Code #1236 " . $filename);
+						}
+					}
+				}
+			}
+		}
 		if (is_string($files)) {
 			$files = array ($files);
 		}
 		if (is_array($files)) {
-			foreach ($files as $var) {
-				$filename = $this->class_module->get_path() . $var;
-				if (!file_exists($filename)) {
-					throw new \Exception("Code #1236 " . $filename);
-				}
-				else {
-					$include = @include($filename);
-					if ($include === false) {
-						throw new \Exception("Code #1236 " . $filename);
-					}
-				}
-			}
-
+			load_file($files, $this->class_module->get_path());
 			return true;
 		}
 
