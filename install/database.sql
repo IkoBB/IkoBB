@@ -97,7 +97,11 @@ CREATE TABLE `iko_permissions` (
   `group_permission_permission_id`  int(11)   NOT NULL,
   UNIQUE KEY `group_permission_relation` (`group_permission_group_id`,`group_permission_permission_id`),
   KEY `iko_group_permission_id_permission` (`group_permission_permission_id`),
-  KEY `iko_group_permission_id_group` (`group_permission_group_id`)
+  KEY `iko_group_permission_id_group` (`group_permission_group_id`),
+  CONSTRAINT `iko_group_permissions_ibfk_1`
+  FOREIGN KEY (`group_permission_group_id`)
+  REFERENCES `iko_usergroups` (`usergroup_id`)
+  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE `iko_user_permissions` (
