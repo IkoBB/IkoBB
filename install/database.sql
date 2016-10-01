@@ -81,7 +81,12 @@ CREATE TABLE `iko_usergroups` (
   `usergroup_name`  varchar(255)  NOT NULL,
   `usergroup_style` varchar(255)  NOT NULL,
   PRIMARY KEY (`usergroup_id`),
-  UNIQUE KEY `iko_usergroups_usergroup_name_uindex` (`usergroup_name`)
+  UNIQUE KEY `iko_usergroups_usergroup_name_uindex` (`usergroup_name`),
+  CONSTRAINT `iko_usergroups_ibfk_1`
+  FOREIGN KEY (`usergroup_id`)
+  REFERENCES `iko_user_assignment` (`user_assignment_id_group`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE
 );
 
 
