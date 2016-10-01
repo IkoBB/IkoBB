@@ -21,7 +21,7 @@ class user_module_loader extends module_loader
 
 	protected function pre_check_PDO_Tables ()
 	{
-		$tables = array ("{prefix}user"); //Insert your SQL Tables here. It will load over the Core{prefix} Std is: iko_
+		$tables = array ("{prefix}user");
 		$this->check_PDO_Tables($tables);
 	}
 
@@ -31,8 +31,10 @@ class user_module_loader extends module_loader
 			"user.class.php",
 			"group.class.php",
 			"permissions" => array (
-				"group.permission.class.php",
-				"user.permission.class.php")); //Insert your needed Files here. It will load over the Core.
+				"permissions.class.php",
+				"value.class.php",
+				"group.class.php",
+				"user.class.php"));
 		$this->check_Files($files);
 	}
 
@@ -42,9 +44,10 @@ class user_module_loader extends module_loader
 			"user.class.php",
 			"group.class.php",
 			"permissions" => array(
-				"permission.class.php",
-				"user.permission.class.php",
-				"group.permission.class.php"
+				"permissions.class.php",
+				"value.class.php",
+				"user.class.php",
+				"group.class.php"
 			));
 		return parent::load($files);
 	}

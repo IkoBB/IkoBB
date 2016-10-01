@@ -18,7 +18,11 @@
  */
 namespace Iko;
 
-class permission
+use Iko\Permissions\User as users;
+use Iko\Permissions\Group as groups;
+use Iko\Permissions\Value as values;
+
+abstract class Permissions
 {
 	const table = "{prefix}permissions";
 
@@ -28,18 +32,14 @@ class permission
 	const user_assignment = "{prefix}user_assignment";
 	const user_permissions = "{prefix}user_permissions";
 
-
-	private static $users = array ();
-	private static $groups = array ();
-
 	public static function get ($class)
 	{
-		$array = array();
-		if(!is_array($class)) {
-			$class = array($class);
+		$array = array ();
+		if (!is_array($class)) {
+			$class = array ($class);
 		}
-		if(is_array($class)) {
-			foreach($class as $value) {
+		if (is_array($class)) {
+			foreach ($class as $value) {
 				if ($value instanceof user) {
 					array_push($array, self::get_user($value));
 				}
@@ -55,40 +55,67 @@ class permission
 				}
 			}
 		}
-
+		if (count($array) == 1) {
+			return $array[0];
+		}
+		else {
+			return $array;
+		}
 	}
 
 	public static function get_user ($class)
 	{
-
+		return users::get($class);
 	}
 
 	public static function get_group ($class)
 	{
-
+		return groups::get($class);
 	}
 
-	private static function get_permission_var ($class)
+	private static function get_permission ($class) //
 	{
 
 	}
-
 
 	protected $permissions = array ();
 
-	protected function __construct() {
+	protected function __construct ()
+	{
 		$this->load_permission();
 	}
-	protected function load_permission() {
 
-	}
+	abstract protected function load_permission ();
+
+	/**
+	 * @param $permission
+	 *
+	 * @return bool
+	 */
 	public function has_permission ($permission)
 	{
-		return TRUE;
+		if (!$permission instanceof values) {
+			$permission = values::get($permission);
+		}
+		if (array_search($permission, $this->permissions, TRUE) !== FALSE) {
+			return TRUE;
+		}
+		else {
+			return FALSE;
+		}
 	}
 
 	public function add_permission ($permission)
 	{
+		if(!$permission instanceof values) {
+			$permission = values::get($permission);
+		}
+
 		return TRUE;
 	}
+
+	abstract public function get_type ();
+
+	abstract public function get_class ();
+
 }

@@ -19,18 +19,19 @@
  */
 namespace Iko;
 
-class group
+class Group
 {
 	const table = "{prefix}user_groups";
+	const assignment = permission::group_assignment;
 
-	private static $groups = array ();
-	private static $groups_exist = array ();
+	private static $cache = array ();
+	private static $cache_exist = array ();
 
 	/**
 	 * @param      $group_id
 	 * @param bool $reload
 	 *
-	 * @return array|mixed
+	 * @return array|group
 	 */
 	public static function get ($group_id, $reload = FALSE)
 	{
@@ -43,14 +44,14 @@ class group
 			}
 			$group_array = array ();
 			foreach ($group_id as $id) {
-				if (!isset(self::$groups[ $id ]) || self::$groups[ $id ] == NULL || $reload) {
+				if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
 					if (self::exist($id, $reload)) {
-						self::$groups[ $id ] = new group($id);
-						array_push($group_array, self::$groups[ $id ]);
+						self::$cache[ $id ] = new __CLASS__($id);
+						array_push($group_array, self::$cache[ $id ]);
 					}
 				}
 				else {
-					array_push($group_array, self::$groups[ $id ]);
+					array_push($group_array, self::$cache[ $id ]);
 				}
 			}
 			if (count($group_array) == 1) {
@@ -71,42 +72,42 @@ class group
 	 * @param      $group_id
 	 * @param bool $reload
 	 *
-	 * @return bool|mixed
+	 * @return bool
 	 */
 	public static function exist ($group_id, $reload = FALSE)
 	{
 		if ($group_id != 0 && $group_id != NULL) {
 			if (is_string($group_id) || is_int($group_id)) {
-				if (!isset(self::$groups_exist[ $group_id ]) || $reload) {
+				if (!isset(self::$cache_exist[ $group_id ]) || $reload) {
 					$statement = Core::$PDO->prepare("SELECT group_id FROM " . self::table . " WHERE group_id = :group_id");
 					$statement->bindParam('group_id', $group_id);
 					$statement->execute();
 					if ($statement->rowCount() > 0) {
-						self::$groups_exist[ $group_id ] = TRUE;
+						self::$cache_exist[ $group_id ] = TRUE;
 
 						return TRUE;
 					}
 					else {
-						self::$groups_exist[ $group_id ] = FALSE;
+						self::$cache_exist[ $group_id ] = FALSE;
 
 						return FALSE;
 					}
 				}
 
-				return self::$groups_exist[ $group_id ];
+				return self::$cache_exist[ $group_id ];
 			}
 			else {
 				if (is_array($group_id)) {
 					$statement = Core::$PDO->prepare("SELECT group_id FROM " . self::table . " WHERE group_id = :group_id");
 					foreach ($group_id as $id) {
-						if (!isset(self::$groups_exist[ $id ]) || $reload) {
+						if (!isset(self::$cache_exist[ $id ]) || $reload) {
 							$statement->bindParam('group_id', $id);
 							$statement->execute();
 							if ($statement->rowCount() > 0) {
-								self::$groups_exist[ $id ] = TRUE;
+								self::$cache_exist[ $id ] = TRUE;
 							}
 							else {
-								self::$groups_exist[ $id ] = FALSE;
+								self::$cache_exist[ $id ] = FALSE;
 							}
 						}
 					}
@@ -128,7 +129,7 @@ class group
 	private $group_name;
 	private $group_style;
 	private $group_rang;
-	private $group_parents;
+	private $group_parents = array ();
 
 	/**
 	 * group constructor.
@@ -144,15 +145,49 @@ class group
 			$this->group_name = $fetch["group_name"];
 			$this->group_style = $fetch["group_style"];
 			$this->group_rang = $fetch["group_rang"];
+
+
+			$this->load_parents();
 		}
 	}
 
 	/**
 	 *
 	 */
-	private function load_parent() {
-		$statement = Core::$PDO->query("SELECT * FROM ");
+	private function load_parents ()
+	{
+		$this->group_parents = array ();
+		$sql = "SELECT * FROM " . self::assignment . " LEFT JOIN " . self::table . " WHERE group_id = group_parent_id AND group_child_id = :group_id ORDER BY rank";
+		$statement = Core::$PDO->prepare($sql, array (PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
+		$statement->bindParam(":group_id", $this->get_Id());
+		$statement->execute();
+		while ($row = $statement->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+			$parent = self::get($row["group_parent_id"]);
+			if (array_search($parent, $this->group_parents) === FALSE) {
+				array_push($this->group_parents, $parent);
+			}
+			$this->load_parents_recursive($parent);
+		}
 	}
+
+	private function load_parents_recursive ($group)
+	{
+		$parent_list = $group->get_Parents();
+		foreach ($parent_list as $item) {
+			if (array_search($item, $this->group_parents) === FALSE) {
+				array_push($this->group_parents, $item);
+				$this->load_parents_recursive($item);
+			}
+		}
+	}
+	/*
+	 * Parent | Child
+	 * Gast   | Member
+	 * Member | VIP
+	 * Member | Moderator
+	 * Test   | Moderator
+	 *
+	 */
 	/**
 	 * @return mixed
 	 */
@@ -178,5 +213,8 @@ class group
 		$this->group_rang = $group_rang;
 	}
 
-
+	public function get_Parents ()
+	{
+		return $this->group_parents;
+	}
 }

@@ -12,19 +12,12 @@
  */
 namespace Iko;
 
-class user
+class User
 {
 	const table = "{prefix}user";
 
-	private static $users = array ();
-	private static $users_exist = array ();
-
-	/**
-	 * @param int  $user_id
-	 * @param bool $reload
-	 *
-	 * @return array|mixed|null
-	 */
+	private static $cache = array ();
+	private static $cache_exist = array ();
 	public static function get ($user_id = 0, $reload = FALSE)
 	{
 		if ($user_id != 0 && $user_id != NULL) {
@@ -36,14 +29,14 @@ class user
 			}
 			$user_array = array ();
 			foreach ($user_id as $id) {
-				if (!isset(self::$users[ $id ]) || self::$users[ $id ] == NULL || $reload) {
+				if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
 					if (self::exist($id, $reload)) {
-						self::$users[ $id ] = new user($id);
-						array_push($user_array, self::$users[ $id ]);
+						self::$cache[ $id ] = new __CLASS__($id);
+						array_push($user_array, self::$cache[ $id ]);
 					}
 				}
 				else {
-					array_push($user_array, self::$users[ $id ]);
+					array_push($user_array, self::$cache[ $id ]);
 				}
 			}
 			if (count($user_array) == 1) {
@@ -88,36 +81,36 @@ class user
 	{
 		if ($user_id != 0 && $user_id != NULL) {
 			if (is_string($user_id) || is_int($user_id)) {
-				if (!isset(self::$users_exist[ $user_id ]) || $reload) {
+				if (!isset(self::$cache_exist[ $user_id ]) || $reload) {
 					$statement = Core::$PDO->prepare("SELECT user_id FROM " . self::table . " WHERE user_id = :user_id");
 					$statement->bindParam('user_id', $user_id);
 					$statement->execute();
 					if ($statement->rowCount() > 0) {
-						self::$users_exist[ $user_id ] = TRUE;
+						self::$cache_exist[ $user_id ] = TRUE;
 
 						return TRUE;
 					}
 					else {
-						self::$users_exist[ $user_id ] = FALSE;
+						self::$cache_exist[ $user_id ] = FALSE;
 
 						return FALSE;
 					}
 				}
 
-				return self::$users_exist[ $user_id ];
+				return self::$cache_exist[ $user_id ];
 			}
 			else {
 				if (is_array($user_id)) {
 					$statement = Core::$PDO->prepare("SELECT user_id FROM " . self::table . " WHERE user_id = :user_id");
 					foreach ($user_id as $id) {
-						if (!isset(self::$users_exist[ $id ]) || $reload) {
+						if (!isset(self::$cache_exist[ $id ]) || $reload) {
 							$statement->bindParam('user_id', $id);
 							$statement->execute();
 							if ($statement->rowCount() > 0) {
-								self::$users_exist[ $id ] = TRUE;
+								self::$cache_exist[ $id ] = TRUE;
 							}
 							else {
-								self::$users_exist[ $id ] = FALSE;
+								self::$cache_exist[ $id ] = FALSE;
 							}
 						}
 					}
@@ -147,8 +140,8 @@ class user
 	private $user_birthday;
 	private $user_chosen_template_id;
 	private $user_timezone_id;
+	private $permission;
 
-	private $groups = array ();
 
 	/**
 	 * user constructor.
@@ -175,7 +168,8 @@ class user
 			$this->user_birthday = $fetch["user_birthday"];
 			$this->user_chosen_template_id = $fetch["user_chosen_template_id"];
 			$this->user_timezone_id = $fetch["user_timezone_id"];
-			load_groups();
+			$this->load_groups();
+			$this->permission = Permissions::get($this);
 		}
 		else {
 			throw new Exception("User does not exist: User_ID = " . $user_id . "");
@@ -190,21 +184,35 @@ class user
 		return $this->id;
 	}
 
+	private $groups = array ();
+	private $groups_all = array();
 	/**
 	 *
 	 */
 	private function load_groups ()
 	{
-		$statement = Core::$PDO->prepare("SELECT * FROM " . permission::user_assignment . " WHERE user_assignment_id_user = " . $this->get_ID(), array (PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
+		$statement = Core::$PDO->prepare("SELECT * FROM " . Permissions::user_assignment . " WHERE user_assignment_id_user = " . $this->get_ID(), array (PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
 		$statement->execute();
 		while ($fetch = $statement->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
-			array_push($this->groups, group::get($fetch["user_assignment_id_group"]));
+			$group = group::get($fetch["user_assignment_id_group"]);
+			if(array_search($group, $this->groups)) {
+				array_push($this->groups, $group);
+			}
+			if(array_search($group, $this->groups_all)) {
+				array_push($this->groups_all, $group);
+				$this->load_groups_recursive($group);
+			}
 		}
 	}
-	public function get_groups() {
-		return $this->groups;
+	private function load_groups_recursive($group) {
+		$parent_list = $group->get_Parents();
+		foreach ($parent_list as $item) {
+			if(array_search($item, $this->groups_all) === false) {
+				array_push($this->groups_all, $item);
+				$this->load_groups_recursive($item);
+			}
+		}
 	}
-
 	/**
 	 * @return mixed
 	 */
