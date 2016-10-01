@@ -15,113 +15,127 @@ namespace Iko;
 abstract class module_loader
 {
 	private $class_module;
-	private $checked = false;
+	private $checked = FALSE;
 
-	public function __construct($module)
+	public function __construct ($module)
 	{
 		$this->class_module = $module;
 	}
 
-	public function check()
+	public function check ()
 	{
 		if ($this->pre_check_Files() && $this->pre_check_PDO_Tables()) {
-			$this->checked = true;
+			$this->checked = TRUE;
 		}
 
 		return $this->is_Checked();
 	}
 
-	public function is_Checked()
+	public function is_Checked ()
 	{
 		return $this->checked;
 	}
 
-	abstract protected function pre_check_PDO_Tables();
+	abstract protected function pre_check_PDO_Tables ();
 
-	abstract protected function pre_check_Files();
+	abstract protected function pre_check_Files ();
 
-	public function check_PDO_Tables($tables = array ())
+	public function check_PDO_Tables ($tables = array ())
 	{
-		$result = true;
+		$result = TRUE;
 		if (is_string($tables)) {
 			$tables = array ($tables);
 		}
 		foreach ($tables as $var) {
+			if (strpos($var, "{!prefix}") === FALSE) {
+				$var = "{prefix}" . $var;
+			}
+			else
+			{
+				$var = str_replace("{!prefix}",'', $var);
+			}
+			echo $var;
 			$query = "SELECT 1 FROM " . $var . " WHERE 1;";
 			$sql = Core::$PDO->query($query);
 			echo "<br>";
 			var_dump($sql);
-			if ($sql === false) {
-				$result = false;
+			if ($sql === FALSE) {
+				$result = FALSE;
 			}
 		}
 
 		return $result;
 	}
 
-	public function check_Files($files = array ())
+	function check_files_exist ($array, $prefix)
 	{
-		function check_files_exist($array,$prefix) {
-			$result = true;
-			foreach ($array as $key => $value) {
-				if(is_array($value)) {
-					if(!check_files_exist($value, $prefix .$key . "/")) {
-						$result = false;
-					}
-				}
-				else {
-					$filename = $prefix . $value;
-					if(!file_exists($filename)) {
-						$result = false;
-					}
+		$result = TRUE;
+		foreach ($array as $key => $value) {
+			if (is_array($value)) {
+				if (!$this->check_files_exist($value, $prefix . $key . "/")) {
+					$result = FALSE;
 				}
 			}
-			return $result;
+			else {
+				$filename = $prefix . $value;
+				if (!file_exists($filename)) {
+					$result = FALSE;
+				}
+			}
 		}
-		$result = true;
+
+		return $result;
+	}
+
+	public function check_Files ($files = array ())
+	{
+
+		$result = TRUE;
 		if (is_string($files)) {
 			$files = array ($files);
 		}
 		if (is_array($files)) {
-			check_files_exist($files, $this->class_module->get_path());
+			$this->check_files_exist($files, $this->class_module->get_path());
 		}
 
 		return $result;
 	}
 
-	public function load($files = array ())
+	function load_file ($array, $prefix)
 	{
-		function load_file($array, $prefix) {
-			foreach ($array as $key => $var) {
-				if(is_array($var)) {
-					load_file($var, $prefix . $key . "/");
+		foreach ($array as $key => $var) {
+			if (is_array($var)) {
+				$this->load_file($var, $prefix . $key . "/");
+			}
+			else {
+				$filename = $prefix . $var;
+				if (!file_exists($filename)) {
+					throw new \Exception("Code #1236 " . $filename);
 				}
 				else {
-					$filename = $prefix . $var;
-					if (!file_exists($filename)) {
+					$include = @include($filename);
+					if ($include === FALSE) {
 						throw new \Exception("Code #1236 " . $filename);
 					}
-					else {
-						$include = @include($filename);
-						if ($include === FALSE) {
-							throw new \Exception("Code #1236 " . $filename);
-						}
-					}
 				}
 			}
 		}
+	}
+
+	public function load ($files = array ())
+	{
 		if (is_string($files)) {
 			$files = array ($files);
 		}
 		if (is_array($files)) {
-			load_file($files, $this->class_module->get_path());
-			return true;
-		}
+			$this->load_file($files, $this->class_module->get_path());
 
-		return false;
+			return TRUE;
+		}
+		return FALSE;
 	}
 
-	public function create_PDO_Tables($args = array (), $file = false)
+	public function create_PDO_Tables ($args = array (), $file = FALSE)
 	{
 		$files = $args;
 		if ($file) {
@@ -150,9 +164,9 @@ abstract class module_loader
 		foreach ($args as $var) {
 			$var = str_replace('`', '', $var);
 			echo $var;
-			if (strpos($var, "create") !== false || strpos($var, "CREATE") !== false) {
+			if (strpos($var, "create") !== FALSE || strpos($var, "CREATE") !== FALSE) {
 				$state = Core::$PDO->query($var);
-				if ($state === false) {
+				if ($state === FALSE) {
 					throw new \Exception(Core::$PDO->errorInfo());
 				}
 			}
