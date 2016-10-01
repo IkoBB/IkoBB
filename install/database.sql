@@ -89,7 +89,12 @@ CREATE TABLE `iko_permissions` (
   `permission_id`   int(11)       NOT NULL    AUTO_INCREMENT,
   `permission_name` varchar(255)  NOT NULL,
   PRIMARY KEY (`permission_id`),
-  UNIQUE KEY `iko_permissions_permission_name_uindex` (`permission_name`)
+  UNIQUE KEY `iko_permissions_permission_name_uindex` (`permission_name`),
+  CONSTRAINT `iko_permissions_ibfk_1`
+  FOREIGN KEY (`permission_id`)
+  REFERENCES `iko_group_permissions` (`group_permission_permission_id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE
   );
 
   CREATE TABLE `iko_group_permissions` (
@@ -101,7 +106,8 @@ CREATE TABLE `iko_permissions` (
   CONSTRAINT `iko_group_permissions_ibfk_1`
   FOREIGN KEY (`group_permission_group_id`)
   REFERENCES `iko_usergroups` (`usergroup_id`)
-  ON DELETE CASCADE ON UPDATE CASCADE
+  ON DELETE CASCADE
+  ON UPDATE CASCADE
 );
 
 CREATE TABLE `iko_user_permissions` (
