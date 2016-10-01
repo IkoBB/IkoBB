@@ -64,7 +64,10 @@ CREATE TABLE `iko_user` (
 	KEY `user_avatar_id` (`user_avatar_id`),
 	KEY `user_location_id` (`user_location_id`),
 	KEY `user_chosen_template_id` (`user_chosen_template_id`),
-	KEY `user_timezone_id` (`user_timezone_id`)
+	KEY `user_timezone_id` (`user_timezone_id`),
+	CONSTRAINT `iko_users_ibfk_1`
+	FOREIGN KEY (`user_id`)
+	REFERENCES `iko_user_assignment` (`user_assignment_id_user`)
 );
 
 CREATE TABLE `iko_user_assignment` (
