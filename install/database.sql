@@ -168,7 +168,7 @@ ALTER  TABLE iko_user_permissions
 
 
 ALTER  TABLE iko_modules
-  CONSTRAINT `iko_modules_ibfk_1`
+ADD  CONSTRAINT `iko_modules_ibfk_1`
   FOREIGN KEY (`module_name`)
   REFERENCES `iko_permissions` (`module_name`)
   ON DELETE CASCADE
