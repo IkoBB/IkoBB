@@ -88,47 +88,49 @@ CREATE TABLE `iko_usergroups` (
 );
 
 
-  CREATE TABLE `iko_permissions` (
-  `permission_id`     int(11)       NOT NULL AUTO_INCREMENT,
-  `permission_name`   varchar(255)  NOT NULL,
-  PRIMARY KEY (`permission_id`),
-  UNIQUE KEY `iko_permissions_permission_name_uindex` (`permission_name`)
+CREATE TABLE `iko_permissions` (
+  `permission_name`   varchar(255)    NOT NULL,
+  `module_name`       varchar(255)    NOT NULL,
+  `comment`           text            NOT NULL,
+  PRIMARY KEY (`permission_name`),
+  UNIQUE KEY `iko_permissions_permission_name_uindex` (`permission_name`),
+  KEY `module_name` (`module_name`)
 );
 
 CREATE TABLE `iko_group_permissions` (
-  `usergroup_id`    int(11)   NOT NULL,
-  `permission_id`   int(11)   NOT NULL,
-  UNIQUE KEY `group_permission_relation` (`usergroup_id`,`permission_id`),
-  KEY `group_permission_id` (`permission_id`),
+  `usergroup_id`      int(11)         NOT NULL,
+  `permission_name`   varchar(255)    NOT NULL,
+  UNIQUE KEY `group_permission_relation` (`usergroup_id`,`permission_name`),
+  KEY `group_permission_name` (`permission_name`),
   KEY `iko_group_permission_id_group` (`usergroup_id`)
 );
 
 
 CREATE TABLE `iko_user_permissions` (
-  `user_id`         int(11)     NOT NULL,
-  `permission_id`   int(11)     NOT NULL,
-  UNIQUE KEY `group_permission_relation` (`permission_id`,`user_id`),
-  KEY `iko_group_permission_id_permission` (`permission_id`),
-  KEY `iko_group_permission_id_group` (`user_id`)
+  `user_id`           int(11)           NOT NULL,
+  `permission_name`   varchar(255)      NOT NULL,
+  UNIQUE KEY `group_permission_relation` (`permission_name`,`user_id`),
+  KEY `iko_group_permission_name_permission` (`permission_name`),
+  KEY `iko_group_permission_id_user` (`user_id`)
 );
 
 /*Relation between Tables */
 
 ALTER Table iko_user
-ADD CONSTRAINT `iko_users_ibfk_1`
+  ADD CONSTRAINT `iko_users_ibfk_1`
 	FOREIGN KEY (`user_id`)
 	REFERENCES `iko_user_assignment` (`user_id`);
 
 
 ALTER TABLE iko_group_permissions
-ADD CONSTRAINT `iko_group_permissions_ibfk_1`
+  ADD CONSTRAINT `iko_group_permissions_ibfk_1`
   FOREIGN KEY (`usergroup_id`)
   REFERENCES `iko_usergroups` (`usergroup_id`)
   ON DELETE CASCADE
   ON UPDATE CASCADE;
 
 ALTER TABLE iko_usergroups
-ADD CONSTRAINT `iko_usergroups_ibfk_1`
+  ADD CONSTRAINT `iko_usergroups_ibfk_1`
   FOREIGN KEY (`usergroup_id`)
   REFERENCES `iko_user_assignment` (`usergroup_id`)
   ON DELETE CASCADE
@@ -136,19 +138,30 @@ ADD CONSTRAINT `iko_usergroups_ibfk_1`
 
 
 ALTER TABLE iko_permissions
-ADD CONSTRAINT `iko_permissions_ibfk_1`
-  FOREIGN KEY (`permission_id`)
-  REFERENCES `iko_group_permissions` (`permission_id`)
+  ADD CONSTRAINT `iko_permissions_ibfk_1`
+  FOREIGN KEY (`permission_name`)
+  REFERENCES `iko_group_permissions` (`permission_name`)
   ON DELETE CASCADE
   ON UPDATE CASCADE;
 
-  ALTER TABLE iko_user_permissions
+ALTER TABLE iko_user_permissions
   ADD CONSTRAINT `iko_user_permissions_ibfk_1`
   FOREIGN KEY (`user_id`)
   REFERENCES `iko_users` (`user_id`)
-  ON UPDATE CASCADE,
-  ADD `iko_user_permissions_ibfk_2`
-  FOREIGN KEY (`permission_id`)
-  REFERENCES `iko_permissions` (`permission_id`)
+  ON UPDATE CASCADE;
+
+ALTER  TABLE iko_user_permissions
+  ADD CONSTRAINT `iko_user_permissions_ibfk_2`
+  FOREIGN KEY (`permission_name`)
+  REFERENCES `iko_permissions` (`permission_name`)
   ON DELETE CASCADE
   ON UPDATE CASCADE;
+
+
+ALTER  TABLE iko_modules
+  CONSTRAINT `iko_modules_ibfk_1`
+  FOREIGN KEY (`module_name`)
+  REFERENCES `iko_permissions` (`module_name`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE;
+  
