@@ -80,11 +80,11 @@ CREATE TABLE `iko_user_assignment` (
 
 
 CREATE TABLE `iko_group_assignment` (
-  `parent_group_name`   varchar(255)    NOT NULL,
-  `child_group_name`    varchar(255)    NOT NULL,
-  UNIQUE KEY `group_relation` (`parent_group_name`,`child_group_name`),
-  KEY `iko_group_assignment` (`parent_group_name`),
-  KEY `iko_group_child` (`child_group_name`)
+  `parent_group_id`   INT (11)    NOT NULL,
+  `child_group_id`    INT (11)    NOT NULL,
+  UNIQUE KEY `group_relation` (`parent_group_id`,`child_group_id`),
+  KEY `iko_group_assignment` (`parent_group_id`),
+  KEY `iko_group_child` (`child_group_id`)
 );
 
 
@@ -173,4 +173,14 @@ ADD  CONSTRAINT `iko_modules_ibfk_1`
   REFERENCES `iko_permissions` (`module_name`)
   ON DELETE CASCADE
   ON UPDATE CASCADE;
+
+ALTER TABLE iko_group_assignment
+  ADD CONSTRAINT `iko_group_assignment_ibfk_1`
+  FOREIGN KEY (`parent_group_id`)
+  REFERENCES `iko_usergroups` (`usergroup_id`);
+
+ALTER TABLE iko_group_assignment
+  ADD CONSTRAINT `iko_group_assignment_ibfk_2`
+  FOREIGN KEY (`child_group_id`)
+  REFERENCES `iko_usergroups` (`usergroup_id`);
 
