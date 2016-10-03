@@ -17,6 +17,12 @@ class template
 {
 	private static $instance = null;
 
+	/**
+	 * Initiation of the class
+	 * Only one instance of the class is allowed
+	 *
+	 * @return \Iko\template|null
+	 */
 	public static function get_instance()
 	{
 		if (self::$instance == null) {
@@ -37,6 +43,14 @@ class template
 	private $param = array ();
 	private $entity = array ();
 
+	/**
+	 * template constructor.
+	 * - Defines template_id
+	 * - Loads the information of the template
+	 * - Loads the template before parsing
+	 *
+	 * @throws \Iko\Exception
+	 */
 	private function __construct()
 	{
 		$this->template_id = 1;
@@ -71,6 +85,16 @@ class template
 		}
 	}
 
+	/**
+	 * BladeSyntax Parser
+	 * - {{ }} is used for text {{ This is a text }} or variables {{ $variable }}
+	 * - %% %% is used for parameters like title %% title %%
+	 * - §§ §§ is used for entities like sidebar §§ sidebar §§
+	 *
+	 * @param $string
+	 *
+	 * @return mixed|string
+	 */
 	private function bladeSyntax($string)
 	{
 		$syntax_blade = array (
@@ -109,7 +133,13 @@ class template
 		return $string;
 	}
 
-	public function entity($entity, $parameters)
+	/**
+	 * Adds an entity to the template
+	 *
+	 * @param       $entity
+	 * @param array $parameters
+	 */
+	public function entity($entity, $parameters = array ())
 	{
 		if (file_exists(Core::$basepath . 'template/' . $this->template_directory . '/entities.html')) {
 			$entities = file_get_contents(Core::$basepath . 'template/' . $this->template_directory . '/entities.html');
@@ -125,11 +155,19 @@ class template
 		}
 	}
 
+	/**
+	 * @return mixed|string
+	 */
 	public function __toString()
 	{
 		return $this->bladeSyntax($this->template);
 	}
 
+	/**
+	 * @param $var
+	 *
+	 * @return mixed|string
+	 */
 	public function __get($var)
 	{
 		if (isset($this->param[$var])) {
@@ -140,6 +178,12 @@ class template
 		}
 	}
 
+	/**
+	 * Adds a new parameter to template class
+	 *
+	 * @param $var
+	 * @param $value
+	 */
 	public function __set($var, $value)
 	{
 		$this->param[$var] = $value;
