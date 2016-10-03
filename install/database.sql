@@ -125,7 +125,7 @@ CREATE TABLE `iko_user_permissions` (
 
 /*Relation between Tables */
 
-ALTER Table iko_user
+ALTER Table iko_users
   ADD CONSTRAINT `iko_users_ibfk_1`
 	FOREIGN KEY (`user_id`)
 	REFERENCES `iko_user_assignment` (`user_id`);
