@@ -79,6 +79,15 @@ CREATE TABLE `iko_user_assignment` (
 );
 
 
+CREATE TABLE `iko_group_assignment` (
+  `parent_group_name`   varchar(255)    NOT NULL,
+  `child_group_name`    varchar(255)    NOT NULL,
+  UNIQUE KEY `group_relation` (`parent_group_name`,`child_group_name`),
+  KEY `iko_group_assignment` (`parent_group_name`),
+  KEY `iko_group_child` (`child_group_name`)
+);
+
+
 CREATE TABLE `iko_usergroups` (
   `usergroup_id`    int(11)       NOT NULL AUTO_INCREMENT,
   `usergroup_name`  varchar(255)  NOT NULL,
@@ -164,4 +173,4 @@ ALTER  TABLE iko_modules
   REFERENCES `iko_permissions` (`module_name`)
   ON DELETE CASCADE
   ON UPDATE CASCADE;
-  
+
