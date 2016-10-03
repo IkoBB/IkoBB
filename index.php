@@ -77,6 +77,7 @@ class Program
 ");
 $template->title = "IkoBB - Demo & Testing page";
 $template->username = "N8boy";
+$template->entity("TEST", array ());
 
 
 // Output the template

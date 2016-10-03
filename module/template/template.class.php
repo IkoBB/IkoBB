@@ -35,6 +35,7 @@ class template
 	private $template_version;
 	private $template;
 	private $param = array ();
+	private $entity = array ();
 
 	private function __construct()
 	{
@@ -60,7 +61,7 @@ class template
 		}
 
 		// check directory & check required version core::version <= $template_required_version
-		if (file_exists(Core::$basepath . 'template/' . $this->template_directory . '/template.html') && version_compare(core::version, $this->template_required_version, '<=')) {
+		if (file_exists(Core::$basepath . 'template/' . $this->template_directory . '/template.html') && version_compare(Core::version, $this->template_required_version, '<=')) {
 			// ToDo: $template static?
 			$this->template = file_get_contents(Core::$basepath . '/template/' . $this->template_directory . '/template.html');
 		}
@@ -74,12 +75,15 @@ class template
 	{
 		$syntax_blade = array (
 			'/{{ (.*) }}/',
+			// text or variable
 			'/{{-v (.*) = (.*) }}/',
 			'/(\s*)@(if|elseif|foreach|for|while)(\s*\(.*\))/',
 			'/(\s*)@(endif|endforeach|endfor|endwhile)(\s*)/',
 			'/(\s*)@(else)(\s*)/',
 			'/(\s*)@unless(\s*\(.*\))/',
-			'/%% (.*) %%/');
+			'/%% (.*) %%/',
+			// Param
+			'/§§ (.*) §§/'); // Entity
 		$syntax_php = array (
 			'<?php echo $1; ?>',
 			'<?php $1 = $2; ?>',
@@ -87,7 +91,8 @@ class template
 			'$1<?php $2; ?>',
 			'$1<?php $2: ?>$3',
 			'$1<?php if( ! ($2)): ?>',
-			'<?php echo $this->param["$1"]; ?>');
+			'<?php echo $this->param["$1"]; ?>',
+			'<?php echo $this->entity["$1"]; ?>');
 		$string = preg_replace($syntax_blade, $syntax_php, $string);
 		//@empty
 		$string = str_replace('@empty', '<?php endforeach; ?><?php else: ?>', $string);
@@ -102,6 +107,22 @@ class template
 		@ob_end_clean();
 
 		return $string;
+	}
+
+	public function entity($entity, $parameters)
+	{
+		if (file_exists(Core::$basepath . 'template/' . $this->template_directory . '/entities.html')) {
+			$entities = file_get_contents(Core::$basepath . 'template/' . $this->template_directory . '/entities.html');
+			preg_match("/<!-- start:" . $entity . " -->(.*)<!-- end:" . $entity . " -->/is", $entities, $unparsed_entity);
+			foreach ($parameters as $parameter => $value) {
+				$param[$parameter] = $value;
+			}
+
+			$parsed_entity = $this->bladeSyntax($unparsed_entity[1]);
+			$this->entity[$entity] = $parsed_entity;
+
+
+		}
 	}
 
 	public function __toString()
