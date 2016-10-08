@@ -15,6 +15,12 @@ $template->sub_title = "Modules";
 $template->basepath = Core::$basepath;
 $template->adminpath = Core::$adminpath;
 
+$template->extra_css = $template->entity("CSS_DataTables", array (), true);
+$template->extra_js = $template->entity("JS_dataTables", array (), true);
+$template->extra_js .= $template->entity("JS_SlimScroll", array (), true);
+$template->extra_js .= $template->entity("JS_FastClick", array (), true);
+$template->extra_js .= $template->entity("Scrip_ModuleTable", array (), true);
+
 $template->content = '<div class="row">
   <div class="col-xs-12">
     <div class="box">

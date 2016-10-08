@@ -19,7 +19,7 @@ class template
 
 	/**
 	 * Initiation of the class
-	 * Only one instance of the class is allowed
+	 * Only one instance of the template class is allowed
 	 *
 	 * @return \Iko\template|null
 	 */
@@ -44,7 +44,7 @@ class template
 	private $entity = array ();
 
 	/**
-	 * template constructor.
+	 * Template constructor
 	 * - Defines template_id
 	 * - Loads the information of the template
 	 * - Loads the template before parsing
@@ -82,11 +82,10 @@ class template
 
 		// check directory & check required version core::version <= $template_required_version
 		if (file_exists(Core::$basepath . 'template/' . $this->template_directory . '/template.html') && version_compare(Core::version, $this->template_required_core_version, '<=')) {
-			// ToDo: $template static?
 			$this->template = file_get_contents(Core::$basepath . '/template/' . $this->template_directory . '/template.html');
 		}
 		else {
-			throw new Exception("Error #4321: The version of the template is lower than the version of the core. Please update your template.<br>" . Core::version . " | " . $this->template_required_core_version);
+			throw new Exception("Error #4321: The version of the template is lower than the version of the core. Please update your template.<br>Core version: " . Core::version . "<br> Required Core Version: " . $this->template_required_core_version);
 			// ToDo: Set user template to default template core::User->set_template(default);
 		}
 	}
@@ -144,8 +143,11 @@ class template
 	 *
 	 * @param       $entity
 	 * @param array $parameters
+	 * @param bool  $return
+	 *
+	 * @return bool
 	 */
-	public function entity($entity, $parameters = array ())
+	public function entity($entity, $parameters = array (), $return = false)
 	{
 		if (file_exists(Core::$basepath . 'template/' . $this->template_directory . '/entities.html')) {
 			$entities = file_get_contents(Core::$basepath . 'template/' . $this->template_directory . '/entities.html');
@@ -153,10 +155,13 @@ class template
 			foreach ($parameters as $parameter => $value) {
 				$param[$parameter] = $value;
 			}
-
 			$parsed_entity = $this->bladeSyntax($unparsed_entity[1]);
-			$this->entity[$entity] = $parsed_entity;
-
+			if ($return === false) {
+				$this->entity[$entity] = $parsed_entity;
+			}
+			else {
+				return $parsed_entity;
+			}
 
 		}
 	}
@@ -172,6 +177,8 @@ class template
 	}
 
 	/**
+	 * Gets the value of a parameter
+	 *
 	 * @param $var
 	 *
 	 * @return mixed|string
@@ -187,7 +194,7 @@ class template
 	}
 
 	/**
-	 * Adds a new parameter to template class
+	 * Adds a new parameter to the template class
 	 *
 	 * @param $var
 	 * @param $value

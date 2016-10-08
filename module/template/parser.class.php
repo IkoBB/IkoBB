@@ -17,6 +17,15 @@ use Emojione;
 
 class parser
 {
+	/**
+	 * Parser for BBCodes
+	 * All possible BBCodes can be found in our Wiki:
+	 * http://wiki.ikobb.de
+	 *
+	 * @param $string
+	 *
+	 * @return mixed|string
+	 */
 	public static function bbCodes($string)
 	{
 		/** disable html tags */
@@ -86,7 +95,7 @@ class parser
 
 				return self::syntax_highlighter($matches[2], $matches[1]);
 			},
-			/** ToDO: codeblock with a specific language & line selected*/
+			/** ToDO: codeblock with a specific language & line selected */
 
 
 
@@ -192,9 +201,7 @@ class parser
 			},
 			// YouTube
 			'#\\[youtube\\](.*?)\\[/youtube\\]#uis' => '<iframe width="560" height="315" src="//www.youtube.com/embed/\\1?rel=0" frameborder="0" allowfullscreen></iframe>'
-			/* ToDo: Add the following BBCodes: [flag], [latex], [asciimath], [mathml], [spoiler], [post], [thread], [php], [html]
-			// flags
-			'#\\[flag\\](.*?)\\[/flag\\]#uis' => '<span class="flag-icon flag-icon-\\1"></span>', Not included yet
+			/* ToDo: Add the following BBCodes: [latex], [asciimath], [mathml], [spoiler], [post], [thread], [php], [html]
 			// LaTeX
 			'#\\[latex\\](.*?)\\[/latex\\]#uis' => '$$\\1$$', Not included yet
 			// LaTeX
@@ -235,6 +242,13 @@ class parser
 		return $result;
 	}
 
+	/**
+	 * Checks if the url is valid and if its an allowed protocol like http or https
+	 *
+	 * @param $url
+	 *
+	 * @return bool
+	 */
 	public static function check_url($url)
 	{
 		$valid_url = false;
@@ -246,6 +260,14 @@ class parser
 		return $valid_url;
 	}
 
+	/**
+	 * Transforms a text smiley like :grin: or an unicode emoji (for example send by an mobile phone) to an
+	 * image based emoji
+	 *
+	 * @param $string
+	 *
+	 * @return string
+	 */
 	public static function text_to_emoji($string)
 	{
 		$return = '';
@@ -259,6 +281,15 @@ class parser
 		return $return;
 	}
 
+	/**
+	 * Transforms a string to an string which has coding syntax highlighting
+	 *
+	 * @param        $string
+	 * @param string $language
+	 * @param bool   $highlight
+	 *
+	 * @return mixed|string
+	 */
 	public static function syntax_highlighter($string, $language = "c", $highlight = false)
 	{
 		$return = "";

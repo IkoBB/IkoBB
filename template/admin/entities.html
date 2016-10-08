@@ -1,0 +1,44 @@
+<!-- start:JS_dataTables --><!-- DataTables -->
+<script src="../template/admin/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="../template/admin/plugins/datatables/dataTables.bootstrap.min.js"></script><!-- end:JS_dataTables -->
+
+<!-- start:JS_SlimScroll --><!-- SlimScroll -->
+<script src="../template/admin/plugins/slimScroll/jquery.slimscroll.min.js"></script><!-- end:JS_SlimScroll -->
+
+<!-- start:JS_FastClick --><!-- FastClick -->
+<script src="../template/admin/plugins/fastclick/fastclick.js"></script><!-- end:JS_FastClick -->
+
+<!-- start:Scrip_ModuleTable --><!-- Optionally, you can add Slimscroll and FastClick plugins.
+     Both of these plugins are recommended to enhance the
+     user experience. Slimscroll is required when using the
+     fixed layout. -->
+<script type="text/javascript">
+	$(function () {
+		$("#modules-table").DataTable({
+			"paging": false,
+			"ordering": true,
+			"initComplete": function () {
+				var api = this.api();
+				api.$('td').click(function () {
+					var inner = this.innerHTML;
+					if (inner == '<span class="label label-success">Active</span> ') {
+						inner = "Active";
+					}
+					else if (inner == '<span class="label label-danger">Disabled</span> ') {
+						inner = 'Disabled';
+					}
+					api.search(inner).draw();
+				});
+			}
+		});
+	});
+	$("#modules-table tbody").on('mouseenter', 'td', function () {
+		var colIdx = table.cell(this).index().column;
+
+		$(table.cells().nodes()).removeClass('highlight');
+		$(table.column(colIdx).nodes()).addClass('highlight');
+	});
+</script><!-- end:Scrip_ModuleTable -->
+
+<!-- start:CSS_DataTables --><!-- Theme style -->
+<link rel="stylesheet" href="../template/admin/plugins/datatables/dataTables.bootstrap.css"><!-- end:CSS_DataTables -->
