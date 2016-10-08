@@ -17,8 +17,7 @@ namespace Iko;
  *
  */
 require_once 'core/core.php';
-$class = new modul("example");
-@$class->load();
+
 /**
  * For more Informatione how to create your own Modul. Go to: http://wiki.ikobb.de/index.php?title=Module_developing
  */

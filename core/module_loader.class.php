@@ -15,7 +15,8 @@ namespace Iko;
 abstract class module_loader
 {
 	private $class_module;
-	private $checked = FALSE;
+	public $checked = FALSE;
+	public $is_load = FALSE;
 
 	public function __construct ($module)
 	{
@@ -27,12 +28,13 @@ abstract class module_loader
 		if ($this->pre_check_Files() && $this->pre_check_PDO_Tables()) {
 			$this->checked = TRUE;
 		}
+
 		return $this->is_Checked();
 	}
 
 	public function is_Checked ()
 	{
-		return $this->checked;
+		return (bool)$this->checked;
 	}
 
 	abstract protected function pre_check_PDO_Tables ();
@@ -47,11 +49,12 @@ abstract class module_loader
 		}
 		foreach ($tables as $var) {
 			if (strpos($var, "{!prefix}") === FALSE) {
-				$var = "{prefix}" . $var;
+				if (strpos($var, "{prefix}") === FALSE) {
+					$var = "{prefix}" . $var;
+				}
 			}
-			else
-			{
-				$var = str_replace("{!prefix}",'', $var);
+			else {
+				$var = str_replace("{!prefix}", '', $var);
 			}
 			$query = "SELECT 1 FROM " . $var . " WHERE 1;";
 			$sql = Core::$PDO->query($query);
@@ -78,6 +81,7 @@ abstract class module_loader
 				}
 			}
 		}
+
 		return $result;
 	}
 
@@ -91,6 +95,7 @@ abstract class module_loader
 		if (is_array($files)) {
 			$result = $this->check_files_exist($files, $this->class_module->get_path());
 		}
+
 		return $result;
 	}
 
@@ -106,7 +111,7 @@ abstract class module_loader
 					throw new \Exception("Code #1236 " . $filename);
 				}
 				else {
-					$include = @include($filename);
+					$include = include($filename);
 					if ($include === FALSE) {
 						throw new \Exception("Code #1236 " . $filename);
 					}
@@ -122,9 +127,10 @@ abstract class module_loader
 		}
 		if (is_array($files)) {
 			$this->load_file($files, $this->class_module->get_path());
-			return TRUE;
+			$this->is_load = TRUE;
 		}
-		return FALSE;
+
+		return $this->is_load();
 	}
 
 	public function create_PDO_Tables ($args = array (), $file = FALSE)
@@ -155,12 +161,19 @@ abstract class module_loader
 		}
 		foreach ($args as $var) {
 			$var = str_replace('`', '', $var);
-			if (strpos($var, "create") !== FALSE || strpos($var, "CREATE") !== FALSE) {
+			if (strpos($var, "create") !== FALSE || strpos($var, "CREATE") !== FALSE || strpos($var,
+					"ALTER TABLE") !== FALSE || strpos($var, "alter table") !== FALSE
+			) {
 				$state = Core::$PDO->query($var);
 				if ($state === FALSE) {
 					throw new \Exception(Core::$PDO->errorInfo());
 				}
 			}
 		}
+	}
+
+	public function is_load ()
+	{
+		return $this->is_load;
 	}
 }

@@ -12,7 +12,7 @@
  */
 namespace Iko;
 
-class core_loader extends module_loader
+class forum_module_loader extends \Iko\module_loader // TODO: Create Module
 {
 	public function __construct ($module)
 	{
@@ -21,26 +21,16 @@ class core_loader extends module_loader
 
 	protected function pre_check_PDO_Tables ()
 	{
-		$tables = array (
-			"modules",
-			"configs",); //Insert your SQL Tables here. It will load over the Core{prefix} Std is: iko_
+		$tables = array ();
+
 		return $this->check_PDO_Tables($tables);
 	}
 
 	protected function pre_check_Files ()
 	{
-		$files = array (
-			"sql" => array (
-				"configs.sql",
-				"modules.sql")); //Insert your needed Files here. It will load over the Core.
-		return $this->check_Files($files);
-	}
+		$files = array ();
 
-	public function create_PDO_Tables ($args = array (), $file = FALSE)
-	{
-		parent::create_PDO_Tables(array (
-			"sql/configs.sql",
-			"sql/modules.sql"), TRUE);
+		return $this->check_Files($files);
 	}
 
 	public function load ($files = array ())

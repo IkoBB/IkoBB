@@ -21,8 +21,9 @@ class user_module_loader extends module_loader
 
 	protected function pre_check_PDO_Tables ()
 	{
-		$tables = array ("{prefix}user");
-		$this->check_PDO_Tables($tables);
+		$tables = array (
+			"users",); //Insert your SQL Tables here. It will load over the Core{prefix} Std is: iko_
+		return $this->check_PDO_Tables($tables);
 	}
 
 	protected function pre_check_Files ()
@@ -35,7 +36,8 @@ class user_module_loader extends module_loader
 				"value.class.php",
 				"group.class.php",
 				"user.class.php"));
-		$this->check_Files($files);
+
+		return $this->check_Files($files);
 	}
 
 	public function load ($files = array ())

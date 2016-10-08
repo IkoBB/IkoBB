@@ -14,21 +14,26 @@ namespace Example;
 
 class module extends \Iko\module_loader
 {
-	public function __construct($module)
+	public function __construct ($module)
 	{
 		parent::__construct($module);
 	}
 
-	protected function pre_check_PDO_Tables()
+	protected function pre_check_PDO_Tables ()
 	{
 		$tables = array ( //Insert your SQL Tables here. It will load over the Core{prefix} Std is: iko_
 		                  "example",
 		                  // For: iko_example
-		                  "{!prefix}myprefix_example"); // For myprefix_example
+		                  "{prefix}examples",
+		                  //For: iko_examples
+		                  "{!prefix}myprefix_example"
+		                  // For myprefix_example
+		);
+
 		return $this->check_PDO_Tables($tables);
 	}
 
-	protected function pre_check_Files()
+	protected function pre_check_Files ()
 	{
 		$files = array (
 			"example.php",
@@ -36,7 +41,7 @@ class module extends \Iko\module_loader
 		return $this->check_Files($files);
 	}
 
-	public function load($files = array ())
+	public function load ($files = array ())
 	{
 		$files = array (
 			"test.php");

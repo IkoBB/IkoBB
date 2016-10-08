@@ -133,12 +133,30 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 		}
 	}
 
+	public static function load_status ($name)
+	{
+		if (self::exist($name)) {
+			return self::get($name)->is_load();
+		}
+	}
 	public static function init ()
 	{
-		$iko = self::get("iko");
-		//$iko->check();
-		//$iko->load();
+		self::pre_check();
+		self::request("iko");
 	}
+
+	private static function pre_check ()
+	{
+		$statement = Core::$PDO->query("SELECT module_name FROM " . self::table . " ");
+		$fetch_all = $statement->fetchAll();
+		foreach ($fetch_all as $item) {
+			$filename = Core::$modulepath . $item["module_name"] . "/module.php";
+			if (!file_exists($filename)) {
+				throw new \Exception("Needed File module.php to implement the Module " . $item["module_name"] . " does not exist.");
+			}
+		}
+	}
+
 	/*
 	 * Static Part End
 	 */
@@ -154,22 +172,22 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 	{
 		$statement = Core::$PDO->query("SELECT * FROM " . self::table . " WHERE module_name = '" . $name . "'");
 		$fetch = $statement->fetch(PDO::FETCH_ASSOC);
-		print_r($fetch);
 		foreach ($fetch as $key => $value) {
 			$temp_key = str_replace("module_", "", $key);
 			$this->{$temp_key} = $value;
 		}
-		$this->get_loader();
+		$this->status = (bool)$this->status;
+		$this->load_loader();
 	}
 
 	private $is_load = FALSE;
 	private $loader_class_name = "module";
 
-	private function get_loader ()
+	private function load_loader ()
 	{
-		$filename = core::$modulepath . $this->name . "/module.php";
+		$filename = Core::$modulepath . $this->name . "/module.php";
 		if (!file_exists($filename)) {
-			throw new \Exception("Needed File Iko_loader to implement the Module " . $this->name . " does not exist.");
+			throw new \Exception("Needed File module.php to implement the Module " . $this->name . " does not exist.");
 		}
 		$handle = fopen($filename, "r");
 		$namespace = "";
@@ -197,7 +215,7 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 		else {
 			$class = '' . $namespace . '\\' . $this->get_loader_name();
 			if (class_exists($class)) {
-				$this->loader = @new $class($this);
+				$this->loader = new $class($this);
 			}
 			else {
 				throw new \Exception("#1238 " . $class . " not found in " . $filename . "");
@@ -211,10 +229,16 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 		return $this->loader_class_name;
 	}
 
+	private function get_loader ()
+	{
+		return $this->loader;
+	}
 	public function check ()
 	{
-		if ($this->loader instanceof module_loader && $this->get_status()) {
-			return $this->loader->check();
+		if ($this->get_loader() instanceof module_loader && $this->get_status()) {
+			$this->get_loader()->check();
+
+			return $this->get_loader()->is_Checked();
 		}
 		else {
 			return TRUE;
@@ -223,8 +247,8 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 
 	public function is_Checked ()
 	{
-		if ($this->loader instanceof module_loader && $this->get_status()) {
-			return $this->loader->is_Checked();
+		if ($this->get_loader() instanceof module_loader && $this->get_status()) {
+			return $this->get_loader()->is_Checked();
 		}
 		else {
 			return TRUE;
@@ -233,11 +257,15 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 
 	public function load ()
 	{
-		if ($this->loader instanceof module_loader && $this->status && !$this->is_load) {
-			return $this->loader->load();
+		if ($this->get_loader() instanceof module_loader && $this->status && !$this->is_load()) {
+			if ($this->get_loader()->load()) {
+				$this->is_load = TRUE;
+			}
+
+			return $this->is_load;
 		}
 		else {
-			return FALSE;
+			return $this->is_load();
 		}
 	}
 
@@ -261,6 +289,10 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 		return $this->status;
 	}
 
+	public function is_load ()
+	{
+		return $this->is_load;
+	}
 	public function load_complete ()
 	{
 		if ($this->get_status()) {
@@ -271,11 +303,11 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 				return $this->load();
 			}
 			else {
-				return FALSE;
+				return $this->is_load();
 			}
 		}
 		else {
-			return FALSE;
+			return $this->is_load();
 		}
 	}
 }

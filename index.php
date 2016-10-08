@@ -17,7 +17,8 @@ require_once 'core/core.php';
 
 
 // Loading and checking template engine
-var_dump(module::request("template"));
+module::request("template");
+module::request("user");
 $template = template::get_instance();
 
 // Create 3 new parameters called content, title and userprofile. They can be accessed with blade syntax with %% content %%, %% title %% and %% userprofile %%.
