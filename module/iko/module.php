@@ -14,33 +14,36 @@ namespace Iko;
 
 class core_loader extends module_loader
 {
-	public function __construct($module)
+	public function __construct ($module)
 	{
 		parent::__construct($module);
 	}
 
-	protected function pre_check_PDO_Tables()
+	protected function pre_check_PDO_Tables ()
 	{
 		$tables = array (
-			"{prefix}modules",
-			"{prefix}configs"); //Insert your SQL Tables here. It will load over the Core{prefix} Std is: iko_
-		$this->check_PDO_Tables($tables);
+			"modules",
+			"configs"); //Insert your SQL Tables here. It will load over the Core{prefix} Std is: iko_
+		return $this->check_PDO_Tables($tables);
 	}
 
-	protected function pre_check_Files()
+	protected function pre_check_Files ()
 	{
-		$files = array (); //Insert your needed Files here. It will load over the Core.
-		$this->check_Files($files);
+		$files = array (
+			"sql" => array (
+				"configs.sql",
+				"modules.sql")); //Insert your needed Files here. It will load over the Core.
+		return $this->check_Files($files);
 	}
 
-	public function create_PDO_Tables($args = array (), $file = false)
+	public function create_PDO_Tables ($args = array (), $file = FALSE)
 	{
 		parent::create_PDO_Tables(array (
 			"sql/configs.sql",
-			"sql/modules.sql"), true);
+			"sql/modules.sql"), TRUE);
 	}
 
-	public function load($files = array ())
+	public function load ($files = array ())
 	{
 		$files = array ();
 

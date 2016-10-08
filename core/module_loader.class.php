@@ -27,7 +27,6 @@ abstract class module_loader
 		if ($this->pre_check_Files() && $this->pre_check_PDO_Tables()) {
 			$this->checked = TRUE;
 		}
-
 		return $this->is_Checked();
 	}
 
@@ -54,16 +53,12 @@ abstract class module_loader
 			{
 				$var = str_replace("{!prefix}",'', $var);
 			}
-			echo $var;
 			$query = "SELECT 1 FROM " . $var . " WHERE 1;";
 			$sql = Core::$PDO->query($query);
-			echo "<br>";
-			var_dump($sql);
 			if ($sql === FALSE) {
 				$result = FALSE;
 			}
 		}
-
 		return $result;
 	}
 
@@ -83,7 +78,6 @@ abstract class module_loader
 				}
 			}
 		}
-
 		return $result;
 	}
 
@@ -95,9 +89,8 @@ abstract class module_loader
 			$files = array ($files);
 		}
 		if (is_array($files)) {
-			$this->check_files_exist($files, $this->class_module->get_path());
+			$result = $this->check_files_exist($files, $this->class_module->get_path());
 		}
-
 		return $result;
 	}
 
@@ -129,7 +122,6 @@ abstract class module_loader
 		}
 		if (is_array($files)) {
 			$this->load_file($files, $this->class_module->get_path());
-
 			return TRUE;
 		}
 		return FALSE;
@@ -163,7 +155,6 @@ abstract class module_loader
 		}
 		foreach ($args as $var) {
 			$var = str_replace('`', '', $var);
-			echo $var;
 			if (strpos($var, "create") !== FALSE || strpos($var, "CREATE") !== FALSE) {
 				$state = Core::$PDO->query($var);
 				if ($state === FALSE) {
