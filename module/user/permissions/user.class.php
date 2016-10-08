@@ -19,6 +19,7 @@
 namespace Iko\Permissions;
 
 use Iko;
+use Iko\Permissions;
 use Iko\User as users;
 
 
@@ -82,10 +83,14 @@ class User extends Permissions
 
 		}
 	}
+
 	public function add_permission ($permission)
 	{
-		if(!$permission instanceof values) {
-			$permission = values::get($permission);
+		if (!$permission instanceof value) {
+			$permission = value::get($permission);
+		}
+		if ($permission instanceof value) {
+
 		}
 
 		return TRUE;
@@ -93,9 +98,15 @@ class User extends Permissions
 
 	protected function load_permission ()
 	{
-
-		$statement = Core::$PDO->prepare("SELECT * FROM " . self::user_permissions . " WHERE ");
-
+		$statement = Core::$PDO->prepare("SELECT * FROM " . self::user_permissions . " WHERE user_id = :user_id");
+		$statement->bindParam(":user_id", $this->user_class->get_ID());
+		$statement->execute();
+		foreach ($statement->fetchAll() as $fetch) {
+			$per = value::get($fetch["permission_name"]);
+			if (array_search($per, $this->permissions) === FALSE) {
+				array_push($this->permissions, $per);
+			}
+		}
 	}
 
 	public function get_type ()

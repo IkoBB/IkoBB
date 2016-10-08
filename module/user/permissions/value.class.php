@@ -18,8 +18,11 @@
  */
 namespace Iko\Permissions;
 
+use Iko\Permissions;
+
 class Value
 {
+	const table = Permissions::table;
 	private static $cache = array ();
 	private static $cache_exist = array ();
 	public static function get ($value = 0, $reload = FALSE)
@@ -28,19 +31,20 @@ class Value
 			if (is_array($value)) {
 				self::exist($value);
 			}
-			if (is_string($value) || is_int($value)) {
+			if (is_string($value)) {
 				$value = array ($value);
 			}
 			$user_array = array ();
-			foreach ($value as $id) {
-				if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
-					if (self::exist($id, $reload)) {
-						self::$cache[ $id ] = new __CLASS__($id);
-						array_push($user_array, self::$cache[ $id ]);
+			foreach ($value as $name) {
+				if (!isset(self::$cache[ $name ]) || self::$cache[ $name ] == NULL || $reload) {
+					if (self::exist($name, $reload)) {
+						$class = str_replace(__NAMESPACE__ . "/", "", __CLASS__);
+						self::$cache[ $name ] = new $class($name);
+						array_push($user_array, self::$cache[ $name ]);
 					}
 				}
 				else {
-					array_push($user_array, self::$cache[ $id ]);
+					array_push($user_array, self::$cache[ $name ]);
 				}
 			}
 			if (count($user_array) == 1) {
@@ -76,45 +80,44 @@ class Value
 	}
 
 	/**
-	 * @param int  $user_id
+	 * @param int  $names
 	 * @param bool $reload
 	 *
 	 * @return bool|mixed
 	 */
-	public static function exist ($user_id = 0, $reload = FALSE)
+	public static function exist ($names = 0, $reload = FALSE)
 	{
-		if ($user_id != 0 && $user_id != NULL) {
-			if (is_string($user_id) || is_int($user_id)) {
-				if (!isset(self::$cache_exist[ $user_id ]) || $reload) {
-					$statement = Core::$PDO->prepare("SELECT user_id FROM " . self::table . " WHERE user_id = :user_id");
-					$statement->bindParam('user_id', $user_id);
+		if ($names != 0 && $names != NULL) {
+			$statement = Core::$PDO->prepare("SELECT * FROM " . self::table . " WHERE permission_name = :perm_name");
+			if (is_string($names) || is_int($names)) {
+				if (!isset(self::$cache_exist[ $names ]) || $reload) {
+					$statement->bindParam(':perm_name', $names);
 					$statement->execute();
 					if ($statement->rowCount() > 0) {
-						self::$cache_exist[ $user_id ] = TRUE;
+						self::$cache_exist[ $names ] = TRUE;
 
 						return TRUE;
 					}
 					else {
-						self::$cache_exist[ $user_id ] = FALSE;
+						self::$cache_exist[ $names ] = FALSE;
 
 						return FALSE;
 					}
 				}
 
-				return self::$cache_exist[ $user_id ];
+				return self::$cache_exist[ $names ];
 			}
 			else {
-				if (is_array($user_id)) {
-					$statement = Core::$PDO->prepare("SELECT user_id FROM " . self::table . " WHERE user_id = :user_id");
-					foreach ($user_id as $id) {
-						if (!isset(self::$cache_exist[ $id ]) || $reload) {
-							$statement->bindParam('user_id', $id);
+				if (is_array($names)) {
+					foreach ($names as $name) {
+						if (!isset(self::$cache_exist[ $name ]) || $reload) {
+							$statement->bindParam(':perm_name', $name);
 							$statement->execute();
 							if ($statement->rowCount() > 0) {
-								self::$cache_exist[ $id ] = TRUE;
+								self::$cache_exist[ $name ] = TRUE;
 							}
 							else {
-								self::$cache_exist[ $id ] = FALSE;
+								self::$cache_exist[ $name ] = FALSE;
 							}
 						}
 					}
@@ -129,5 +132,21 @@ class Value
 		else {
 			return FALSE;
 		}
+	}
+
+
+	private $name;
+	private $module;
+
+	protected function __construct ($name)
+	{
+		if (is_string($name) && self::exist($name)) {
+
+		}
+	}
+
+	public function get_name ()
+	{
+		return $this->name;
 	}
 }

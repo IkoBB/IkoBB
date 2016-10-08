@@ -73,9 +73,14 @@ abstract class Permissions
 		return groups::get($class);
 	}
 
-	private static function get_permission ($class) //
+	private static function get_value ($name) //
 	{
+		return values::get($name);
+	}
 
+	private static function has ($permission, $class)
+	{
+		// TODO: Add has_permission static function for simple resolution.
 	}
 
 	protected $permissions = array ();
@@ -94,25 +99,32 @@ abstract class Permissions
 	 */
 	public function has_permission ($permission)
 	{
+		$result = FALSE;
 		if (!$permission instanceof values) {
 			$permission = values::get($permission);
 		}
-		if (array_search($permission, $this->permissions, TRUE) !== FALSE) {
-			return TRUE;
+		if ($permission instanceof values) {
+			$part = explode(".", $permission->get_name());
+			for ($i = (count($part) - 1); $i > 0; $i++) {
+				$sec_part = "";
+				for ($x = 0; $x <= $i; $x++) {
+					$sec_part .= $part[ $x ] . ".";
+					if ($x == $i) {
+						$sec_part .= "*";
+					}
+				}
+				$sec_permission = values::get($sec_part);
+				if (array_search($sec_permission, $this->permissions, TRUE) !== FALSE) {
+					$result = TRUE;
+					break;
+				}
+			}
 		}
-		else {
-			return FALSE;
-		}
+
+		return $result;
 	}
 
-	public function add_permission ($permission)
-	{
-		if(!$permission instanceof values) {
-			$permission = values::get($permission);
-		}
-
-		return TRUE;
-	}
+	abstract public function add_permission ($permission);
 
 	abstract public function get_type ();
 

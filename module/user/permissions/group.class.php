@@ -20,6 +20,7 @@ namespace Iko\Permissions;
 
 use Iko;
 use Iko\Group as groups;
+use Iko\Permissions;
 
 class Group extends Permissions
 {
@@ -72,7 +73,10 @@ class Group extends Permissions
 	protected function load_permission ()
 	{
 		$sql = "SELECT * FROM " . self::permissions . " as assi LEFT JOIN " . Permissions::table . " as perm WHERE perm.permission_id = assi.group_permission_permission_id";
-		$statement = Core::$PDO->prepare($sql, array (PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
+		$statement = Core::$PDO->prepare($sql);
+		foreach ($statement->fetchAll() as $fetch) {
+			$fetch = NULL;
+		}
 	}
 
 	public function get_type ()
@@ -83,5 +87,10 @@ class Group extends Permissions
 	public function get_class ()
 	{
 		// TODO: Implement get_class() method.
+	}
+
+	public function add_permission ($permission)
+	{
+		// TODO: Implement add_permission() method.
 	}
 }

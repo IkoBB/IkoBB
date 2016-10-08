@@ -46,7 +46,8 @@ class Group
 			foreach ($group_id as $id) {
 				if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
 					if (self::exist($id, $reload)) {
-						self::$cache[ $id ] = new __CLASS__($id);
+						$class = str_replace(__NAMESPACE__ . "/", "", __CLASS__);
+						self::$cache[ $id ] = new $class($id);
 						array_push($group_array, self::$cache[ $id ]);
 					}
 				}
@@ -77,10 +78,10 @@ class Group
 	public static function exist ($group_id, $reload = FALSE)
 	{
 		if ($group_id != 0 && $group_id != NULL) {
+			$statement = Core::$PDO->prepare("SELECT group_id FROM " . self::table . " WHERE group_id = :group_id");
 			if (is_string($group_id) || is_int($group_id)) {
 				if (!isset(self::$cache_exist[ $group_id ]) || $reload) {
-					$statement = Core::$PDO->prepare("SELECT group_id FROM " . self::table . " WHERE group_id = :group_id");
-					$statement->bindParam('group_id', $group_id);
+					$statement->bindParam(':group_id', $group_id);
 					$statement->execute();
 					if ($statement->rowCount() > 0) {
 						self::$cache_exist[ $group_id ] = TRUE;
@@ -98,10 +99,9 @@ class Group
 			}
 			else {
 				if (is_array($group_id)) {
-					$statement = Core::$PDO->prepare("SELECT group_id FROM " . self::table . " WHERE group_id = :group_id");
 					foreach ($group_id as $id) {
 						if (!isset(self::$cache_exist[ $id ]) || $reload) {
-							$statement->bindParam('group_id', $id);
+							$statement->bindParam(':group_id', $id);
 							$statement->execute();
 							if ($statement->rowCount() > 0) {
 								self::$cache_exist[ $id ] = TRUE;
@@ -161,7 +161,7 @@ class Group
 		$statement = Core::$PDO->prepare($sql, array (PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
 		$statement->bindParam(":group_id", $this->get_Id());
 		$statement->execute();
-		while ($row = $statement->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+		foreach ($statement->fetchAll() as $row) {
 			$parent = self::get($row["group_parent_id"]);
 			if (array_search($parent, $this->group_parents) === FALSE) {
 				array_push($this->group_parents, $parent);
@@ -217,4 +217,5 @@ class Group
 	{
 		return $this->group_parents;
 	}
+
 }

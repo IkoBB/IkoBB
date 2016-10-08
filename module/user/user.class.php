@@ -31,7 +31,8 @@ class User
 			foreach ($user_id as $id) {
 				if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
 					if (self::exist($id, $reload)) {
-						self::$cache[ $id ] = new __CLASS__($id);
+						$class = str_replace(__NAMESPACE__ . "/", "", __CLASS__);
+						self::$cache[ $id ] = new $class($id);
 						array_push($user_array, self::$cache[ $id ]);
 					}
 				}
@@ -80,10 +81,10 @@ class User
 	public static function exist ($user_id = 0, $reload = FALSE)
 	{
 		if ($user_id != 0 && $user_id != NULL) {
+			$statement = Core::$PDO->prepare("SELECT user_id FROM " . self::table . " WHERE user_id = :user_id");
 			if (is_string($user_id) || is_int($user_id)) {
 				if (!isset(self::$cache_exist[ $user_id ]) || $reload) {
-					$statement = Core::$PDO->prepare("SELECT user_id FROM " . self::table . " WHERE user_id = :user_id");
-					$statement->bindParam('user_id', $user_id);
+					$statement->bindParam(':user_id', $user_id);
 					$statement->execute();
 					if ($statement->rowCount() > 0) {
 						self::$cache_exist[ $user_id ] = TRUE;
@@ -101,10 +102,9 @@ class User
 			}
 			else {
 				if (is_array($user_id)) {
-					$statement = Core::$PDO->prepare("SELECT user_id FROM " . self::table . " WHERE user_id = :user_id");
 					foreach ($user_id as $id) {
 						if (!isset(self::$cache_exist[ $id ]) || $reload) {
-							$statement->bindParam('user_id', $id);
+							$statement->bindParam(':user_id', $id);
 							$statement->execute();
 							if ($statement->rowCount() > 0) {
 								self::$cache_exist[ $id ] = TRUE;
@@ -127,6 +127,10 @@ class User
 		}
 	}
 
+	public static function session ()
+	{
+
+	}
 	private $id;
 	private $user_name;
 	private $user_password;
