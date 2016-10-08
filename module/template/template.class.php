@@ -37,7 +37,7 @@ class template
 	private $template_author;
 	private $template_directory;
 	private $template_name;
-	private $template_required_version;
+	private $template_required_core_version;
 	private $template_version;
 	private $template;
 	private $param = array ();
@@ -53,34 +53,40 @@ class template
 	 */
 	private function __construct()
 	{
-		$this->template_id = 1;
-		// $this->template_id = Core::template;
-		// ToDo: Get template which the user wants to have
-
-		// Variablen aus Tabelle
-		try {
-			$statement = Core::$PDO->prepare("SELECT * FROM iko_templates WHERE template_id = :template_id");
-			$statement->bindParam(':template_id', $this->template_id);
-			$statement->execute();
-			$result = $statement->fetch();
-
-			$this->template_author = $result['template_author'];
-			$this->template_directory = $result['template_directory'];
-			$this->template_name = $result['template_name'];
-			$this->template_required_version = $result['template_required_core_version'];
-			$this->template_version = $result['template_version'];
+		if (strpos(Core::$currentfile, Core::$adminpath) === false) {
+			// ToDo: Get template which the user wants to have
+			// $this->template_id = Core::template;
+			$this->template_id = 1;
+			// Get all variables from table
+			try {
+				$statement = Core::$PDO->prepare("SELECT * FROM iko_templates WHERE template_id = :template_id");
+				$statement->bindParam(':template_id', $this->template_id);
+				$statement->execute();
+				$result = $statement->fetch(PDO::FETCH_ASSOC);
+				foreach ($result as $key => $value) {
+					$this->{$key} = $value;
+				}
+			}
+			catch (\PDOException $exception) {
+				throw new Exception("Error #1234: " . $exception);
+			}
 		}
-		catch (\PDOException $exception) {
-			throw new Exception("Error #1234: " . $exception);
+		else {
+			$this->template_id = 0;
+			$this->template_author = 'IkoBB';
+			$this->template_directory = 'admin';
+			$this->template_name = 'admin';
+			$this->template_required_core_version = '1.0.0a';
+			$this->template_version = '1.0.0a';
 		}
 
 		// check directory & check required version core::version <= $template_required_version
-		if (file_exists(Core::$basepath . 'template/' . $this->template_directory . '/template.html') && version_compare(Core::version, $this->template_required_version, '<=')) {
+		if (file_exists(Core::$basepath . 'template/' . $this->template_directory . '/template.html') && version_compare(Core::version, $this->template_required_core_version, '<=')) {
 			// ToDo: $template static?
 			$this->template = file_get_contents(Core::$basepath . '/template/' . $this->template_directory . '/template.html');
 		}
 		else {
-			throw new Exception("Error #4321: The version of the template is lower than the version of the core. Please update your template.");
+			throw new Exception("Error #4321: The version of the template is lower than the version of the core. Please update your template.<br>" . Core::version . " | " . $this->template_required_core_version);
 			// ToDo: Set user template to default template core::User->set_template(default);
 		}
 	}
@@ -98,16 +104,16 @@ class template
 	private function bladeSyntax($string)
 	{
 		$syntax_blade = array (
-			'/{{ (.*) }}/',
+			'/{{ (.*) }}/U',
 			// text or variable
-			'/{{-v (.*) = (.*) }}/',
+			'/{{-v (.*) = (.*) }}/U',
 			'/(\s*)@(if|elseif|foreach|for|while)(\s*\(.*\))/',
 			'/(\s*)@(endif|endforeach|endfor|endwhile)(\s*)/',
 			'/(\s*)@(else)(\s*)/',
 			'/(\s*)@unless(\s*\(.*\))/',
-			'/%% (.*) %%/',
+			'/%% (.*) %%/U',
 			// Param
-			'/§§ (.*) §§/'); // Entity
+			'/§§ (.*) §§/U'); // Entity
 		$syntax_php = array (
 			'<?php echo $1; ?>',
 			'<?php $1 = $2; ?>',
@@ -128,7 +134,7 @@ class template
 		ob_start();
 		eval('?>' . $string . '');
 		$string = ob_get_clean();
-		@ob_end_clean();
+		if (ob_get_length()) ob_end_clean();
 
 		return $string;
 	}
@@ -157,6 +163,8 @@ class template
 
 	/**
 	 * @return mixed|string
+	 *
+	 * @ToDo: Variables like {{ Core::$version }} can't be used. Core is not defined.
 	 */
 	public function __toString()
 	{
