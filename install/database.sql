@@ -7,16 +7,6 @@ CREATE TABLE `iko_configs` (
 	UNIQUE KEY `config_module_relation` (`config_name`, `module_name`)
 );
 
-
-/*   Funktioniert nicht mehr wegen Modulrichtlinien - es muss zuerst ein Datensatz mit dem Value des Moduls angelegt werden
-INSERT INTO `iko_configs` VALUES ('site_name', 'Test Value', 'The name of the site', '1'),
-	('site_template', 1, 'Insert the ID of the template which should be the default template.', '1'),
-	('site_email', 'test@test.com', 'The contact email of the forum. Also used for sending emails.', '1'),
-	('site_maintenance', 0, 'Indicates if the site is maintenance. 1 - Maintenance Mode on; 2 - Maintenance Mode off',
-	 '1');
-	 */
-
-
 CREATE TABLE `iko_modules` (
 	`module_author`      VARCHAR(255) NOT NULL,
 	`module_name`        VARCHAR(255) NOT NULL,
@@ -210,3 +200,9 @@ FOREIGN KEY (`module_name`)
 REFERENCES `iko_modules` (`module_name`)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE;
+
+INSERT INTO `iko_configs` VALUES ('site_name', 'Test Value', 'The name of the site', 'iko'),
+	('site_template', 1, 'Insert the ID of the template which should be the default template.', 'iko'),
+	('site_email', 'test@test.com', 'The contact email of the forum. Also used for sending emails.', 'iko'),
+	('site_maintenance', 0, 'Indicates if the site is maintenance. 1 - Maintenance Mode on; 2 - Maintenance Mode off',
+	 'iko');
