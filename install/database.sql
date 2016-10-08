@@ -4,7 +4,7 @@ CREATE TABLE `iko_configs` (
 	`config_comment`  TEXT,
 	`module_name` VARCHAR(255) NOT NULL,
 	PRIMARY KEY (`config_name`),
-	KEY `config_category` (`config_category`)
+	KEY `config_category` (`module_name`)
 );
 
 INSERT INTO `iko_configs` VALUES ('site_name', 'Test Value', 'The name of the site', '1'),
