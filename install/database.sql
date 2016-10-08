@@ -4,14 +4,17 @@ CREATE TABLE `iko_configs` (
 	`config_comment`  TEXT,
 	`module_name` VARCHAR(255) NOT NULL,
 	PRIMARY KEY (`config_name`),
-	KEY `config_category` (`module_name`)
+	UNIQUE KEY `config_module_relation` (`config_name`, `module_name`)
 );
 
+
+/*   Funktioniert nicht mehr wegen Modulrichtlinien - es muss zuerst ein Datensatz mit dem Value des Moduls angelegt werden
 INSERT INTO `iko_configs` VALUES ('site_name', 'Test Value', 'The name of the site', '1'),
 	('site_template', 1, 'Insert the ID of the template which should be the default template.', '1'),
 	('site_email', 'test@test.com', 'The contact email of the forum. Also used for sending emails.', '1'),
 	('site_maintenance', 0, 'Indicates if the site is maintenance. 1 - Maintenance Mode on; 2 - Maintenance Mode off',
 	 '1');
+	 */
 
 
 CREATE TABLE `iko_modules` (
@@ -197,5 +200,13 @@ ALTER TABLE iko_template_assignment
 	ADD CONSTRAINT `iko_template_assignment_ibfk2`
 FOREIGN KEY (`template_id`)
 REFERENCES `iko_templates` (`template_id`)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE;
+
+
+ALTER TABLE iko_configs
+	ADD CONSTRAINT `iko_configs_ibfk1`
+FOREIGN KEY (`module_name`)
+REFERENCES `iko_modules` (`module_name`)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE;
