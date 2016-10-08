@@ -57,14 +57,12 @@ CREATE TABLE `iko_users` (
 	`user_gender`             TINYINT(1)            DEFAULT NULL,
 	`user_date_joined`        INT(11)      NOT NULL,
 	`user_birthday`           DATE                  DEFAULT NULL,
-	`user_chosen_template_id` INT(11)               DEFAULT '1',
 	`user_timezone_id`        INT(11)               DEFAULT '1',
 	PRIMARY KEY (`user_id`),
 	UNIQUE KEY `user_name` (`user_name`),
 	UNIQUE KEY `user_email` (`user_email`),
 	KEY `user_avatar_id` (`user_avatar_id`),
 	KEY `user_location_id` (`user_location_id`),
-	KEY `user_chosen_template_id` (`user_chosen_template_id`),
 	KEY `user_timezone_id` (`user_timezone_id`)
 );
 
