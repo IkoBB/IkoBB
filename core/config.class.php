@@ -26,21 +26,21 @@ interface config_interface
 	/**
 	 *
 	 */
-	function reload_config();
+	function reload_config ();
 
 	/**
 	 * @param unknown $name
-	 * @param unknown $wert
+	 * @param unknown $value
 	 * @param string  $comment
 	 */
-	function add($name, $wert, $comment = "");
+	function add ($name, $value, $comment = "");
 
 	/**
 	 * @param unknown $name
-	 * @param unknown $wert
+	 * @param unknown $value
 	 * @param string  $comment
 	 */
-	function set($name, $wert, $comment = "");
+	function set ($name, $value, $comment = "");
 }
 
 /**
@@ -50,15 +50,17 @@ interface config_interface
 abstract class config_loader implements config_interface
 {
 	protected $config = array ();
+	protected $config_class;
 
-	protected function __construct()
+	protected function __construct ($config_class)
 	{
+		$this->config_class = $config_class;
 	}
 
 	/**
 	 *
 	 */
-	public function get_config()
+	public function get_config ()
 	{
 		if (is_array($this->config)) {
 			return $this->config;
@@ -72,7 +74,7 @@ abstract class config_loader implements config_interface
 	 * {@inheritDoc}
 	 * @see \Iko\config_interface::reload_config()
 	 */
-	public function reload_config()
+	public function reload_config ()
 	{
 		$this->config = array ();
 		$this->load_Config();
@@ -82,15 +84,20 @@ abstract class config_loader implements config_interface
 	 * {@inheritDoc}
 	 * @see \Iko\config_interface::set()
 	 */
-	public abstract function set($name, $wert, $comment = "");
+	public abstract function set ($name, $value, $comment = "");
 
 	/**
 	 * {@inheritDoc}
 	 * @see \Iko\config_interface::add()
 	 */
-	public abstract function add($name, $wert, $comment = "");
+	public abstract function add ($name, $value, $comment = "");
 
-	protected abstract function load_Config();
+	protected abstract function load_Config ();
+
+	public function get_config_class ()
+	{
+		return $this->config_class;
+	}
 }
 
 /**
@@ -107,36 +114,40 @@ class config extends config_loader
 	 *
 	 * @return NULL|mixed
 	 */
-	public static function load($type, $args)
+	public static function load ($type, $args)
 	{
-		$class = null;
-		$var = false;
+		if (!is_array($args)) {
+			$args = array ($args);
+		}
+		$class = NULL;
+		$var = FALSE;
 		for ($i = 0; $i < count(self::$configs); $i++) {
-			if (self::$configs[$i]["type"] == $type && self::$configs[$i]["args"] == $args) {
+			if (self::$configs[ $i ]["type"] == $type && self::$configs[ $i ]["args"] == $args) {
 				$var = $i;
 				break;
 			}
 		}
-		if ($var !== false) {
-			if (!isset(self::$configs[$var]["class"]) || self::$configs[$var]["class"] == null) {
-				self::$configs[$var]["class"] = new config(self::$configs[$var]["type"], self::$configs[$var]["args"]);
+		if ($var !== FALSE) {
+			if (!isset(self::$configs[ $var ]["class"]) || self::$configs[ $var ]["class"] == NULL) {
+				self::$configs[ $var ]["class"] = new config(self::$configs[ $var ]["type"],
+					self::$configs[ $var ]["args"]);
 			}
-			$class = self::$configs[$var]["class"];
+			$class = self::$configs[ $var ]["class"];
 		}
 		else {
 			$array = array (
-				"type" => $type,
-				"args" => $args,
+				"type"  => $type,
+				"args"  => $args,
 				"class" => new config($type, $args));
 			array_push(self::$configs, $array);
-			$class = self::$configs[(count(self::$configs) - 1)]["class"];
+			$class = self::$configs[ (count(self::$configs) - 1) ]["class"];
 		}
 
 		return $class;
 	}
 
-	private $config_loader = null;
-	private $create_args = null;
+	private $config_loader = NULL;
+	private $create_args = NULL;
 
 	/**
 	 * @param unknown $type
@@ -144,18 +155,23 @@ class config extends config_loader
 	 *
 	 * @throws \Exception
 	 */
-	public function __construct($type, $args)
+	public function __construct ($type, $args)
 	{
+		if (!is_array($args)) {
+			$args = array ($args);
+		}
 		switch (strtolower($type)) {
 			case 'file':
 				$this->config_loader = new config_loader_file($args);
 			break;
+			case 'pdo':
+				$this->config_loader = new config_loader_pdo($args);
 			case 'create':
-				$this->config_loader = null;
+				$this->config_loader = NULL;
 				$this->create_args = $args;
 			break;
 			default:
-				throw new \Exception("Config kann nur mit als File, Mysql, Create initalisiert werden.");
+				throw new \Exception("Config kann nur mit als File, PDO, Create initalisiert werden.");
 			break;
 		}
 		$this->load_Config();
@@ -164,9 +180,9 @@ class config extends config_loader
 	/**
 	 *
 	 */
-	protected function load_Config()
+	protected function load_Config ()
 	{
-		if ($this->config_loader != null) {
+		if ($this->config_loader != NULL) {
 			$this->config = $this->config_loader->get_config();
 		}
 	}
@@ -175,19 +191,19 @@ class config extends config_loader
 	 * {@inheritDoc}
 	 * @see \Iko\config_loader::add()
 	 */
-	public function add($name, $wert, $comment = "")
+	public function add ($name, $value, $comment = "")
 	{
-		if ($this->config_loader->add($name, $wert, $comment)) {
+		if ($this->config_loader->add($name, $value, $comment)) {
 			$this->reload_config();
-			if (isset($this->config[$name])) {
-				return true;
+			if (isset($this->config[ $name ])) {
+				return TRUE;
 			}
 			else {
-				return false;
+				return FALSE;
 			}
 		}
 		else {
-			return false;
+			return FALSE;
 		}
 	}
 
@@ -195,37 +211,37 @@ class config extends config_loader
 	 * {@inheritDoc}
 	 * @see \Iko\config_loader::set()
 	 */
-	public function set($name, $wert, $comment = "")
+	public function set ($name, $value, $comment = "")
 	{
-		if ($this->config[$name] != $wert) {
-			if ($this->config_loader->set($name, $wert, $comment)) {
+		if ($this->config[ $name ] != $value) {
+			if ($this->config_loader->set($name, $value, $comment)) {
 				$this->reload_config();
-				if (isset($this->config[$name]) && $this->config[$name] == $wert) {
-					return true;
+				if (isset($this->config[ $name ]) && $this->config[ $name ] == $value) {
+					return TRUE;
 				}
 				else {
-					return false;
+					return FALSE;
 				}
 			}
 			else {
-				return false;
+				return FALSE;
 			}
 		}
 		else {
-			return true;
+			return TRUE;
 		}
 	}
 
 	/**
 	 * @param unknown $names
 	 */
-	public function get($names)
+	public function get ($names)
 	{
-		if (isset($this->config[$names])) {
-			return $this->config[$names];
+		if (isset($this->config[ $names ])) {
+			return $this->config[ $names ];
 		}
 		else {
-			return null;
+			return NULL;
 		}
 	}
 
@@ -233,7 +249,7 @@ class config extends config_loader
 	 * {@inheritDoc}
 	 * @see \Iko\config_loader::reload_config()
 	 */
-	public function reload_config()
+	public function reload_config ()
 	{
 		$this->config_loader->reload_config();
 		parent::reload_config();
@@ -252,19 +268,20 @@ class config_loader_file extends config_loader
 	/**
 	 * @param unknown $args
 	 */
-	public function __construct($args)
+	public function __construct ($args, $config_class)
 	{
-		$this->file = $args;
+		parent::__construct($config_class);
+		$this->file = $args[0];
 		$this->load_Config();
 	}
 
 	/**
 	 * @throws \Exception
 	 */
-	protected function load_Config()
+	protected function load_Config ()
 	{
 		$inc = @include $this->file;
-		if ($inc === false) {
+		if ($inc === FALSE) {
 			/* $this->FirstCreateConfig();
 			$this->loadConfig(); */
 			throw new \Exception("Die Datei ist nicht vorhanden. " . $this->file);
@@ -294,7 +311,7 @@ class config_loader_file extends config_loader
 	 * {@inheritDoc}
 	 * @see \Iko\config_loader::get_config()
 	 */
-	public function get_config()
+	public function get_config ()
 	{
 		return $this->config;
 	}
@@ -303,7 +320,7 @@ class config_loader_file extends config_loader
 	 * {@inheritDoc}
 	 * @see \Iko\config_loader::set()
 	 */
-	public function set($name, $wert, $comment = "")
+	public function set ($name, $value, $comment = "")
 	{
 		//Inhalt der Datei
 		$string = "";
@@ -313,20 +330,20 @@ class config_loader_file extends config_loader
 		if (is_string($name)) {
 			$name_temp = '"' . $name . '"';
 		}
-		if (is_string($wert)) {
-			$wert = '"' . $wert . '"';
+		if (is_string($value)) {
+			$value = '"' . $value . '"';
 		}
 		//�berpr�fung ob die Einstellung gesetzt ist?
-		if (isset($this->config[$name])) {
-			$search = $this->config[$name];
+		if (isset($this->config[ $name ])) {
+			$search = $this->config[ $name ];
 			if (is_string($search)) {
 				$search = '"' . $search . '"';
 			}
-			if ($this->config[$name] != $wert) {
+			if ($this->config[ $name ] != $value) {
 				$main = fopen($this->file, "r");
 				while ($read = fgets($main)) {
-					if (strpos($read, '$config[' . $name_temp . ']') !== false) {
-						$read = str_replace($search, $wert, $read);
+					if (strpos($read, '$config[' . $name_temp . ']') !== FALSE) {
+						$read = str_replace($search, $value, $read);
 					}
 					$string .= $read;
 				}
@@ -335,29 +352,29 @@ class config_loader_file extends config_loader
 		}
 		if ($string != "") {
 			$delete = unlink($this->file);
-			if ($delete === true) {
+			if ($delete === TRUE) {
 				$handle = fopen($this->file, "x");
 				$write = fwrite($handle, $string);
 				fclose($handle);
-				if ($write !== false) {
+				if ($write !== FALSE) {
 					$this->reload_config();
 
-					return true;
+					return TRUE;
 				}
 				else {
-					return false;
+					return FALSE;
 				}
 			}
-			else return false;
+			else return FALSE;
 		}
-		else return false;
+		else return FALSE;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 * @see \Iko\config_loader::add()
 	 */
-	public function add($name, $wert, $comment = "")
+	public function add ($name, $value, $comment = "")
 	{
 		$string = "";
 		//Definiert den zu Eintragenden Index
@@ -366,20 +383,20 @@ class config_loader_file extends config_loader
 		if (is_string($name)) {
 			$name_temp = '"' . $name . '"';
 		}
-		if (is_string($wert)) {
-			$wert = '"' . $wert . '"';
+		if (is_string($value)) {
+			$value = '"' . $value . '"';
 		}
-		if (!isset($this->config[$name])) {
+		if (!isset($this->config[ $name ])) {
 			$main = fopen($this->file, "r");
 			while ($read = fgets($main)) {
-				if (strpos($read, '?>') !== false) {
+				if (strpos($read, '?>') !== FALSE) {
 					if ($comment != "") {
 						$comment = '/*
  * ' . $comment . '
  */
 ';
 					}
-					$read = $comment . '$config[' . $name_temp . '] = ' . $wert . ';
+					$read = $comment . '$config[' . $name_temp . '] = ' . $value . ';
 ' . $read;
 				}
 				$string .= $read;
@@ -388,92 +405,104 @@ class config_loader_file extends config_loader
 		}
 		if ($string != "") {
 			$delete = unlink($this->file);
-			if ($delete === true) {
+			if ($delete === TRUE) {
 				$handle = fopen($this->file, "x");
 				$write = fwrite($handle, $string);
 				fclose($handle);
-				if ($write !== false) {
-					return true;
+				if ($write !== FALSE) {
+					return TRUE;
 				}
 				else {
-					return false;
+					return FALSE;
 				}
 			}
 			else {
-				return false;
+				return FALSE;
 			}
 		}
 		else {
-			return false;
+			return FALSE;
 		}
 	}
 }
 
-class config_loader_pdo extends config_loader
+class config_loader_pdo extends config_loader // TODO: Fertig machen.
 {
 	const table = "{prefix}configs";
-	private $prefix;
-	private $table;
+	/*
+	 *
+	 */
+	private $module = "";
+	private $table = self::table;
+	private $args;
 
-	public function __construct($args)
+	public function __construct ($args, $config_class)
 	{
+		parent::__construct($config_class);
 		$this->args = $args;
-		if (is_array($args)) {
-			if (count($args) == 3) {
-				if ($args[2] == true) {
-					$this->table = $args[1];
-					$this->prefix = $args[0];
-				}
+		if (count($this->args) == 1) {
+			$this->module = $this->args[0];
+		}
+		if (count($this->args) == 2) {
+			if (strpos(strtolower($this->args[0]), "table")) {
+				$this->table = $this->args[1];
 			}
-			else {
-				if (count($args) == 2) {
-					if ($args[1] == true) {
-						$this->table = $args[0];
-					}
-				}
-				else {
-					if (count($args) == 1) {
-						$this->prefix = $args[0];
-					}
-				}
+		}
+		if (count($this->args) == 3) {
+			if (strpos(strtolower($this->args[0]), "table")) {
+				$this->table = $this->args[1];
+				$this->module = $this->args[2];
 			}
+		}
+		$this->load_Config();
+	}
+
+	protected function load_Config ()
+	{
+		$query = "SELECT * FROM " . $this->table();
+		if ($this->module != "") {
+			$query .= " WHERE module_name = '" . $this->module . "'";
+		}
+		$statement = Core::$PDO->query($query);
+		$fetch = $statement->fetchAll(PDO::FETCH_ASSOC);
+		foreach ($fetch as $item) {
+			$item["class_loader"] = $this;
+			$value = new config_value($item);
+			$this->config[ $item["config_name"] ] = $value;
+		}
+	}
+
+	public function add ($name, $value, $comment = "")
+	{
+		$query = "INSERT INTO " . self::table() . " (config_name, config_value, config_comment, module_name) VALUES ('" . $name . "','" . $value . "','" . $comment . "','" . $this->module . "')";
+		$statement = Core::$PDO->query($query);
+		if ($statement->rowCount() == 1) {
+			$this->reload_config();
+
+			return TRUE;
 		}
 		else {
-			if (is_string($args)) {
-				$this->prefix = $args;
-			}
+			return FALSE;
 		}
 	}
 
-	public function reload_config()
+	public function set ($name, $value, $comment = "")
 	{
+		$query = "UPDATE " . self::table() . " Set config_value = '" . $value . "' WHERE config_name = '" . $name . "'";
+		$statement = Core::$PDO->query($query);
+		if ($statement->rowCount() == 1) {
+			$this->reload_config();
 
+			return TRUE;
+		}
+		else {
+			return FALSE;
+		}
 	}
 
-	protected function load_Config()
+	private function table ()
 	{
-
-	}
-
-	public function add($name, $wert, $comment = "")
-	{
-
-	}
-
-	public function set($name, $wert, $comment = "")
-	{
-
-	}
-
-	public function get_config()
-	{
-		return $this->config;
-	}
-
-	private function table()
-	{
-		$var = "";
-		if ($this->table != null) {
+		if ($this->table != NULL) {
 			$var = "{prefix}" . $this->table;
 		}
 		else {
@@ -483,26 +512,22 @@ class config_loader_pdo extends config_loader
 		return $var;
 	}
 
-	private function name($var)
-	{
-		return $this->prefix . $var;
-	}
 }
 
 /**
  * @author Marcel
  *
  */
-class config_var
+class config_value
 {
 	/**
 	 * @param unknown $var
 	 *
 	 * @return NULL|string|unknown
 	 */
-	public static function get_Convert($var)
+	public static function get_Convert ($var)
 	{
-		$conv = null;
+		/*$conv = null;
 		if (is_array($var)) {
 			$conv = serialize($var);
 		}
@@ -530,15 +555,18 @@ class config_var
 					}
 				}
 			}
-		}
+		}*/
+		$conv = serialize($var);
 
 		return $conv;
 	}
 
-	private $var;
+	private $value;
 	private $name;
 	private $comment;
-	private $config_class;
+	private $class_loader;
+	private $module_name;
+	private $class_main;
 
 	/**
 	 * @param unknown $name
@@ -546,12 +574,13 @@ class config_var
 	 * @param string  $comment
 	 * @param unknown $config_loader
 	 */
-	public function __construct($name, $var, $comment = "", $config_loader)
+	public function __construct ($args)
 	{
-		$this->name = $name;
-		$this->var = $var;
-		$this->comment = $comment;
-		$this->config_loader = $config_loader;
+		foreach ($args as $key => $value) {
+			$key = str_replace("config_", "", $key);
+			$this->{$key} = $value;
+		}
+
 	}
 
 	/**
@@ -559,34 +588,34 @@ class config_var
 	 *
 	 * @return NULL|unknown
 	 */
-	public function get($type = "")
+	public function get ($type = "")
 	{
-		$var = null;
+		$var = NULL;
 		switch ($type) {
 			case 'array':
-				$var = unserialize($this->var);
+				$var = unserialize($this->value);
 			break;
 			case 'object':
-				$var = unserialize($this->var);
+				$var = unserialize($this->value);
 			break;
 			case 'int':
-				$var = intval($this->var);
+				$var = intval($this->value);
 			break;
 			case 'bool':
-				if ($this->var || strtolower($this->var) == "true") {
-					$var = true;
+				if ($this->value || strtolower($this->value) == "true") {
+					$var = TRUE;
 				}
 				else {
-					if (!$this->var || strtolower($this->var) == "false") {
-						$var = false;
+					if (!$this->value || strtolower($this->value) == "false") {
+						$var = FALSE;
 					}
 				}
 			break;
 			case 'string':
-				$var = $this->var;
+				$var = $this->value;
 			break;
 			default:
-				$var = $this->var;
+				$var = unserialize($this->value);
 			break;
 		}
 
@@ -598,29 +627,29 @@ class config_var
 	 * $var->equals($other);
 	 * This Funtion use string converted objects and look if the two objects are similar
 	 *
-	 * @param unknown $wert
+	 * @param unknown $value
 	 *
 	 * @return boolean
 	 */
-	public function equals($wert)
+	public function equals ($value)
 	{
-		if (self::get_Convert($wert) === $this->get()) {
-			return true;
+		if (self::get_Convert($value) === $this->get()) {
+			return TRUE;
 		}
 		else {
-			return false;
+			return FALSE;
 		}
 	}
 
-	public function __toString()
+	public function __toString ()
 	{
-		return $this->string;
+		return (string)$this->string;
 	}
 
 	/**
 	 * @return unknown
 	 */
-	public function getName()
+	public function get_name ()
 	{
 		return $this->name;
 	}
@@ -628,7 +657,7 @@ class config_var
 	/**
 	 * @return string
 	 */
-	public function get_commentary()
+	public function get_commentary ()
 	{
 		return $this->comment;
 	}
@@ -638,8 +667,44 @@ class config_var
 	 *
 	 * @return \Iko\NULL|\Iko\unknown
 	 */
-	public function __get($wert)
+	public function __get ($wert)
 	{
 		return $this->get($wert);
+	}
+
+	public function get_module_name ()
+	{
+		return $this->module_name;
+	}
+
+	public function get_module ()
+	{
+		return module::get($this->get_module_name());
+	}
+
+	private function get_config_loader ()
+	{
+		return $this->class_loader;
+	}
+
+	public function get_config_class ()
+	{
+		if (!$this->class_main instanceof config && $this->get_config_loader() != NULL) {
+			$this->class_main = $this->get_config_loader()->get_config_class();
+		}
+
+		return $this->class_main;
+	}
+
+	public function set ($value, $comment = "")
+	{
+		$this->get_config_class()->set($this->get_name(), $value, $comment);
+	}
+
+	public function add ()
+	{
+		if ($this->get_config_class() instanceof config) {
+			$this->get_config_class()->add($this->get_name(), $this->value, $this->comment);
+		}
 	}
 }
