@@ -21,10 +21,11 @@ class module extends \Iko\module_loader
 
 	protected function pre_check_PDO_Tables()
 	{
-		$tables = array (
-			"example",
-			"{prefix}example"); //Insert your SQL Tables here. It will load over the Core{prefix} Std is: iko_
-		$this->check_PDO_Tables($tables);
+		$tables = array ( //Insert your SQL Tables here. It will load over the Core{prefix} Std is: iko_
+		                  "example",
+		                  // For: iko_example
+		                  "{!prefix}myprefix_example"); // For myprefix_example
+		return $this->check_PDO_Tables($tables);
 	}
 
 	protected function pre_check_Files()
@@ -32,7 +33,7 @@ class module extends \Iko\module_loader
 		$files = array (
 			"example.php",
 			"example.txt"); //Insert your needed Files here. It will load over the Core.
-		$this->check_Files($files);
+		return $this->check_Files($files);
 	}
 
 	public function load($files = array ())
