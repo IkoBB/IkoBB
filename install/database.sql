@@ -2,7 +2,7 @@ CREATE TABLE `iko_configs` (
 	`config_name`     VARCHAR(255) NOT NULL,
 	`config_value`    VARCHAR(255) NOT NULL,
 	`config_comment`  TEXT,
-	`config_category` VARCHAR(255) NOT NULL,
+	`module_name` VARCHAR(255) NOT NULL,
 	PRIMARY KEY (`config_name`),
 	KEY `config_category` (`config_category`)
 );
