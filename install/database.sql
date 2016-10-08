@@ -122,6 +122,14 @@ CREATE TABLE `iko_user_permissions` (
 	KEY `iko_group_permission_id_user` (`user_id`)
 );
 
+CREATE TABLE `iko_template_assignment` (
+	`user_id`         INT(11)      NOT NULL,
+	`template_id` 		INT(11) NOT NULL,
+	UNIQUE KEY `user_template_relation` (`template_id`, `user_id`),
+	KEY `user_id` (`user_id`),
+	KEY `template_id` (`template_id`)
+);
+
 /*Relation between Tables */
 
 ALTER TABLE iko_user_assignment
@@ -180,3 +188,16 @@ ALTER TABLE iko_group_assignment
 FOREIGN KEY (`child_group_id`)
 REFERENCES `iko_usergroups` (`usergroup_id`);
 
+ALTER TABLE iko_template_assignment
+	ADD CONSTRAINT `iko_template_assignment_ibfk1`
+FOREIGN KEY (`user_id`)
+REFERENCES `iko_users` (`user_id`)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE;
+
+ALTER TABLE iko_template_assignment
+	ADD CONSTRAINT `iko_template_assignment_ibfk2`
+FOREIGN KEY (`template_id`)
+REFERENCES `iko_templates` (`template_id`)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE;
