@@ -153,7 +153,7 @@ class template
 			$entities = file_get_contents(Core::$basepath . 'template/' . $this->template_directory . '/entities.html');
 			preg_match("/<!-- start:" . $entity . " -->(.*)<!-- end:" . $entity . " -->/is", $entities, $unparsed_entity);
 			foreach ($parameters as $parameter => $value) {
-				$param[$parameter] = $value;
+				$this->param[$parameter] = $value;
 			}
 			$parsed_entity = $this->bladeSyntax($unparsed_entity[1]);
 			if ($return === false) {
