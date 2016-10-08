@@ -21,8 +21,9 @@ class template_loader extends \Iko\module_loader
 
 	protected function pre_check_PDO_Tables()
 	{
-		$tables = array ("{prefix}template");
-		$this->check_PDO_Tables($tables);
+		$tables = array ("templates");
+
+		return $this->check_PDO_Tables($tables);
 	}
 
 	protected function pre_check_Files()
@@ -30,14 +31,19 @@ class template_loader extends \Iko\module_loader
 		$files = array (
 			"template.class.php",
 			"parser.class.php",
-			"lib/EmojiOne/autoload.php",
-			"lib/EmojiOne/src/Client.php",
-			"lib/EmojiOne/src/ClientInterface.php",
-			"lib/EmojiOne/src/Emojione.php",
-			"lib/EmojiOne/src/Ruleset.php",
-			"lib/EmojiOne/src/RulesetInterface.php",
-			"lib/GeSHi/geshi.php",);
-		$this->check_Files($files);
+			"lib" => array (
+				"EmojiOne" => array (
+					"autoload.php",
+					"src" => array (
+						"Client.php",
+						"ClientInterface.php",
+						"Emojione.php",
+						"Ruleset.php",
+						"RulesetInterface.php")),
+				"GeSHi"    => array (
+					"geshi.php")));
+
+		return $this->check_Files($files);
 	}
 
 	public function load($files = array ())
@@ -47,7 +53,6 @@ class template_loader extends \Iko\module_loader
 			"parser.class.php",
 			"lib/EmojiOne/autoload.php",
 			"lib/GeSHi/geshi.php",);
-
 		return parent::load($files);
 	}
 }

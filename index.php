@@ -13,13 +13,11 @@
 namespace Iko;
 
 require_once 'core/core.php';
-$class = new module("iko");
+
 
 
 // Loading and checking template engine
-$template_loader = new module("template");
-$template_loader->check();
-$template_loader->load();
+var_dump(module::request("template"));
 $template = template::get_instance();
 
 // Create 3 new parameters called content, title and userprofile. They can be accessed with blade syntax with %% content %%, %% title %% and %% userprofile %%.
