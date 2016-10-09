@@ -54,6 +54,7 @@ class config extends config_loader
 			array_push(self::$configs, $array);
 			$class = self::$configs[ (count(self::$configs) - 1) ]["class"];
 		}
+
 		return $class;
 	}
 
@@ -95,7 +96,7 @@ class config extends config_loader
 	protected function load_Config ()
 	{
 		if ($this->config_loader != NULL) {
-			$this->config = array();
+			$this->config = array ();
 			$this->config = $this->config_loader->load_config();
 		}
 	}
@@ -157,7 +158,9 @@ class config extends config_loader
 			return NULL;
 		}
 	}
-	public function get_all() {
+
+	public function get_all ()
+	{
 		return $this->config;
 	}
 }

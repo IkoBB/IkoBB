@@ -24,6 +24,7 @@ abstract class config_loader implements config_interface
 	{
 		$this->config_class = $config_class;
 	}
+
 	/**
 	 * {@inheritDoc}
 	 * @see \Iko\config_interface::set()

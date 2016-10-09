@@ -11,136 +11,137 @@
  *
  */
 /**
-* @author Marcel
-*
-*/
+ * @author Marcel
+ *
+ */
 namespace Iko;
 
 class config_value
 {
-/**
-* @param unknown $var
-*
-* @return NULL|string|unknown
-*/
-public static function get_Convert ($var)
-{
-return serialize($var);
-}
+	/**
+	 * @param unknown $var
+	 *
+	 * @return NULL|string|unknown
+	 */
+	public static function get_Convert ($var)
+	{
+		return serialize($var);
+	}
 
-private $value;
-private $name;
-private $comment;
-private $class_loader;
-private $module_name;
-private $class_main;
+	private $value;
+	private $name;
+	private $comment;
+	private $class_loader;
+	private $module_name;
+	private $class_main;
 
-/**
-* @param unknown $name
-* @param unknown $wert
-* @param string  $comment
-* @param unknown $config_loader
-*/
-public function __construct ($args)
-{
-foreach ($args as $key => $value) {
-$key = str_replace("config_", "", $key);
-$this->{$key} = $value;
-}
-}
-/**
-* @param string $type
-*
-* @return NULL|unknown
-*/
-public function get ()
-{
-return unserialize($this->value);
-}
+	/**
+	 * @param unknown $name
+	 * @param unknown $wert
+	 * @param string  $comment
+	 * @param unknown $config_loader
+	 */
+	public function __construct ($args)
+	{
+		foreach ($args as $key => $value) {
+			$key = str_replace("config_", "", $key);
+			$this->{$key} = $value;
+		}
+	}
 
-/**
-*
-* $var->equals($other);
-* This Funtion use string converted objects and look if the two objects are similar
-*
-* @param unknown $value
-*
-* @return boolean
-*/
-public function equals ($value)
-{
-if (self::get_Convert($value) === $this->get()) {
-return TRUE;
-}
-else {
-return FALSE;
-}
-}
+	/**
+	 * @param string $type
+	 *
+	 * @return NULL|unknown
+	 */
+	public function get ()
+	{
+		return unserialize($this->value);
+	}
 
-public function __toString ()
-{
-return (string)$this->string;
-}
+	/**
+	 *
+	 * $var->equals($other);
+	 * This Funtion use string converted objects and look if the two objects are similar
+	 *
+	 * @param unknown $value
+	 *
+	 * @return boolean
+	 */
+	public function equals ($value)
+	{
+		if (self::get_Convert($value) === $this->get()) {
+			return TRUE;
+		}
+		else {
+			return FALSE;
+		}
+	}
 
-/**
-* @return unknown
-*/
-public function get_name ()
-{
-return $this->name;
-}
+	public function __toString ()
+	{
+		return (string)$this->string;
+	}
 
-/**
-* @return string
-*/
-public function get_commentary ()
-{
-return $this->comment;
-}
+	/**
+	 * @return unknown
+	 */
+	public function get_name ()
+	{
+		return $this->name;
+	}
 
-/**
-* @param unknown $wert
-*
-* @return \Iko\NULL|\Iko\unknown
-*/
-public function __get ($wert)
-{
-return $this->get();
-}
+	/**
+	 * @return string
+	 */
+	public function get_commentary ()
+	{
+		return $this->comment;
+	}
 
-public function get_module_name ()
-{
-return $this->module_name;
-}
+	/**
+	 * @param unknown $wert
+	 *
+	 * @return \Iko\NULL|\Iko\unknown
+	 */
+	public function __get ($wert)
+	{
+		return $this->get();
+	}
 
-public function get_module ()
-{
-return module::get($this->get_module_name());
-}
+	public function get_module_name ()
+	{
+		return $this->module_name;
+	}
 
-private function get_config_loader ()
-{
-return $this->class_loader;
-}
+	public function get_module ()
+	{
+		return module::get($this->get_module_name());
+	}
 
-public function get_config_class ()
-{
-if (!$this->class_main instanceof config && $this->get_config_loader() != NULL) {
-$this->class_main = $this->get_config_loader()->get_config_class();
-}
+	private function get_config_loader ()
+	{
+		return $this->class_loader;
+	}
 
-return $this->class_main;
-}
+	public function get_config_class ()
+	{
+		if (!$this->class_main instanceof config && $this->get_config_loader() != NULL) {
+			$this->class_main = $this->get_config_loader()->get_config_class();
+		}
 
-public function set ($value, $comment = "")
-{
-$this->get_config_class()->set($this->get_name(), $value, $comment);
-}
+		return $this->class_main;
+	}
 
-public function add ()
-{
-if ($this->get_config_class() instanceof config) {
-$this->get_config_class()->add($this->get_name(), $this->value, $this->comment);
-}
-}
+	public function set ($value, $comment = "")
+	{
+		$this->get_config_class()->set($this->get_name(), $value, $comment);
+	}
+
+	public function add ()
+	{
+		if ($this->get_config_class() instanceof config) {
+			$this->get_config_class()->add($this->get_name(), $this->value, $this->comment);
+		}
+	}
 }

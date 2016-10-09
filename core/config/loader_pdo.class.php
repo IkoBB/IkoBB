@@ -59,6 +59,7 @@ class config_loader_pdo extends config_loader
 			$value = new config_value($item);
 			$config[ $item["config_name"] ] = $value;
 		}
+
 		return $config;
 	}
 
@@ -97,6 +98,7 @@ class config_loader_pdo extends config_loader
 		else {
 			$var = str_replace("{!prefix}", '', $var);
 		}
+
 		return $var;
 	}
 
