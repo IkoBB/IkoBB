@@ -23,7 +23,8 @@ $template = template::get_instance();
 
 // Create 3 new parameters called content, title and userprofile. They can be accessed with blade syntax with %% content %%, %% title %% and %% userprofile %%.
 $template->content = parser::bbCodes("[b]Welcome to the IkoBB demo and testing page[/b]");
-$template->title = "IkoBB - Demo & Testing page";
+$template->title = "IkoBB";
+$template->sub_title = "Demo & Testing page";
 $template->username = "N8boy";
 
 $template->entity("TEST", array (

@@ -15,6 +15,9 @@ $template->sub_title = "Dashboard";
 $template->basepath = Core::$basepath;
 $template->adminpath = Core::$adminpath;
 
+$template->extra_css = "";
+$template->extra_js = "";
+
 $template->content = "Test";
 
 echo $template;
