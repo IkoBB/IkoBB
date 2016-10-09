@@ -116,8 +116,7 @@ CREATE TABLE `iko_user_permissions` (
 CREATE TABLE `iko_template_assignment` (
 	`user_id`         INT(11)      NOT NULL,
 	`template_id` 		INT(11) NOT NULL,
-	UNIQUE KEY `user_template_relation` (`template_id`, `user_id`),
-	KEY `user_id` (`user_id`),
+	UNIQUE KEY `user_id` (`user_id`),
 	KEY `template_id` (`template_id`)
 );
 
