@@ -194,7 +194,7 @@ class parser
 					$return = '<iframe src="//player.vimeo.com/video/' . $matches[2] . '?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;color=ffffff" width="560" height="240" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
 				}
 				elseif (strtolower($matches[1]) == 'twitch') {
-					$return = '<object type="application/x-shockwave-flash" width="620" height="378" id="live_embed_player_flash" data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=' . $matches[2] . '" bgcolor="#000000"><param name="allowFullScreen" value="true" /><param name="allowScriptAccess" value="always" /><param name="allowNetworking" value="all" /><param name="movie" value="http://www.twitch.tv/widgets/live_embed_player.swf" /><param name="flashvars" value="hostname=www.twitch.tv&channel=' . $matches[2] . '&auto_play=true&start_volume=100" /></object>';
+					$return = '<iframe src="https://player.twitch.tv/?channel=' . strtolower($matches[2]) . '" frameborder="0" scrolling="no" height="378" width="620"></iframe><a href="https://www.twitch.tv/' . strtolower($matches[2]) . '?tt_medium=live_embed&tt_content=text_link" style="padding:2px 0px 4px; display:block; width:345px; font-weight:normal; font-size:10px; text-decoration:underline;">Watch live video from ' . $matches[2] . ' on www.twitch.tv</a>';
 				}
 
 				return $return;
