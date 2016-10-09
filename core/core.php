@@ -171,7 +171,7 @@ Core::init(0);
  *  Load Config Loader
  */
 require_once Core::$corepath . "exception.class.php";
-require_once Core::$corepath . 'config.class.php';
+require_once Core::$corepath . 'config.php';
 require_once Core::$corepath . "pdo.class.php";
 
 /**
