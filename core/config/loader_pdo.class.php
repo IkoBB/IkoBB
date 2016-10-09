@@ -65,13 +65,18 @@ class config_loader_pdo extends config_loader
 
 	public function add ($name, $value, $comment = "")
 	{
-		$query = "INSERT INTO " . self::table() . " (config_name, config_value, config_comment, module_name) VALUES ('" . $name . "','" . config_value::get_Convert($value) . "','" . $comment . "','" . $this->module . "')";
-		$statement = Core::$PDO->query($query);
-		if ($statement->rowCount() == 1) {
-			return TRUE;
+		if (!$this->config_class->get($name) instanceof config_value) {
+			$query = "INSERT INTO " . self::table() . " (config_name, config_value, config_comment, module_name) VALUES ('" . $name . "','" . config_value::get_Convert($value) . "','" . $comment . "','" . $this->module . "')";
+			$statement = Core::$PDO->query($query);
+			if ($statement->rowCount() == 1) {
+				return TRUE;
+			}
+			else {
+				return FALSE;
+			}
 		}
 		else {
-			return FALSE;
+			$this->config_class->set($name, $value, $comment);
 		}
 	}
 
