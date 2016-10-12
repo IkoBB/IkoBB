@@ -19,14 +19,14 @@ namespace Iko;
 interface config_interface
 {
 	/**
-	 * @param unknown $name
+	 * @param string $name
 	 * @param unknown $value
 	 * @param string  $comment
 	 */
-	function add ($name, $value, $comment = "");
+	function add ($name, $value, $comment);
 
 	/**
-	 * @param unknown $name
+	 * @param string $name
 	 * @param unknown $value
 	 * @param string  $comment
 	 */

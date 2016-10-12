@@ -118,7 +118,7 @@ class config_loader_file extends config_loader
 	 * {@inheritDoc}
 	 * @see \Iko\config_loader::add()
 	 */
-	public function add ($name, $value, $comment = "")
+	public function add ($name, $value, $comment)
 	{
 		$string = "";
 		//Definiert den zu Eintragenden Index

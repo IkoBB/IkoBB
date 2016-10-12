@@ -35,7 +35,7 @@ abstract class config_loader implements config_interface
 	 * {@inheritDoc}
 	 * @see \Iko\config_interface::add()
 	 */
-	public abstract function add ($name, $value, $comment = "");
+	public abstract function add ($name, $value, $comment);
 
 	protected abstract function load_Config ();
 

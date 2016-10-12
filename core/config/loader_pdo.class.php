@@ -63,13 +63,18 @@ class config_loader_pdo extends config_loader
 		return $config;
 	}
 
-	public function add ($name, $value, $comment = "")
+	public function add ($name, $value, $comment)
 	{
 		if (!$this->config_class->get($name) instanceof config_value) {
-			$query = "INSERT INTO " . self::table() . " (config_name, config_value, config_comment, module_name) VALUES ('" . $name . "','" . config_value::get_Convert($value) . "','" . $comment . "','" . $this->module . "')";
-			$statement = Core::$PDO->query($query);
-			if ($statement->rowCount() == 1) {
-				return TRUE;
+			if ($comment != "") {
+				$query = "INSERT INTO " . self::table() . " (config_name, config_value, config_comment, module_name) VALUES ('" . $name . "','" . config_value::get_Convert($value) . "','" . $comment . "','" . $this->module . "')";
+				$statement = Core::$PDO->query($query);
+				if ($statement->rowCount() == 1) {
+					return TRUE;
+				}
+				else {
+					return FALSE;
+				}
 			}
 			else {
 				return FALSE;
@@ -82,7 +87,8 @@ class config_loader_pdo extends config_loader
 
 	public function set ($name, $value, $comment = "")
 	{
-		$query = "UPDATE " . self::table() . " Set config_value = '" . config_value::get_Convert($value) . "' WHERE config_name = '" . $name . "'";
+		$query = "UPDATE " . self::table() . " Set config_value = '" . config_value::get_Convert($value) . "'";
+		$query .= "WHERE config_name = '" . $name . "'";
 		$statement = Core::$PDO->query($query);
 		if ($statement->rowCount() == 1) {
 			return TRUE;

@@ -94,7 +94,7 @@ class config_value
 	/**
 	 * @return string
 	 */
-	public function get_commentary ()
+	public function get_comment ()
 	{
 		return $this->comment;
 	}
