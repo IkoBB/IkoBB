@@ -14,17 +14,21 @@ namespace Iko;
 
 class User
 {
-	const table = "{prefix}user";
-
+	const table = "{prefix}users";
+	const id = "user_id";
 	private static $cache = array ();
 	private static $cache_exist = array ();
+
 	public static function get ($user_id = 0, $reload = FALSE)
 	{
-		if ($user_id != 0 && $user_id != NULL) {
+		if (is_string($user_id)) {
+			return self::search(array ("user_name" => $user_id));
+		}
+		if (is_array($user_id) || is_int($user_id)) {
 			if (is_array($user_id)) {
 				self::exist($user_id);
 			}
-			if (is_string($user_id) || is_int($user_id)) {
+			if (is_int($user_id)) {
 				$user_id = array ($user_id);
 			}
 			$user_array = array ();
@@ -53,22 +57,41 @@ class User
 
 	public static function search ($args = array (), $or = FALSE) // TODO: Complete Function for Searching after single and Mutliple user
 	{
-		$sql = "SELECT user_id FROM " . self::table . " WHERE";
+		$sql = "SELECT " . self::id . " FROM " . self::table . " WHERE";
 		$equal = ($or) ? "OR" : "AND";
 		if (count($args) > 0) {
+			$i = count($args);
 			$string = "";
 			foreach ($args as $key => $var) {
 				if (is_string($var)) {
-					$string .= ' ' . $key . ' LIKE "' . $var . '"';
+					$string .= ' ' . $key . " = '" . $var . "'";
 				}
 				if (is_int($var)) {
-					$string .= ' ' . $key . ' = ' . $var . '"';
+					$string .= ' ' . $key . ' = ' . $var . '';
 				}
 				if (is_bool($var)) {
 					$var = intval($var);
-					$string .= ' ' . $key . ' = ' . $var . '"';
+					$string .= ' ' . $key . ' = ' . $var . '';
+				}
+				if ($i > 1) {
+					$string .= " " . $equal;
 				}
 			}
+			$sql .= $string;
+		}
+		$ids = array ();
+		$statement = Core::$PDO->query($sql);
+		if ($statement !== FALSE) {
+			$fetch_all = $statement->fetchAll();
+			foreach ($fetch_all as $fetch) {
+				array_push($ids, intval($fetch[ self::id ]));
+			}
+			$user_array = self::get($ids);
+
+			return $user_array;
+		}
+		else {
+			return NULL;
 		}
 	}
 
@@ -81,7 +104,7 @@ class User
 	public static function exist ($user_id = 0, $reload = FALSE)
 	{
 		if ($user_id != 0 && $user_id != NULL) {
-			$statement = Core::$PDO->prepare("SELECT user_id FROM " . self::table . " WHERE user_id = :user_id");
+			$statement = Core::$PDO->prepare("SELECT user_id FROM " . self::table . " WHERE " . self::id . " = :user_id");
 			if (is_string($user_id) || is_int($user_id)) {
 				if (!isset(self::$cache_exist[ $user_id ]) || $reload) {
 					$statement->bindParam(':user_id', $user_id);
@@ -131,19 +154,20 @@ class User
 	{
 
 	}
+
 	private $id;
-	private $user_name;
-	private $user_password;
-	private $user_email;
-	private $user_avatar_id;
-	private $user_signature;
-	private $user_about_user;
-	private $user_location_id;
-	private $user_gender;
-	private $user_date_joined;
-	private $user_birthday;
-	private $user_chosen_template_id;
-	private $user_timezone_id;
+	private $name;
+	private $password;
+	private $email;
+	private $avatar_id;
+	private $signature;
+	private $about_user;
+	private $location_id;
+	private $gender;
+	private $date_joined;
+	private $birthday;
+	private $chosen_template_id;
+	private $timezone_id;
 	private $permission;
 
 
@@ -157,23 +181,17 @@ class User
 	protected function __construct ($user_id)
 	{
 		if (self::exist($user_id)) {
-			$statement = Core::$PDO->query("SELECT * FROM {prefix}user WHERE user_id = $user_id");
+			$statement = Core::$PDO->query("SELECT * FROM " . self::table . " WHERE " . self::id . " = $user_id");
 			$fetch = $statement->fetch(PDO::FETCH_ASSOC);
-			$this->id = $fetch["user_id"];
-			$this->user_name = $fetch["user_name"];
-			$this->user_password = $fetch["user_password"];
-			$this->user_email = $fetch["user_email"];
-			$this->user_avatar_id = $fetch["user_avatar_id"];
-			$this->user_signature = $fetch["user_signature"];
-			$this->user_about_user = $fetch["user_about_user"];
-			$this->user_location_id = $fetch["user_location_id"];
-			$this->user_gender = $fetch["user_gender"];
-			$this->user_date_joined = $fetch["user_date_joined"];
-			$this->user_birthday = $fetch["user_birthday"];
-			$this->user_chosen_template_id = $fetch["user_chosen_template_id"];
-			$this->user_timezone_id = $fetch["user_timezone_id"];
+			foreach ($fetch as $key => $value) {
+				$temp_key = str_replace("user_", "", $key);
+				$this->{$temp_key} = $value;
+			}
 			$this->load_groups();
-			$this->permission = Permissions::get($this);
+			//$this->permission = Permissions::get($this);
+			/*if (!$this->permission instanceof Permissions) {
+				throw new Exception("Permission konnte nicht aufgerufen werden.");
+			}*/
 		}
 		else {
 			throw new Exception("User does not exist: User_ID = " . $user_id . "");
@@ -181,47 +199,62 @@ class User
 	}
 
 	/**
-	 * @return mixed
+	 * @return integer
 	 */
 	public function get_Id ()
 	{
-		return $this->id;
+		return intval($this->id);
 	}
 
 	private $groups = array ();
-	private $groups_all = array();
+	private $groups_all = array ();
+
 	/**
 	 *
 	 */
 	private function load_groups ()
 	{
-		$statement = Core::$PDO->prepare("SELECT * FROM " . Permissions::user_assignment . " WHERE user_assignment_id_user = " . $this->get_ID(), array (PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
-		$statement->execute();
-		while ($fetch = $statement->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
-			$group = group::get($fetch["user_assignment_id_group"]);
-			if(array_search($group, $this->groups)) {
+		$sql = "SELECT * FROM " . Permissions::user_assignment . " WHERE " . self::id . " = " . $this->get_ID();
+		$statement = Core::$PDO->query($sql);
+		$fetch_all = $statement->fetchAll(PDO::FETCH_ASSOC);
+		foreach ($fetch_all as $fetch) {
+			$group = group::get($fetch[ Group::id ]);
+			if (array_search($group, $this->groups, TRUE) === FALSE) {
 				array_push($this->groups, $group);
 			}
-			if(array_search($group, $this->groups_all)) {
+			if (array_search($group, $this->groups_all, TRUE) === FALSE) {
 				array_push($this->groups_all, $group);
 				$this->load_groups_recursive($group);
 			}
 		}
 	}
-	private function load_groups_recursive($group) {
+
+	private function load_groups_recursive ($group)
+	{
 		$parent_list = $group->get_Parents();
 		foreach ($parent_list as $item) {
-			if(array_search($item, $this->groups_all) === false) {
+			if (array_search($item, $this->groups_all, TRUE) === FALSE) {
 				array_push($this->groups_all, $item);
 				$this->load_groups_recursive($item);
 			}
 		}
 	}
+
 	/**
 	 * @return mixed
 	 */
 	public function get_user_name ()
 	{
-		return $this->user_name;
+		return $this->name;
+	}
+
+	public function get_groups ()
+	{
+		return $this->groups;
+	}
+
+	public function get_Permission ()
+	{
+		return $this->permission;
 	}
 }

@@ -150,7 +150,7 @@ class Core
 	{
 		$config = config::load("file", self::$corepath . "database.conf.php");
 		try {
-			self::$PDO = new \Iko\PDO($config->get("dns"), $config->get("username"), $config->get("password"),
+			self::$PDO = new PDO($config->get("dns"), $config->get("username"), $config->get("password"),
 				$config->get("options"));
 		}
 		catch (\PDOException $ex) {

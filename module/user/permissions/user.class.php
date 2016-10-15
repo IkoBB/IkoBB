@@ -21,6 +21,9 @@ namespace Iko\Permissions;
 use Iko;
 use Iko\Permissions;
 use Iko\User as users;
+use Iko\PDO as PDO;
+use Iko\Core as Core;
+use Iko\Exception as Exception;
 
 
 class User extends Permissions
@@ -33,15 +36,18 @@ class User extends Permissions
 	public static function get ($class, $reload = FALSE)
 	{
 		if ($class instanceof users) {
-			$id = $class->get_ID();
+			$id = intval($class->get_Id());
 		}
-		else {
-			if (is_int($class)) {
-				$id = $class;
-			}
+		if (is_int($class)) {
+			$id = $class;
+		}
+		if (is_string($class)) {
+			$id = intval($class);
 		}
 		if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
-			self::$cache[ $id ] = new User($id);
+			$class = str_replace(__NAMESPACE__ . "/", "", __CLASS__);
+			self::$cache[ $id ] = new $class($id);
+			return self::$cache[ $id ];
 		}
 		else {
 			return self::$cache[ $id ];
@@ -63,10 +69,8 @@ class User extends Permissions
 			if (is_int($user)) {
 				$id = $user;
 			}
-			else {
-				if (is_string($user)) {
-					throw new Exception("Permissions | User | # 0001");
-				}
+			if (is_string($user)) {
+				$id = intval($user);
 			}
 		}
 		$this->user_id = $id;
@@ -80,38 +84,33 @@ class User extends Permissions
 		$this->user_groups = $this->user_class->get_groups();
 		$this->groups = Permissions::get($this->user_groups);
 		foreach ($this->groups as $group) {
-
+			$perm_array = $group->get_Permissions();
+			foreach ($perm_array as $value) {
+				$this->add_permission_value($value);
+			}
 		}
 	}
 
 	public function add_permission ($permission)
 	{
-		if (!$permission instanceof value) {
-			$permission = value::get($permission);
+		if (!$permission instanceof Value) {
+			$permission = Value::get($permission);
 		}
-		if ($permission instanceof value) {
+		if ($permission instanceof Value) {
 
 		}
-
 		return TRUE;
 	}
 
 	protected function load_permission ()
 	{
-		$statement = Core::$PDO->prepare("SELECT * FROM " . self::user_permissions . " WHERE user_id = :user_id");
-		$statement->bindParam(":user_id", $this->user_class->get_ID());
-		$statement->execute();
-		foreach ($statement->fetchAll() as $fetch) {
-			$per = value::get($fetch["permission_name"]);
-			if (array_search($per, $this->permissions) === FALSE) {
-				array_push($this->permissions, $per);
-			}
+		$sql = "SELECT * FROM " . self::user_permissions . " WHERE " . users::id . " = " . $this->user_class->get_Id();
+		$statement = Core::$PDO->query($sql);
+		$fetch_All = $statement->fetchAll();
+		foreach ($fetch_All as $fetch) {
+			$per = Value::get($fetch["permission_name"]);
+			$this->add_permission_value($per);
 		}
-	}
-
-	public function get_type ()
-	{
-		// TODO: Implement get_type() method.
 	}
 
 	public function get_class ()

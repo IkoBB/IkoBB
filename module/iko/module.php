@@ -38,7 +38,7 @@ class core_loader extends module_loader
 
 	public function create_PDO_Tables ($args = array (), $file = FALSE)
 	{
-		parent::create_PDO_Tables(array (
+		return parent::create_PDO_Tables(array (
 			"sql/configs.sql",
 			"sql/modules.sql"), TRUE);
 	}

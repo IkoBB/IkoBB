@@ -19,15 +19,19 @@
 namespace Iko\Permissions;
 
 use Iko\Permissions;
+use Iko\Core as Core;
+use Iko\PDO as PDO;
 
 class Value
 {
 	const table = Permissions::table;
 	private static $cache = array ();
 	private static $cache_exist = array ();
+
 	public static function get ($value = 0, $reload = FALSE)
 	{
-		if ($value != 0 && $value != NULL) {
+
+		if ($value != "" && $value != NULL) {
 			if (is_array($value)) {
 				self::exist($value);
 			}
@@ -60,7 +64,7 @@ class Value
 
 	public static function search ($args = array (), $or = FALSE) // TODO: Complete Function for Searching after single and Mutliple user
 	{
-		$sql = "SELECT user_id FROM " . self::table . " WHERE";
+		$sql = "SELECT * FROM " . self::table . " WHERE";
 		$equal = ($or) ? "OR" : "AND";
 		if (count($args) > 0) {
 			$string = "";
@@ -87,7 +91,7 @@ class Value
 	 */
 	public static function exist ($names = 0, $reload = FALSE)
 	{
-		if ($names != 0 && $names != NULL) {
+		if ($names != "" && $names != NULL) {
 			$statement = Core::$PDO->prepare("SELECT * FROM " . self::table . " WHERE permission_name = :perm_name");
 			if (is_string($names) || is_int($names)) {
 				if (!isset(self::$cache_exist[ $names ]) || $reload) {
@@ -104,7 +108,6 @@ class Value
 						return FALSE;
 					}
 				}
-
 				return self::$cache_exist[ $names ];
 			}
 			else {
@@ -141,12 +144,22 @@ class Value
 	protected function __construct ($name)
 	{
 		if (is_string($name) && self::exist($name)) {
-
+			$sql = "SELECT * FROM " . self::table . " WHERE permission_name = '" . $name . "'";
+			$statement = Core::$PDO->query($sql);
+			$fetch = $statement->fetch(PDO::FETCH_ASSOC);
+			foreach ($fetch as $key => $value) {
+				$temp_key = str_replace("permission_", "", $key);
+				$temp_key = str_replace("_name", "", $temp_key);
+				$this->{$temp_key} = $value;
+			}
 		}
 	}
 
-	public function get_name ()
+	public function get_Name ()
 	{
 		return $this->name;
+	}
+	public function get_Module () {
+		return $this->module;
 	}
 }

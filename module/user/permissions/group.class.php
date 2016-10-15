@@ -18,7 +18,8 @@
  */
 namespace Iko\Permissions;
 
-use Iko;
+use Iko\PDO as PDO;
+use Iko\Core as Core;
 use Iko\Group as groups;
 use Iko\Permissions;
 
@@ -32,15 +33,18 @@ class Group extends Permissions
 	public static function get ($class, $reload = FALSE)
 	{
 		if ($class instanceof groups) {
-			$id = $class->get_ID();
+			$id = intval($class->get_Id());
 		}
-		else {
-			if (is_int($class)) {
-				$id = $class;
-			}
+		if (is_int($class)) {
+			$id = $class;
+		}
+		if (is_string($class)) {
+			$id = intval($class);
 		}
 		if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
-			self::$cache[ $id ] = new Group($id);
+			$class = str_replace(__NAMESPACE__ . "/", "", __CLASS__);
+			self::$cache[ $id ] = new $class($id);
+			return self::$cache[ $id ];
 		}
 		else {
 			return self::$cache[ $id ];
@@ -49,6 +53,7 @@ class Group extends Permissions
 
 	private $group_class;
 	private $group_id;
+	private $group_parent_perm = array();
 
 	public function __construct ($group)
 	{
@@ -59,10 +64,8 @@ class Group extends Permissions
 			if (is_int($group)) {
 				$id = $group;
 			}
-			else {
-				if (is_string($group)) {
-					throw new Exception("Permissions | Group | # 0001");
-				}
+			if (is_string($group)) {
+				$id = intval($group);
 			}
 		}
 		$this->group_id = $id;
@@ -72,21 +75,30 @@ class Group extends Permissions
 
 	protected function load_permission ()
 	{
-		$sql = "SELECT * FROM " . self::permissions . " as assi LEFT JOIN " . Permissions::table . " as perm WHERE perm.permission_id = assi.group_permission_permission_id";
-		$statement = Core::$PDO->prepare($sql);
-		foreach ($statement->fetchAll() as $fetch) {
-			$fetch = NULL;
+		$sql = "SELECT * FROM " . self::permissions . " WHERE usergroup_id = " . $this->get_class()->get_Id();
+		$statement = Core::$PDO->query($sql);
+		if ($statement !== FALSE) {
+			foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $fetch) {
+				$this->add_permission_value($fetch["permission_name"]);
+			}
 		}
-	}
-
-	public function get_type ()
-	{
-		// TODO: Implement get_type() method.
+		$parents = $this->get_class()->get_Parents();
+		foreach ($parents as $item) {
+			$perm = self::get($item);
+			$permissions = $perm->get_Permissions();
+			foreach ($permissions as $value) {
+				if ($this->add_permission_value($value)) {
+					if (array_search($value, $this->group_parent_perm, TRUE) === FALSE) {
+						array_push($this->group_parent_perm, $value);
+					}
+				}
+			}
+		}
 	}
 
 	public function get_class ()
 	{
-		// TODO: Implement get_class() method.
+		return $this->group_class;
 	}
 
 	public function add_permission ($permission)

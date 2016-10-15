@@ -21,8 +21,9 @@ namespace Iko;
 
 class Group
 {
-	const table = "{prefix}user_groups";
-	const assignment = permission::group_assignment;
+	const table = "{prefix}usergroups";
+	const assignment = Permissions::group_assignment;
+	const id = "usergroup_id";
 
 	private static $cache = array ();
 	private static $cache_exist = array ();
@@ -78,7 +79,7 @@ class Group
 	public static function exist ($group_id, $reload = FALSE)
 	{
 		if ($group_id != 0 && $group_id != NULL) {
-			$statement = Core::$PDO->prepare("SELECT group_id FROM " . self::table . " WHERE group_id = :group_id");
+			$statement = Core::$PDO->prepare("SELECT " . self::id . " FROM " . self::table . " WHERE " . self::id . " = :group_id");
 			if (is_string($group_id) || is_int($group_id)) {
 				if (!isset(self::$cache_exist[ $group_id ]) || $reload) {
 					$statement->bindParam(':group_id', $group_id);
@@ -126,8 +127,8 @@ class Group
 
 
 	private $id;
-	private $group_name;
-	private $group_style;
+	private $name;
+	private $style;
 	private $group_rang;
 	private $group_parents = array ();
 
@@ -139,15 +140,14 @@ class Group
 	protected function __construct ($group_id)
 	{
 		if (self::exist($group_id)) {
-			$statement = Core::$PDO->query("SELECT * FROM " . self::table . " WHERE group_id = " . $group_id);
-			$fetch = $statement->fetch();
-			$this->id = $fetch["group_id"];
-			$this->group_name = $fetch["group_name"];
-			$this->group_style = $fetch["group_style"];
-			$this->group_rang = $fetch["group_rang"];
-
-
+			$statement = Core::$PDO->query("SELECT * FROM " . self::table . " WHERE " . self::id . " = " . $group_id);
+			$fetch = $statement->fetch(PDO::FETCH_ASSOC);
+			foreach ($fetch as $key => $value) {
+				$temp_key = str_replace("usergroup_", "", $key);
+				$this->{$temp_key} = $value;
+			}
 			$this->load_parents();
+
 		}
 	}
 
@@ -157,16 +157,16 @@ class Group
 	private function load_parents ()
 	{
 		$this->group_parents = array ();
-		$sql = "SELECT * FROM " . self::assignment . " LEFT JOIN " . self::table . " WHERE group_id = group_parent_id AND group_child_id = :group_id ORDER BY rank";
-		$statement = Core::$PDO->prepare($sql, array (PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
-		$statement->bindParam(":group_id", $this->get_Id());
-		$statement->execute();
-		foreach ($statement->fetchAll() as $row) {
-			$parent = self::get($row["group_parent_id"]);
-			if (array_search($parent, $this->group_parents) === FALSE) {
-				array_push($this->group_parents, $parent);
+		$sql = "SELECT * FROM " . self::assignment . " WHERE child_group_id = " . $this->get_Id();
+		$statement = Core::$PDO->query($sql);
+		if ($statement !== FALSE) {
+			foreach ($statement->fetchAll() as $row) {
+				$parent = self::get($row["parent_group_id"]);
+				if (array_search($parent, $this->group_parents, TRUE) === FALSE) {
+					array_push($this->group_parents, $parent);
+				}
+				$this->load_parents_recursive($parent);
 			}
-			$this->load_parents_recursive($parent);
 		}
 	}
 
@@ -193,8 +193,7 @@ class Group
 	 */
 	public function get_Id ()
 	{
-		return $this->id;
-
+		return intval($this->id);
 	}
 
 	/**
@@ -202,7 +201,7 @@ class Group
 	 */
 	public function get_Rang ()
 	{
-		return $this->group_rang;
+		return $this->rang;
 	}
 
 	/**
@@ -218,4 +217,12 @@ class Group
 		return $this->group_parents;
 	}
 
+	public function get_Style ()
+	{
+		return $this->style;
+	}
+
+	public function get_Displayname ()
+	{
+	}
 }

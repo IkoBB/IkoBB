@@ -20,7 +20,8 @@ namespace Iko;
 
 use Iko\Permissions\User as users;
 use Iko\Permissions\Group as groups;
-use Iko\Permissions\Value as values;
+use Iko\Permissions\Value as Value;
+use Iko\Exception as Exception;
 
 abstract class Permissions
 {
@@ -36,29 +37,27 @@ abstract class Permissions
 	{
 		$array = array ();
 		if (!is_array($class)) {
+
 			$class = array ($class);
 		}
 		if (is_array($class)) {
 			foreach ($class as $value) {
-				if ($value instanceof user) {
+				if ($value instanceof User) {
 					array_push($array, self::get_user($value));
 				}
 				else {
-					if ($value instanceof group) {
+					if ($value instanceof Group) {
 						array_push($array, self::get_group($value));
 					}
 					else {
 						if (is_int($class)) {
-							return NULL;
+							throw new Exception("Wieso Null");
 						}
 					}
 				}
 			}
 		}
-		if (count($array) == 1) {
-			return $array[0];
-		}
-		else {
+		if (count($array)) {
 			return $array;
 		}
 	}
@@ -70,12 +69,13 @@ abstract class Permissions
 
 	public static function get_group ($class)
 	{
-		return groups::get($class);
+		$group = groups::get($class);
+		return $group;
 	}
 
 	private static function get_value ($name) //
 	{
-		return values::get($name);
+		return Value::get($name);
 	}
 
 	private static function has ($permission, $class)
@@ -83,7 +83,6 @@ abstract class Permissions
 		// TODO: Add has_permission static function for simple resolution.
 	}
 
-	protected $permissions = array ();
 
 	protected function __construct ()
 	{
@@ -91,6 +90,33 @@ abstract class Permissions
 	}
 
 	abstract protected function load_permission ();
+
+
+	protected $permissions = array ();
+
+	/**
+	 * @param \Iko\Permissions\Value $value
+	 *
+	 * @return bool
+	 */
+	protected function add_permission_value ($value)
+	{
+		if (!$value instanceof Value && is_string($value)) {
+			$value = Value::get($value);
+		}
+		if ($value instanceof Value) {
+			if (array_search($value, $this->permissions, TRUE) === FALSE) {
+				array_push($this->permissions, $value);
+
+				return TRUE;
+			}
+			else {
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
 
 	/**
 	 * @param $permission
@@ -100,23 +126,35 @@ abstract class Permissions
 	public function has_permission ($permission)
 	{
 		$result = FALSE;
-		if (!$permission instanceof values) {
-			$permission = values::get($permission);
+		if (!$permission instanceof Value) {
+			$permission = Value::get($permission);
 		}
-		if ($permission instanceof values) {
-			$part = explode(".", $permission->get_name());
-			for ($i = (count($part) - 1); $i > 0; $i++) {
-				$sec_part = "";
-				for ($x = 0; $x <= $i; $x++) {
-					$sec_part .= $part[ $x ] . ".";
-					if ($x == $i) {
-						$sec_part .= "*";
+		if ($permission instanceof Value) {
+			if (array_search($permission, $this->permissions, TRUE) !== FALSE) {
+				$result = TRUE;
+			}
+			if ($result == FALSE) {
+				$part = explode(".", $permission->get_name());
+				if (count($part) > 1) {
+					for ($i = (count($part) - 1); $i >= -1; $i--) {
+						$sec_part = "";
+						if ($i >= 0) {
+							for ($x = 0; $x <= $i; $x++) {
+								$sec_part .= $part[ $x ] . ".";
+								if ($x == $i) {
+									$sec_part .= "*";
+								}
+							}
+						}
+						else {
+							$sec_part = "*";
+						}
+						$sec_permission = Value::get($sec_part);
+						if (array_search($sec_permission, $this->permissions, TRUE) !== FALSE) {
+							$result = TRUE;
+							break;
+						}
 					}
-				}
-				$sec_permission = values::get($sec_part);
-				if (array_search($sec_permission, $this->permissions, TRUE) !== FALSE) {
-					$result = TRUE;
-					break;
 				}
 			}
 		}
@@ -124,9 +162,15 @@ abstract class Permissions
 		return $result;
 	}
 
-	abstract public function add_permission ($permission);
+	/**
+	 * @return array //Contains Class Value.
+	 */
+	public function get_Permissions ()
+	{
+		return (array)$this->permissions;
+	}
 
-	abstract public function get_type ();
+	abstract public function add_permission ($permission);
 
 	abstract public function get_class ();
 
