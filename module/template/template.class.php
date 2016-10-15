@@ -164,6 +164,7 @@ class template
 			}
 
 		}
+		return false;
 	}
 
 	/**
