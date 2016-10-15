@@ -282,6 +282,20 @@ class parser
 	}
 
 	/**
+	 * If a string has native unicode emojis, for example send by mobile devices, it will be translated to a string
+	 *
+	 * @param $string
+	 *
+	 * @return string
+	 */
+	public static function emoji_to_text($string) {
+		$client = new Emojione\Client(new Emojione\Ruleset());
+		$return = $client->toShort($string);
+
+		return $return;
+	}
+
+	/**
 	 * Transforms a string to an string which has coding syntax highlighting
 	 *
 	 * @param        $string

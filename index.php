@@ -28,8 +28,8 @@ $template->sub_title = "Demo & Testing page";
 $template->username = "N8boy";
 
 $template->entity("TEST", array (
-	"output" => parser::bbCodes($_POST['text']),
-	"code_output" => parser::bbCodes('[code]' . $_POST['text'] . '[/code]')));
+	"output" => parser::bbCodes(parser::emoji_to_text($_POST['text'])),
+	"code_output" => parser::bbCodes('[code]' . parser::emoji_to_text($_POST['text']) . '[/code]')));
 
 
 // Output the template
