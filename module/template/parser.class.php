@@ -31,68 +31,100 @@ class parser
 		/** disable html tags */
 		$string = str_replace(array (
 			'<',
-			'>'), array (
+			'>',
+			), array (
 			'&lt;',
-			'&gt;'), $string);
+			'&gt;',), $string);
 		$string = str_replace(array (
 			"\r\n",
 			"\r",
 			"\n"), "<br>", $string);
 
-
-		$tags = array (
+		// Escaping inner [code] and [noparse] content
+		$escape = array (
 			// First parsing BBCodes where no inner BBCodes are allowed
 			// No BBCodes allowed
-			'#\\[noparse\\](.*?)\\[/noparse\\]#uis' => function ($matches) {
+			'#\\[noparse\\](.*)\\[/noparse\\]#muis' => function ($matches) {
 				$matches[1] = str_replace(array (
 					'[',
 					']',
-					':',), array (
+					':',
+					'<',
+					'>'), array (
 					'&#91;',
 					'&#93;',
-					'&#58;',), $matches[1]);
+					'&#58;','&lt;',
+					'&gt;'), $matches[1]);
 
 				return $matches[1];
 			},
 			/** Inline Code  */
-			'#\\[tt\\](.*?)\\[/tt\\]#uis' => function ($matches) {
-				$matches[1] = str_replace(array (
-					'[',
-					']',
-					':',), array (
-					'&#91;',
-					'&#93;',
-					'&#58;',), $matches[1]);
-
-				return '<code>' . $matches[1] . '</code>';
-			},
-			/** codeblock without a specific brush */
-			'#\\[code\\](.*?)\\[/code\\]#uis' => function ($matches) {
+			'#\\[tt\\](.*)\\[/tt\\]#muis' => function ($matches) {
 				$matches[1] = str_replace(array (
 					'[',
 					']',
 					':',
-					'<br>'), array (
+					'<',
+					'>'), array (
 					'&#91;',
 					'&#93;',
 					'&#58;',
-					"\n"), $matches[1]);
+					'&lt;',
+					'&gt;'), $matches[1]);
 
-				return self::syntax_highlighter($matches[1]);
+				return '[tt]'.$matches[1].'[/tt]';
+			},
+			/** codeblock without a specific brush */
+			'#\\[code\\](.*)\\[/code\\]#muis' => function ($matches) {
+				$matches[1] = str_replace(array (
+					'[',
+					']',
+					':',
+					'<br>',
+					'<',
+					'>'), array (
+					'&#91;',
+					'&#93;',
+					'&#58;',
+					"\n",
+					'&lt;',
+					'&gt;'), $matches[1]);
+
+				return '[code]'.$matches[1].'[/code]';
 			},
 			/** codeblock with a specific language */
-			'#\\[code=([^\\]]*?)\\](.*?)\\[/code\\]#uis' => function ($matches) {
+			'#\\[code=([^\\]]*?)\\](.*)\\[/code\\]#muis' => function ($matches) {
 				$matches[2] = str_replace(array (
 					'[',
 					']',
 					':',
-					'<br>'), array (
+					'<br>',
+					'<',
+					'>'), array (
 					'&#91;',
 					'&#93;',
 					'&#58;',
-					"\n"), $matches[2]);
+					"\n",
+					'&lt;',
+					'&gt;'), $matches[2]);
 				$matches[1] = strtolower($matches[1]);
 
+				return '[code='.$matches[1].']'.$matches[2].'[/code]';
+			});
+
+
+		$tags = array (
+			// First parsing BBCodes where no inner BBCodes are allowed
+			// No BBCodes allowed
+			'#\\[noparse\\](.*)\\[/noparse\\]#muis' => '\\1',
+			/** Inline Code  */
+			'#\\[tt\\](.*)\\[/tt\\]#muis' => '<code>\\1</code>',
+			/** codeblock without a specific brush */
+			'#\\[code\\](.*)\\[/code\\]#muis' => function ($matches) {
+				return self::syntax_highlighter($matches[1]);
+			},
+			/** codeblock with a specific language */
+			'#\\[code=([^\\]]*?)\\](.*)\\[/code\\]#muis' => function ($matches) {
 				return self::syntax_highlighter($matches[2], $matches[1]);
 			},
 			/** ToDO: codeblock with a specific language & line selected */
@@ -222,8 +254,16 @@ class parser
 				return '<math xmlns="http://www.w3.org/1998/Math/MathML">' . $matches[1] . '</math>';
 			}*/);
 
-		// replace non-breaking spaces (caused by contenteditable attribute) with regular spaces
+		// replace non-breaking spaces (caused by content editable attribute) with regular spaces
 		$result = str_replace("\xc2\xa0", ' ', $string);
+		foreach ($escape as $pattern => $replacement) {
+			if (is_callable($replacement)) {
+				$result = preg_replace_callback($pattern, $replacement, $result);
+			}
+			else {
+				$result = preg_replace($pattern, $replacement, $result);
+			}
+		}
 
 		//$result = htmlspecialchars($result, ENT_QUOTES, 'UTF-8');
 		foreach ($tags as $pattern => $replacement) {
