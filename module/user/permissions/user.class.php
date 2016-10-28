@@ -57,7 +57,6 @@ class User extends Permissions
 	private $user_class;
 	private $user_id;
 	private $user_groups = array ();
-	private $groups = array ();
 
 
 	public function __construct ($user)
@@ -82,8 +81,8 @@ class User extends Permissions
 	private function load_groups ()
 	{
 		$this->user_groups = $this->user_class->get_groups();
-		$this->groups = Permissions::get($this->user_groups);
-		foreach ($this->groups as $group) {
+		$groups = Permissions::get($this->user_groups);
+		foreach ($groups as $group) {
 			$perm_array = $group->get_Permissions();
 			foreach ($perm_array as $value) {
 				$this->add_permission_value($value);

@@ -31,8 +31,18 @@ class session
 	/**
 	 *
 	 */
-	public static function init()
+	public static function init($phase)
 	{
-		session_start();
+		switch ($phase) {
+			case 0:
+				session_start();
+			break;
+			case 1:
+
+			break;
+			default:
+				NULL;
+			break;
+		}
 	}
 }

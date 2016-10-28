@@ -41,6 +41,7 @@ class Core
 				self::load_paths();
 			break;
 			case 1:
+				session::init(0);
 				self::load_PDO();
 			break;
 			case 2:
