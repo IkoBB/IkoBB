@@ -38,7 +38,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 	<header class="main-header">
 
 		<!-- Logo -->
-		<a href="%% basepath %%" class="logo">
+		<a href="{{ Core::$basepath; }}" class="logo">
 			<!-- mini logo for sidebar mini 50x50 pixels -->
 			<span class="logo-mini"><b>I</b>ko</span>
 			<!-- logo for regular state and mobile devices -->
@@ -231,9 +231,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 			<ul class="sidebar-menu">
 				<li class="header">Main Navigation</li>
 				<!-- Optionally, you can add icons to the links -->
-				<li class="active"><a href="%% adminpath %%"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
+				<li class="active"><a href="{{ Core::$adminpath; }}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
 				</li>
-				<li><a href="%% adminpath %%modules.php"><i class="fa fa-plug"></i> <span>Modules</span></a></li>
+				<li><a href="{{ Core::$adminpath; }}modules.php"><i class="fa fa-plug"></i> <span>Modules</span></a></li>
 				<li class="treeview">
 					<a href="#"><i class="fa fa-link"></i> <span>Multilevel</span> <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
@@ -276,7 +276,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 	<footer class="main-footer">
 		<!-- To the right -->
 		<div class="pull-right hidden-xs">
-			<small>Core Version: %% version %%</small>
+			<small>Core Version: {{ Core::version; }}</small>
 		</div>
 		<!-- Default to the left -->
 		<strong>Copyright &copy; 2016 <a href="http://www.ikobb.de/">IkoBB</a>.</strong> All rights reserved.
