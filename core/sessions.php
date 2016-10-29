@@ -79,8 +79,6 @@ class session
 				self::renew();
 			}
 		}
-		echo 1;
-		print_r($_SESSION);
 	}
 
 	public static function renew ()
