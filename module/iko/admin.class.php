@@ -22,14 +22,19 @@ class admin
 
 		$data = "SELECT * FROM {prefix}modules ORDER BY module_name";
 		foreach (Core::$PDO->query($data) as $value) {
-			$modules .= '<tr><td>' . $value["module_displayname"] . '</td>' . '<td>' . $value["module_name"] . '</td>' . '<td>' . $value["module_author"] . '</td>' . '<td>' . $value["module_version"] . '</td>';
+
 			if ($value["module_status"]) {
-				$modules .= '<td><span class="label label-success">Active</span> </td>';
+				$status = '<span class="label label-success">Active</span>';
 			}
 			else {
-				$modules .= '<td><span class="label label-danger">Disabled</span> </td>';
+				$status = '<span class="label label-danger">Disabled</span>';
 			}
-			$modules .= '</tr>';
+			$modules .= $template->entity("module_list_entry", array (
+				"module_displayname" => $value["module_displayname"],
+				"module_name" => $value["module_name"],
+				"module_author" => $value["module_author"],
+				"module_version" => $value["module_version"],
+				"module_status" => $status,), true);
 		}
 
 		return $template->entity("module_list", array("module_list_modules" => $modules), true);

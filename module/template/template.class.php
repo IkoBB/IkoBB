@@ -170,7 +170,6 @@ class template
 	/**
 	 * @return mixed|string
 	 *
-	 * @ToDo: Variables like {{ Core::$version }} can't be used. Core is not defined.
 	 */
 	public function __toString()
 	{

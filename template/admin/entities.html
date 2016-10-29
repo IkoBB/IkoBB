@@ -26,6 +26,15 @@
 </div>
 <!-- end:module_list -->
 
+<!-- start:module_list_entry -->
+<tr>
+	<td>%% module_displayname %%</td>
+	<td>%% module_name %%</td>
+	<td>%% module_author %%</td>
+	<td>%% module_version %%</td>
+	<td>%% module_status %%</td>
+</tr><!-- end:module_list_entry -->
+
 
 <!-- JS and CSS Files --><!-- start:JS_dataTables --><!-- DataTables -->
 <script src="../template/admin/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -50,10 +59,10 @@
 				var api = this.api();
 				api.$('td').click(function () {
 					var inner = this.innerHTML;
-					if (inner == '<span class="label label-success">Active</span> ') {
+					if (inner == '<span class="label label-success">Active</span>') {
 						inner = "Active";
 					}
-					else if (inner == '<span class="label label-danger">Disabled</span> ') {
+					else if (inner == '<span class="label label-danger">Disabled</span>') {
 						inner = 'Disabled';
 					}
 					api.search(inner).draw();
