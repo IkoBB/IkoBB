@@ -96,7 +96,7 @@ function set_session ($name, $value)
  */
 function random_string ($length)
 {
-	$base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+	$base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890.:_-!§$%()[]{}?#+*<>";
 	$result = "";
 	for ($i = 0; $i < $length; $i++) {
 		$num = mt_rand(0, strlen($base) - 1);
