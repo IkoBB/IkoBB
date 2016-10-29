@@ -20,7 +20,7 @@ class parser
 	/**
 	 * Parser for BBCodes
 	 * All possible BBCodes can be found in our Wiki:
-	 * http://wiki.ikobb.de
+	 * http://www.ikobb.info
 	 *
 	 * @param $string
 	 *
@@ -44,7 +44,7 @@ class parser
 		$escape = array (
 			// First parsing BBCodes where no inner BBCodes are allowed
 			// No BBCodes allowed
-			'#\\[noparse\\](.*)\\[/noparse\\]#muis' => function ($matches) {
+			'#\\[noparse\\](.*)\\[/noparse\\]#muis'      => function ($matches) {
 				$matches[1] = str_replace(array (
 					'[',
 					']',
@@ -59,7 +59,7 @@ class parser
 				return $matches[1];
 			},
 			/** Inline Code  */
-			'#\\[tt\\](.*)\\[/tt\\]#muis' => function ($matches) {
+			'#\\[tt\\](.*)\\[/tt\\]#muis'                => function ($matches) {
 				$matches[1] = str_replace(array (
 					'[',
 					']',
@@ -75,7 +75,7 @@ class parser
 				return '[tt]'.$matches[1].'[/tt]';
 			},
 			/** codeblock without a specific brush */
-			'#\\[code\\](.*)\\[/code\\]#muis' => function ($matches) {
+			'#\\[code\\](.*)\\[/code\\]#muis'            => function ($matches) { //[code]
 				$matches[1] = str_replace(array (
 					'[',
 					']',
@@ -93,7 +93,7 @@ class parser
 				return '[code]'.$matches[1].'[/code]';
 			},
 			/** codeblock with a specific language */
-			'#\\[code=([^\\]]*?)\\](.*)\\[/code\\]#muis' => function ($matches) {
+			'#\\[code=([^\\]]*?)\\](.*)\\[/code\\]#muis' => function ($matches) { //[code=php]
 				$matches[2] = str_replace(array (
 					'[',
 					']',

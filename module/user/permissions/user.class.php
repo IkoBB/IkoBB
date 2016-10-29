@@ -21,9 +21,7 @@ namespace Iko\Permissions;
 use Iko;
 use Iko\Permissions;
 use Iko\User as users;
-use Iko\PDO as PDO;
 use Iko\Core as Core;
-use Iko\Exception as Exception;
 
 
 class User extends Permissions

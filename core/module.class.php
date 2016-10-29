@@ -257,14 +257,11 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 
 	public function load ()
 	{
-		if ($this->get_loader() instanceof module_loader && $this->status && !$this->is_load()) {
+		if ($this->get_loader() instanceof module_loader && $this->get_status() && !$this->is_load()) {
 			if ($this->get_loader()->load()) {
 				$this->is_load = TRUE;
 			}
 
-			return $this->is_load;
-		}
-		else {
 			return $this->is_load();
 		}
 	}

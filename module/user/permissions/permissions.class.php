@@ -21,7 +21,6 @@ namespace Iko;
 use Iko\Permissions\User as users;
 use Iko\Permissions\Group as groups;
 use Iko\Permissions\Value as Value;
-use Iko\Exception as Exception;
 
 abstract class Permissions
 {
@@ -60,6 +59,8 @@ abstract class Permissions
 		if (count($array)) {
 			return $array;
 		}
+
+		return array ();
 	}
 
 	public static function get_user ($class)
@@ -159,6 +160,15 @@ abstract class Permissions
 			}
 		}
 
+		/*
+		 *  iko.admin.user.edit.username - Spezifisch
+			iko.admin.user.edit.*		- Kategorie
+			iko.admin.user		- Spezifisch
+			iko.admin           - Spezifisch
+			iko.admin.* - Kategorie
+			*
+
+		 */
 		return $result;
 	}
 
