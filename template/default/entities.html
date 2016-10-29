@@ -1,8 +1,136 @@
 <!-- start:TEST -->
+<div class="panel panel-danger">
+	<div class="panel-heading">
+		<h3 class="panel-title">Catergory Name</h3>
+	</div>
 <form action="index.php" method="post">
-	<textarea style="height: 200px;" name="text">{{ @$_POST['text'] }}</textarea><br>
+	<textarea style="height: 200px; width: 100%" name="text">{{ @$_POST['text'] }}</textarea><br>
 	<b><u>Result:</u></b><br>
 	%% output %%<br><br>
 	%% code_output %%<br>
 	<input type="submit">
-</form><!-- end:TEST -->
+</form>
+</div>
+<!-- end:TEST -->
+
+<!-- start:forum-list -->
+<div class="panel panel-danger">
+	<div class="panel-heading">
+		<h3 class="panel-title">Category Name</h3>
+	</div>
+
+	<table class="table table-striped">
+		<tbody>
+		<tr>
+			<td style="width: 1%;"><i class="material-icons"
+			                          style="font-size: 30px;">comment</i></td>
+			<td><a href="#">Announcements</a> <br />
+				<small>Community announcements.</small>
+			</td>
+			<td></td>
+			<td></td>
+			<td class="text-right"></td>
+			<td>
+				<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
+				     class="img-thumbnail pull-left"
+				     style="width:42px;height:42px;margin-right:5px;"> <a href="#">Test
+				                                                                 Topic</a><br>
+				<small><a href="#">Sebastian</a>, <span title="9. October 2016">Like, tomorrow !?</span>
+				</small>
+
+			</td>
+		</tr>
+		<tr>
+			<td><i class="material-icons" style="font-size: 30px;">comment</i></td>
+			<td><a href="#">News </a><br />
+				<small>Community news.</small>
+			</td>
+			<td></td>
+			<td></td>
+			<td class="text-right"></td>
+			<td>
+				<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
+				     class="img-thumbnail pull-left"
+				     style="width:42px;height:42px;margin-right:5px;"> <a href="#">Test
+				                                                                 Topic</a><br>
+				<small><a href="#">Sebastian</a>, <span
+						title="9. October 2016">A moment ago</span></small>
+
+			</td>
+		</tr>
+		<tr>
+			<td><i class="material-icons" style="font-size: 30px;">comment</i></td>
+			<td><a href="http://">Updates</a> <br />
+				<small>Community updates.</small>
+			</td>
+			<td></td>
+			<td></td>
+			<td class="text-right"></td>
+			<td>
+				<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
+				     class="img-thumbnail pull-left"
+				     style="width:42px;height:42px;margin-right:5px;"> <a href="#">Test
+				                                                                 Topic</a><br>
+				<small><a href="#">Sebastian</a>, <span
+						title="9. October 2016">1 minute ago</span></small>
+
+			</td>
+		</tr>
+		</tbody>
+	</table>
+
+</div>
+<!-- end:forum-list -->
+<!-- start:sidebar -->
+<div class="card card-signup">
+	<form class="form" method="" action="">
+		<div class="header header-danger text-center">
+			<h4>Sign Up</h4>
+			<div class="social-line">
+				<a href="#pablo" class="btn btn-simple btn-just-icon"> <i
+						class="fa fa-facebook-square"></i> </a> <a href="#pablo"
+				                                                   class="btn btn-simple btn-just-icon">
+				<i class="fa fa-twitter"></i> </a> <a href="#pablo"
+				                                      class="btn btn-simple btn-just-icon"> <i
+					class="fa fa-google-plus"></i> </a>
+			</div>
+		</div>
+		<p class="text-divider">Or Be Classical</p>
+		<div class="content">
+
+			<div class="input-group">
+                                            <span class="input-group-addon">
+											<i class="material-icons">face</i>
+										</span>
+				<div class="form-group label-floating">
+					<label class="control-label">First Name...</label> <input type="text"
+					                                                          class="form-control"><span
+						class="material-input"></span></div>
+			</div>
+
+			<div class="input-group">
+                                            <span class="input-group-addon">
+											<i class="material-icons">email</i>
+										</span>
+				<div class="form-group label-floating">
+					<label class="control-label">E-mail...</label> <input type="text"
+					                                                      class="form-control"><span
+						class="material-input"></span></div>
+			</div>
+
+			<div class="input-group">
+                                            <span class="input-group-addon">
+											<i class="material-icons">lock_outline</i>
+										</span>
+				<div class="form-group label-floating">
+					<label class="control-label">Password...</label> <input type="password"
+					                                                        class="form-control"><span
+						class="material-input"></span></div>
+			</div>
+		</div>
+		<div class="footer text-center">
+			<a href="#pablo" class="btn btn-simple btn-danger btn-lg">Get Started</a>
+		</div>
+	</form>
+</div>
+<!-- end:sidebar -->

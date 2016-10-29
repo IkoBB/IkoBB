@@ -1,201 +1,211 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8" />
+	<link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
+	<link rel="icon" type="image/png" href="assets/img/favicon.png">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
-	<meta property="og:title" content="%% title %% - %% sub_title %%"/>
-	<meta property="og:url" content="%% site_url %%" />
-	<meta property="og:site_name" content="%% sub_title %%" />
-	<meta property="og:description" content="%% description %%" />
-	<meta property="og:image" content="" />
+	<title>%% sub_title %% | %% title %%</title>
 
-	<title>%% title %% - %% sub_title %%</title>
+	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
 
-	<style>
-		.emojione {
-			font-size: inherit;
-			height: 3ex;
-			width: 3.1ex;
-			min-height: 20px;
-			min-width: 20px;
-			display: inline-block;
-			margin: -.2ex .15em .2ex;
-			line-height: normal;
-			vertical-align: middle
-		}
+	<!--     Fonts and icons     -->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
 
-		img.emojione {
-			width: auto
-		}
-	</style>
+	<!-- CSS Files -->
+	<link href="template/default/assets/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="template/default/assets/css/material-kit.css" rel="stylesheet" />
 
-	<!-- Bootstrap -->
-	<link href="template/default/css/bootstrap.min.css" rel="stylesheet">
-	<link href="template/default/css/default.css" rel="stylesheet">
-	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
-	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->    <!--[if lt IE 9]>
-	<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-	<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>    <![endif]-->
 </head>
-<body>
 
-
-<nav class="navbar navbar-inverse navbar-static-top" role="navigation">
-	<div class="container">
+<body class="ikobb">
+<nav class="navbar navbar-inverse">
+	<div class="container-fluid">
+		<!-- Brand and toggle get grouped for better mobile display -->
 		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#user-nav">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigation-example">
 				<span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span
 					class="icon-bar"></span> <span class="icon-bar"></span>
 			</button>
+			<a class="navbar-brand" href="#">IkoBB</a>
 		</div>
-		<div class="collapse navbar-collapse" id="user-nav">
-			<ul class="nav navbar-nav">
-				<li><a href="#">Reports <span class="label label-warning">5</span></a>
-				</li>
-				<li><a href="admin">Admin CP</a></li>
-			</ul>
+
+		<div class="collapse navbar-collapse" id="navigation-example">
 			<ul class="nav navbar-nav navbar-right">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"
-					                                                              aria-hidden="true"></i>
-
-						%% username %%</a>
-					<ul class="dropdown-menu">
-						<li>
-							<a href="#"> Test </a>
-						</li>
-					</ul>
+				<li>
+					<a href="/"> <i class="material-icons">forum</i>Forums </a>
 				</li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown"> <i class="fa fa-envelope"
-					                                                               aria-hidden="true"></i> Conversations
-
-						<span class="label label-warning">10</span> </a>
-					<ul class="dropdown-menu">
-						<li><a href="#">
-							<h4>
-								Test Message </h4>
-							<small>By Peter 13 minutes ago
-							</small>
-						</a>
-						</li>
-
-						<li role="presentation" class="disabled"><a role="menuitem" tabindex="-1" href="#">No
-						                                                                                   Messages</a>
-						</li>
-
-						<li><a href="#">Conversations</a></li>
-						<li><a href="#">New Message</a></li>
-					</ul>
+				<li>
+					<a href="#"> <i class="material-icons">people</i> Members </a>
 				</li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" style="overflow:auto;"> <i
-							class="fa fa-bell"></i> <span class="label label-warning">2</span>
-
-					</a>
-					<ul class="dropdown-menu">
-						<li role="presentation" class="disabled"><a role="menuitem" tabindex="-1" href="#">No new
-						                                                                                   notifications
-						                                                                                   yet.</a></li>
-						<li><a href="#"> Peter Ottoson quoted you.
-							<small class="text-muted">3 minuts ago</small>
-						</a>
-						</li>
-					</ul>
+				<li>
+					<a href="#" target="_blank" class="btn btn-simple btn-white btn-just-icon"> <i
+							class="fa fa-twitter"></i> </a>
+				</li>
+				<li>
+					<a href="#" target="_blank" class="btn btn-simple btn-white btn-just-icon"> <i
+							class="fa fa-facebook-square"></i> </a>
+				</li>
+				<li>
+					<a href="#" target="_blank" class="btn btn-simple btn-white btn-just-icon"> <i
+							class="fa fa-github"></i> </a>
 				</li>
 			</ul>
 		</div>
 	</div>
 </nav>
 
-
-<div class="container">
-
-	<div class="row">
-		<div class="col-md-10">
-			<h1>
-				<div class="logo"></div>
-			</h1>
-		</div>
-		<div class="col-md-2">
-
-			<div class="btn-group login-bar">
-				<a href="#" class="btn btn-warning btn-block dropdown-toggle" data-toggle="dropdown">Log In</a>
-				<ul class="dropdown-menu dropdown-menu-right" role="menu">
-					<li class="login-form">
-						<form action="%site_url%/members.php/cmd/signin" method="POST">
-							<input type="hidden" name="current_url" value="%current_url%" /> <input type="text"
-							                                                                        name="email"
-							                                                                        class="form-control"
-							                                                                        id="inputEmail3"
-							                                                                        placeholder="Username or Email">
-							<input type="password" name="password" class="form-control" id="inputPassword3"
-							       placeholder="Password"> <label> <input type="checkbox" name="remember"> Remember me
-						</label> <input type="submit" class="btn btn-primary btn-block" name="signin" value="Log In" />
-							<a href="%facebook_login_url%" class="btn btn-info btn-block"><span
-									class="label label-primary"><i class="fa fa-facebook"></i></span> Sign In</a>
-						</form>
-					</li>
-			</div>
-
-		</div>
-	</div>
-	<div class="well well-sm">
-		<ul class="nav nav-pills">
-			<li class="active"><a href="#">Forum</a></li>
-			<li><a href="#">Members</a></li>
-		</ul>
-	</div>
-
-	<div class="row">
-
-		<div class="col-md-12">
+<div class="wrapper">
+	<div class="branding header-filter">
+		<div class="container-fluid" style="position: relative; z-index:10000;">
 			<div class="row">
-				<div class="col-md-9">
-					<h1 class="title">%% sub_title %%</h1>
-				</div>
-				<div class="col-md-3">
-					<form action="#" method="POST" class="search">
-						<input name="search_query" type="text" class="form-control tooltip_toggle"
-						       placeholder="Search..."> <input type="submit" name="search_submit"
-						                                       style="visibility:hidden;display:none;" value="Search" />
+				<div class="col-xs-12">
+					<div class="panel panel-warning">
+						<div class="panel-body">
+							<ul class="nav nav-pills nav-pills-danger" role="tablist">
 
-					</form>
+								<li>
+									<a href="#logo"> <i class="material-icons">star</i> LOGO PLACEHOLDER </a>
+								</li>
+								<li class="pull-right">
+									<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
+									     alt="Raised Image" style="width: 85px;"
+									     class="img-rounded img-responsive img-raised">
+								</li>
+								<li class="active pull-right">
+									<a href="#profile" data-toggle="dropdown"> <i class="material-icons">face</i>
+										Profile <b class="caret"></b> </a>
+									<ul class="dropdown-menu">
+										<li><a href="#">Action</a></li>
+										<li><a href="#">Another action</a></li>
+										<li><a href="#">Something else here</a></li>
+										<li class="divider"></li>
+										<li><a href="#">Separated link</a></li>
+										<li class="divider"></li>
+										<li><a href="#">One more separated link</a></li>
+									</ul>
+								</li>
+								<li class="pull-right">
+									<a href="#notifications" role="tab" data-toggle="tab"> <i class="material-icons">notifications</i>
+										Notifications </a>
+								</li>
+								<li class="pull-right">
+									<a href="#conversations" role="tab" data-toggle="tab"> <i class="material-icons">chat</i>
+										Conversations </a>
+								</li>
+								<li class="pull-right">
+									<a href="#dashboard" role="tab" data-toggle="tab"> <i class="material-icons">dashboard</i>
+										Dashboard </a>
+								</li>
+								<li class="pull-right">
+									<a href="#reports" role="tab" data-toggle="tab"> <i class="material-icons">report_problem</i>
+										Reports </a>
+								</li>
+							</ul>
+						</div>
+					</div>
 				</div>
 			</div>
-			%% content %% §§ TEST §§
 		</div>
-
 	</div>
 
-	<footer class="footer">
-		<div class="row">
-			<div class="col-md-6">
-				<a href="http://ikobb.de/">Powered by IkoBB</a><br />
-				<small class="text-muted">Load Time: %elapsed_time% seconds | Memory: %memory_usage%</small>
-			</div>
-			<div class="col-md-6 change_theme">
-				<div class="btn-group dropup">
-					<button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown">
-						Change Theme <span class="caret"></span>
-					</button>
-					<ul class="dropdown-menu dropdown-menu-right" role="menu">
-						<li class="active"><a href="#"> Default </a></li>
-						<li><a href="#"> Default 2 </a></li>
+	<div class="main main-raised">
+		<div class="container-fluid">
+			<div class="section">
+				<div class="row">
+					<ol class="breadcrumb">
+						<li class="active"><i class="material-icons" style="font-size: 20px;">home</i></li>
+					</ol>
+					<div class="col-md-9">
+						%% content %%
+					</div>
+					<div class="col-md-3 pull-right">
+						§§ sidebar §§
+					</div>
+				</div>
 
-					</ul>
+				<div class="stats">
+					<div class="row">
+						<div class="card card-nav-tabs">
+							<div class="header header-danger">
+								<div class="nav-tabs-navigation">
+									<div class="nav-tabs-wrapper">
+										<ul class="nav nav-tabs" data-tabs="tabs">
+											<li class="active">
+												<a href="#users-o" data-toggle="tab"> <i class="material-icons">face</i>
+													Users Online </a>
+											</li>
+											<li>
+												<a href="#" data-toggle="tab"> <i class="material-icons">show_chart</i>
+													Forum Statistics </a>
+											</li>
+											<li>
+												<a href="#" data-toggle="tab"> <i class="material-icons">build</i>
+													Administrative Team </a>
+
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<div class="content">
+								<div class="tab-content">
+									<div class="tab-pane active" id="users-o">
+										<p><i class="material-icons" style="font-size: 12px;">verified_user</i>
+											%% username %%</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
-	</footer>
+	</div>
 
 </div>
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="template/default/js/bootstrap.min.js"></script>
-<script src="template/default/js/sand.js"></script>
+
+<footer class="footer">
+	<div class="container">
+		<nav class="pull-left">
+			<ul>
+				<li>
+					<a href="#"> <i class="material-icons">arrow_drop_down</i>Change Theme </a>
+				</li>
+				<li>
+					<a href="#"> About Us </a>
+				</li>
+				<li>
+					<a href="#"> Contact </a>
+				</li>
+				<li>
+					<a href="#"> Mark as read </a>
+				</li>
+			</ul>
+		</nav>
+		<div class="copyright pull-right">
+			&copy; 2016, made with <i class="material-icons">code</i> IkoBB
+		</div>
+	</div>
+</footer>
 </body>
+
+<!--   Core JS Files   -->
+<script src="template/default/assets/js/jquery.min.js" type="text/javascript"></script>
+<script src="template/default/assets/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="template/default/assets/js/material.min.js"></script>
+
+<!--  Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
+<script src="template/default/assets/js/nouislider.min.js" type="text/javascript"></script>
+
+<!--  Plugin for the Datepicker, full documentation here: http://www.eyecon.ro/bootstrap-datepicker/ -->
+<script src="template/default/assets/js/bootstrap-datepicker.js" type="text/javascript"></script>
+
+<!-- Control Center for Material Kit: activating the ripples, parallax effects, scripts from the example pages etc -->
+<script src="template/default/assets/js/material-kit.js" type="text/javascript"></script>
+
 </html>
