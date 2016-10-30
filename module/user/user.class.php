@@ -35,7 +35,7 @@ class User
 			foreach ($user_id as $id) {
 				if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
 					if (self::exist($id, $reload)) {
-						$class = str_replace(__NAMESPACE__ . "/", "", __CLASS__);
+						$class = str_replace(__NAMESPACE__ . "/", "", get_called_class());
 						self::$cache[ $id ] = new $class($id);
 						array_push($user_array, self::$cache[ $id ]);
 					}
@@ -150,9 +150,51 @@ class User
 		}
 	}
 
+	private static $session_user = FALSE;
 	public static function session ()
 	{
+		$user_id = intval(define_session("user_id", "0"));
+		if ($user_id != 0) {
+			if (self::exist($user_id)) {
+				self::$session_user = self::get($user_id);
+			}
+		}
+	}
 
+	/**
+	 * @return bool|User
+	 */
+	public static function get_session ()
+	{
+		return self::$session_user;
+	}
+
+	public static function login ($user, $password)
+	{
+		if (check_mail($user)) {
+			$search = array ("user_email" => $user);
+		}
+		else {
+			$search = array ("user_name" => $user);
+		}
+		$class = self::search($search);
+		if ($class !== FALSE) {
+			$pass_hash = get_hash($password);
+			if ($pass_hash == $class->get_password()) {
+				set_session("user_id", $class->get_ID());
+				if (intval(read_session("user_id")) == $class->get_ID()) {
+					return TRUE;
+				}
+
+				return FALSE;
+			}
+			else {
+				return FALSE;
+			}
+		}
+		else {
+			return FALSE;
+		}
 	}
 
 	private $id;
@@ -173,6 +215,7 @@ class User
 
 	/**
 	 * user constructor.
+	 * The Constructor load the sql rows and add it to the relevant variables
 	 *
 	 * @param $user_id
 	 *
@@ -257,4 +300,14 @@ class User
 	{
 		return $this->permission;
 	}
+
+	private function get_password ()
+	{
+		return $this->password;
+	}
 }
+
+/*
+ * Load actually User session. If user is logged in.
+ */
+User::session();
