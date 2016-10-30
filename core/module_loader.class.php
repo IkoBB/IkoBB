@@ -172,6 +172,20 @@ abstract class module_loader
 		}
 	}
 
+	protected $ajax_file = "ajax.php";
+
+	protected function set_ajax_file ($value)
+	{
+		if ($this->check_Files($value)) {
+			$this->ajax_file = $value;
+		}
+	}
+
+	public function load_ajax_file ()
+	{
+		return $this->load($this->ajax_file);
+	}
+
 	public function is_load ()
 	{
 		return $this->is_load;

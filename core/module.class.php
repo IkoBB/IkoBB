@@ -307,4 +307,9 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 			return $this->is_load();
 		}
 	}
+
+	public function load_ajax ()
+	{
+		return $this->get_loader()->load_ajax_file();
+	}
 }
