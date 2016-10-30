@@ -24,7 +24,11 @@ class language_loader extends \Iko\module_loader
     {
 
         //Add Tables like User and choosen language assignment and more
-        $tables = array("language");
+        $tables = array(
+            "language",
+            "translation",
+            "language_assignment"
+        );
 
         return $this->check_PDO_Tables($tables);
     }
