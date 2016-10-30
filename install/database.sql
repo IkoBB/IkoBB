@@ -106,11 +106,33 @@ CREATE TABLE `iko_user_permissions` (
 );
 
 CREATE TABLE `iko_template_assignment` (
-	`user_id`         INT(11)      NOT NULL,
-	`template_id` 		INT(11) NOT NULL,
+	`user_id`         INT(11)       NOT NULL,
+	`template_id` 		INT(11)       NOT NULL,
 	UNIQUE KEY `user_id` (`user_id`),
 	KEY `template_id` (`template_id`)
 );
+
+CREATE TABLE `iko_translation` (
+  `translation_id`      int(11)   NOT NULL  AUTO_INCREMENT,
+  `german`              text      NOT NULL,
+  `english`             text      NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `iko_language` (
+  `language_id`       int(11)           NOT NULL  AUTO_INCREMENT,
+  `language_name`     varchar(255)      NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `iko_language_assignment` (
+	`user_id`         INT(11)       NOT NULL,
+	`language_id` 		INT(11)       DEFAULT '1',
+	UNIQUE KEY `user_id` (`user_id`),
+	KEY `language_id` (`language_id`)
+);
+
+/*TODO: Add Relations of the language components. */
 
 /*Relation between Tables */
 
