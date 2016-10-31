@@ -26,7 +26,6 @@ class session
 	private static $user_ip;
 	private static $session_id;
 	private static $user_id;
-	private static $session_type;
 
 	/**
 	 *
@@ -84,6 +83,7 @@ class session
 	public static function renew ()
 	{
 		session_destroy();
+		header("Refresh: 1");
 		echo '<script>window.location.reload();</script>';
 		exit;
 	}

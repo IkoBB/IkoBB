@@ -12,7 +12,7 @@
  */
 namespace Iko;
 
-class User
+class User //TODO: Complete
 {
 	const table = "{prefix}users";
 	const id = "user_id";
@@ -169,7 +169,7 @@ class User
 		return self::$session_user;
 	}
 
-	public static function login ($user, $password)
+	public static function login ($user, $password) //TODO: Salt Generieren und Last_login hinzufuegen
 	{
 		if (check_mail($user)) {
 			$search = array ("user_email" => $user);
@@ -185,7 +185,6 @@ class User
 				if (intval(read_session("user_id")) == $class->get_ID()) {
 					return TRUE;
 				}
-
 				return FALSE;
 			}
 			else {
@@ -197,6 +196,17 @@ class User
 		}
 	}
 
+	private function salt ($user)
+	{
+		if (!$user instanceof User) {
+			$user = self::get($user);
+		}
+		/*
+		 * Id + Datejoined password datejoined%id
+		 *
+		 */
+
+	}
 	private $id;
 	private $name;
 	private $password;
@@ -304,6 +314,16 @@ class User
 	private function get_password ()
 	{
 		return $this->password;
+	}
+
+	public function get_joined_Date ()
+	{
+		return date(Core::date_format(), $this->get_joined_Time());
+	}
+
+	public function get_joined_Time ()
+	{
+		return $this->date_joined;
 	}
 }
 

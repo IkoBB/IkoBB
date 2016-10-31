@@ -20,7 +20,7 @@ class admin
 		$template = template::get_instance();
 		$modules = '';
 
-		$data = "SELECT * FROM {prefix}modules ORDER BY module_name";
+		$data = "SELECT * FROM " . module::table . " ORDER BY module_name";
 		foreach (Core::$PDO->query($data) as $value) {
 
 			if ($value["module_status"]) {

@@ -14,6 +14,14 @@ namespace Iko;
 
 class user_module_loader extends module_loader
 {
+	private $files = array (
+		"user.class.php",
+		"group.class.php",
+		"permissions" => array (
+			"permissions.class.php",
+			"value.class.php",
+			"group.class.php",
+			"user.class.php"));
 	public function __construct ($module)
 	{
 		parent::__construct($module);
@@ -28,29 +36,11 @@ class user_module_loader extends module_loader
 
 	protected function pre_check_Files ()
 	{
-		$files = array (
-			"user.class.php",
-			"group.class.php",
-			"permissions" => array (
-				"permissions.class.php",
-				"value.class.php",
-				"group.class.php",
-				"user.class.php"));
-
-		return $this->check_Files($files);
+		return $this->check_Files($this->files);
 	}
 
 	public function load ($files = array ())
 	{
-		$files = array (
-			"user.class.php",
-			"group.class.php",
-			"permissions" => array(
-				"permissions.class.php",
-				"value.class.php",
-				"user.class.php",
-				"group.class.php"
-			));
-		return parent::load($files);
+		return parent::load($this->files);
 	}
 }

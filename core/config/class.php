@@ -60,7 +60,7 @@ class config extends config_loader
 
 	private $config_loader = NULL;
 	private $create_args = NULL;
-
+	private $config = array ();
 	/**
 	 * @param unknown $type
 	 * @param unknown $args
@@ -147,20 +147,44 @@ class config extends config_loader
 	}
 
 	/**
-	 * @param unknown $names
+	 * @param unknown $name
 	 */
-	public function get ($names)
+	public function get ($name)
 	{
-		if (isset($this->config[ $names ])) {
-			return $this->config[ $names ];
-		}
-		else {
-			return NULL;
-		}
+		return $this->config[ $name ];
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function get_all ()
 	{
 		return $this->config;
+	}
+
+	/**
+	 * @param $name
+	 *
+	 * @return mixed
+	 */
+	public function __get ($name)
+	{
+		return $this->get($name);
+	}
+
+	/**
+	 * @param $name
+	 * @param $value
+	 * If change the commentary, please use a Array with following style:
+	 * array(VALUE, COMMENT);
+	 */
+	public function __set ($name, $value)
+	{
+		if (is_array($value)) {
+			$this->set($name, $value[0], $value[1]);
+		}
+		else {
+			$this->set($name, $value);
+		}
 	}
 }

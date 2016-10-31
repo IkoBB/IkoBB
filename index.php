@@ -28,7 +28,7 @@ $template->sub_title = "Demo & Testing page";
 $template->username = "Administrator"; // later the real value will be included in the user/session class. If the user is logged in $template->username = user::username or something like that
 
 // Create a new entity, in this case the sidebar, you can also include params in the array
-$template->entity("sidebar",array());
+$template->entity("sidebar", array ()); // §§ sidebar §§
 
 // You can also combine params and entities. Just turn the return value to true which is by default false: entity("entity_name", array(), true);
 $template->content .= $template->entity("TEST", array (

@@ -160,6 +160,13 @@ class Core
 		}
 
 	}
+
+	public static function date_format ()
+	{
+		$config = config::load("PDO", "iko");
+
+		return $config->date_format;
+	}
 }
 
 /**

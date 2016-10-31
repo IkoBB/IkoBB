@@ -34,6 +34,7 @@ class config_loader_file extends config_loader
 	 */
 	protected function load_Config ()
 	{
+		$config = array ();
 		$inc = @include $this->file;
 		if ($inc === FALSE) {
 			/* $this->FirstCreateConfig();
@@ -44,23 +45,6 @@ class config_loader_file extends config_loader
 			return $config;
 		}
 	}
-	/*protected function FirstCreateConfig() {
-		$delete = true;
-		if(file_exists($this->datei)) {
-			$delete = unlink($this->datei);
-		}
-		if($delete == true) {
-			$main = fopen($this->datei, "r");
-			$string = "";
-			while(!feof($main)) {
-				$string .= fread($main, 100);
-			}
-			fclose($main);
-			$handle = fopen(modules::getDir($this->c_module) . "config.inc.php", "x");
-			fwrite($handle, $string);
-			fclose($handle);
-		}
-	}*/
 
 	/**
 	 * {@inheritDoc}
