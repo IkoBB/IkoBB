@@ -32,8 +32,8 @@ $template->entity("sidebar", array ()); // §§ sidebar §§
 
 // You can also combine params and entities. Just turn the return value to true which is by default false: entity("entity_name", array(), true);
 $template->content .= $template->entity("TEST", array (
-	"output" => parser::bbCodes(parser::emoji_to_text($_POST['text'])),
-	"code_output" => parser::bbCodes('[code]' . parser::emoji_to_text($_POST['text']) . '[/code]')), true);
+	"output"      => parser::bbCodes(parser::emoji_to_text(define_post("text", ""))),
+	"code_output" => parser::bbCodes('[code]' . parser::emoji_to_text(define_post("text", "")) . '[/code]')), TRUE);
 
 
 // Output the template

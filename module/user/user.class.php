@@ -330,4 +330,3 @@ class User //TODO: Complete
 /*
  * Load actually User session. If user is logged in.
  */
-User::session();

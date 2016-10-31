@@ -21,7 +21,8 @@ class user_module_loader extends module_loader
 			"permissions.class.php",
 			"value.class.php",
 			"group.class.php",
-			"user.class.php"));
+			"user.class.php"),
+		"execute.php");
 	public function __construct ($module)
 	{
 		parent::__construct($module);
