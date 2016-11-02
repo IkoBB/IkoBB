@@ -3,7 +3,7 @@ namespace Iko;
 
 require_once './../core/core.php';
 
-module::request("template");
+module::request("cms");
 module::request("user");
 module::request("iko");
 $template = template::get_instance();

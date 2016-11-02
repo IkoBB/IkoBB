@@ -17,7 +17,7 @@ require_once 'core/core.php';
 
 
 // Loading and checking template engine
-module::request("template");
+module::request("cms");
 module::request("user");
 $template = template::get_instance();
 
