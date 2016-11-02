@@ -1,6 +1,6 @@
 INSERT INTO `iko_modules` VALUES ('IkoBB','iko','Core Engine','1.0.0a',1),
 ('IkoBB','forum','Forum Engine','1.0.0a',1),
-('IkoBB','template','Template Engine','1.0.0a',1),
+('IkoBB','cms','Template Engine','1.0.0a',1),
 ('IkoBB','user','User Engine','1.0.0a',1);
 
 
