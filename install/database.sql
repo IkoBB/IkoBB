@@ -43,6 +43,7 @@ CREATE TABLE `iko_users` (
 	`user_date_joined`        INT(11)      NOT NULL,
 	`user_birthday`           DATE                  DEFAULT NULL,
 	`user_timezone_id`        INT(11)               DEFAULT '1',
+	`last_login`              INT(11),
 	PRIMARY KEY (`user_id`),
 	UNIQUE KEY `user_name` (`user_name`),
 	UNIQUE KEY `user_email` (`user_email`),
