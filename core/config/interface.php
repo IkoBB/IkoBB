@@ -20,15 +20,15 @@ interface config_interface
 {
 	/**
 	 * @param string $name
-	 * @param unknown $value
-	 * @param string  $comment
+	 * @param mixed  $value
+	 * @param string $comment
 	 */
 	function add ($name, $value, $comment);
 
 	/**
 	 * @param string $name
-	 * @param unknown $value
-	 * @param string  $comment
+	 * @param mixed  $value
+	 * @param string $comment
 	 */
 	function set ($name, $value, $comment = "");
 }

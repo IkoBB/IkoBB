@@ -21,8 +21,8 @@ class config extends config_loader
 	private static $configs = array ();
 
 	/**
-	 * @param unknown $type
-	 * @param unknown $args
+	 * @param string $type
+	 * @param array  $args
 	 *
 	 * @return NULL|mixed
 	 */
@@ -61,9 +61,12 @@ class config extends config_loader
 	private $config_loader = NULL;
 	private $create_args = NULL;
 	private $config = array ();
+
+	/** @noinspection PhpMissingParentConstructorInspection */
+
 	/**
-	 * @param unknown $type
-	 * @param unknown $args
+	 * @param string $type
+	 * @param array  $args
 	 *
 	 * @throws \Exception
 	 */
@@ -97,6 +100,7 @@ class config extends config_loader
 	{
 		if ($this->config_loader != NULL) {
 			$this->config = array ();
+			/** @noinspection PhpUndefinedMethodInspection */
 			$this->config = $this->config_loader->load_config();
 		}
 	}
@@ -107,6 +111,7 @@ class config extends config_loader
 	 */
 	public function add ($name, $value, $comment = "")
 	{
+		/** @noinspection PhpUndefinedMethodInspection */
 		if ($this->config_loader->add($name, $value, $comment)) {
 			$this->load_Config();
 			if (isset($this->config[ $name ])) {
@@ -128,6 +133,7 @@ class config extends config_loader
 	public function set ($name, $value, $comment = "")
 	{
 		if ($this->config[ $name ] != $value) {
+			/** @noinspection PhpUndefinedMethodInspection */
 			if ($this->config_loader->set($name, $value, $comment)) {
 				$this->load_Config();
 				if (isset($this->config[ $name ]) && $this->config[ $name ] == $value) {
@@ -147,11 +153,15 @@ class config extends config_loader
 	}
 
 	/**
-	 * @param unknown $name
+	 * @param string $name
+	 *
+	 * @return mixed
 	 */
 	public function get ($name)
 	{
-		return $this->config[ $name ];
+		/** @noinspection PhpIllegalArrayKeyTypeInspection */
+		/** @noinspection PhpIllegalArrayKeyTypeInspection */
+		return (isset($this->config[ $name ])) ? $this->config[ $name ] : NULL;
 	}
 
 	/**

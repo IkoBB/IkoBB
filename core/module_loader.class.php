@@ -17,7 +17,7 @@ abstract class module_loader
 	private $class_module;
 	public $checked = FALSE;
 	public $is_load = FALSE;
-
+	protected $final_load = NULL;
 	public function __construct ($module)
 	{
 		$this->class_module = $module;
@@ -189,5 +189,18 @@ abstract class module_loader
 	public function is_load ()
 	{
 		return $this->is_load;
+	}
+
+	/**
+	 * @param $callable
+	 * @param $args
+	 */
+	public function final_load ()
+	{
+		if ($this->final_load != NULL) {
+			if (is_callable($this->final_load)) {
+				call_user_func($this->final_load);
+			}
+		}
 	}
 }

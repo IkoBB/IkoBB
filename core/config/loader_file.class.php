@@ -16,12 +16,15 @@
  */
 namespace Iko;
 
-class config_loader_file extends config_loader
+class config_loader_file extends config_loader // TODO: Überarbeiten der Klasse auf Stand von loader_pdo
 {
 	private $file = "";
 
 	/**
-	 * @param unknown $args
+	 * config_loader_file constructor.
+	 *
+	 * @param $args
+	 * @param $config_class
 	 */
 	public function __construct ($args, $config_class)
 	{

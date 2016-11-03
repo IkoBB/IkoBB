@@ -24,85 +24,125 @@ class Group
 	const table = "{prefix}usergroups";
 	const assignment = Permissions::group_assignment;
 	const id = "usergroup_id";
+	const name = "usergroup_name";
 
-	private static $cache = array ();
-	private static $cache_exist = array ();
+	protected static $cache = array ();
+	protected static $cache_exist = array ();
 
-	/**
-	 * @param      $group_id
-	 * @param bool $reload
-	 *
-	 * @return array|group
-	 */
-	public static function get ($group_id, $reload = FALSE)
+	public static function get ($ids = 0, $reload = FALSE)
 	{
-		if ($group_id != 0 && $group_id != NULL) {
-			if (is_array($group_id)) {
-				self::exist($group_id);
+		$class = get_called_class();
+		if (is_string($ids) && !is_numeric($ids)) {
+			return self::search(array (self::name => $ids));
+		}
+		if (is_numeric($ids)) {
+			$ids = intval($ids);
+		}
+		if (is_array($ids) || is_int($ids)) {
+			if (is_array($ids)) {
+				self::exist($ids);
 			}
-			if (is_string($group_id) || is_int($group_id)) {
-				$group_id = array ($group_id);
+			if (is_int($ids)) {
+				$ids = array ($ids);
 			}
-			$group_array = array ();
-			foreach ($group_id as $id) {
+			$user_array = array ();
+			foreach ($ids as $id) {
 				if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
 					if (self::exist($id, $reload)) {
-						$class = str_replace(__NAMESPACE__ . "/", "", __CLASS__);
 						self::$cache[ $id ] = new $class($id);
-						array_push($group_array, self::$cache[ $id ]);
+						array_push($user_array, self::$cache[ $id ]);
 					}
 				}
 				else {
-					array_push($group_array, self::$cache[ $id ]);
+					array_push($user_array, self::$cache[ $id ]);
 				}
 			}
-			if (count($group_array) == 1) {
-				return $group_array[0];
+			if (count($user_array) == 1) {
+				return $user_array[0];
 			}
 			else {
-				return $group_array;
+				return $user_array;
 			}
+		}
+
+		return NULL;
+	}
+
+	public static function search ($args = array (), $or = FALSE) // TODO: Complete Function for Searching after single and Mutliple user
+	{
+		$class = get_called_class();
+		$sql = "SELECT " . self::id . " FROM " . $class::table . " WHERE";
+		$equal = ($or) ? "OR" : "AND";
+		if (count($args) > 0) {
+			$i = count($args);
+			$string = "";
+			foreach ($args as $key => $var) {
+				if (is_string($var)) {
+					$string .= ' ' . $key . " = '" . $var . "'";
+				}
+				if (is_int($var)) {
+					$string .= ' ' . $key . ' = ' . $var . '';
+				}
+				if (is_bool($var)) {
+					$var = intval($var);
+					$string .= ' ' . $key . ' = ' . $var . '';
+				}
+				if ($i > 1) {
+					$string .= " " . $equal;
+				}
+			}
+			$sql .= $string;
+		}
+		$ids = array ();
+		$statement = Core::$PDO->query($sql);
+		if ($statement !== FALSE) {
+			$fetch_all = $statement->fetchAll();
+			foreach ($fetch_all as $fetch) {
+				array_push($ids, intval($fetch[ self::id ]));
+			}
+			$user_array = self::get($ids);
+
+			return $user_array;
+		}
+		else {
+			return NULL;
 		}
 	}
 
-	public static function search ()
-	{
-
-	}
-
 	/**
-	 * @param      $group_id
+	 * @param int  $ids
 	 * @param bool $reload
 	 *
-	 * @return bool
+	 * @return bool|mixed
 	 */
-	public static function exist ($group_id, $reload = FALSE)
+	public static function exist ($ids = 0, $reload = FALSE)
 	{
-		if ($group_id != 0 && $group_id != NULL) {
-			$statement = Core::$PDO->prepare("SELECT " . self::id . " FROM " . self::table . " WHERE " . self::id . " = :group_id");
-			if (is_string($group_id) || is_int($group_id)) {
-				if (!isset(self::$cache_exist[ $group_id ]) || $reload) {
-					$statement->bindParam(':group_id', $group_id);
+		$class = get_called_class();
+		if ($ids != 0 && $ids != NULL) {
+			$statement = Core::$PDO->prepare("SELECT " . $class::id . " FROM " . $class::table . " WHERE " . $class::id . " = :ids");
+			if (is_string($ids) || is_int($ids)) {
+				if (!isset(self::$cache_exist[ $ids ]) || $reload) {
+					$statement->bindParam(':ids', $ids);
 					$statement->execute();
 					if ($statement->rowCount() > 0) {
-						self::$cache_exist[ $group_id ] = TRUE;
+						self::$cache_exist[ $ids ] = TRUE;
 
 						return TRUE;
 					}
 					else {
-						self::$cache_exist[ $group_id ] = FALSE;
+						self::$cache_exist[ $ids ] = FALSE;
 
 						return FALSE;
 					}
 				}
 
-				return self::$cache_exist[ $group_id ];
+				return self::$cache_exist[ $ids ];
 			}
 			else {
-				if (is_array($group_id)) {
-					foreach ($group_id as $id) {
+				if (is_array($ids)) {
+					foreach ($ids as $id) {
 						if (!isset(self::$cache_exist[ $id ]) || $reload) {
-							$statement->bindParam(':group_id', $id);
+							$statement->bindParam(':ids', $id);
 							$statement->execute();
 							if ($statement->rowCount() > 0) {
 								self::$cache_exist[ $id ] = TRUE;
@@ -124,8 +164,6 @@ class Group
 			return FALSE;
 		}
 	}
-
-
 	private $id;
 	private $name;
 	private $style;
@@ -222,7 +260,13 @@ class Group
 		return $this->style;
 	}
 
-	public function get_Displayname ()
+	/*public function get_Displayname ()
 	{
+		return $this->style;
+	}*/
+
+	public function get_permission_class ()
+	{
+		return Permissions::get($this);
 	}
 }

@@ -20,6 +20,11 @@ abstract class config_loader implements config_interface
 {
 	protected $config_class;
 
+	/**
+	 * config_loader constructor.
+	 *
+	 * @param $config_class
+	 */
 	protected function __construct ($config_class)
 	{
 		$this->config_class = $config_class;
@@ -37,8 +42,14 @@ abstract class config_loader implements config_interface
 	 */
 	public abstract function add ($name, $value, $comment);
 
+	/**
+	 * @return mixed
+	 */
 	protected abstract function load_Config ();
 
+	/**
+	 * @return mixed
+	 */
 	public function get_config_class ()
 	{
 		return $this->config_class;

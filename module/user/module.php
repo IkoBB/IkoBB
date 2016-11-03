@@ -14,6 +14,7 @@ namespace Iko;
 
 class user_module_loader extends module_loader
 {
+	protected $final_load = __NAMESPACE__ . "\\User::session";
 	private $files = array (
 		"user.class.php",
 		"group.class.php",
@@ -21,8 +22,7 @@ class user_module_loader extends module_loader
 			"permissions.class.php",
 			"value.class.php",
 			"group.class.php",
-			"user.class.php"),
-		"execute.php");
+			"user.class.php"));
 	public function __construct ($module)
 	{
 		parent::__construct($module);

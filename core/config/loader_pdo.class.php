@@ -81,7 +81,7 @@ class config_loader_pdo extends config_loader
 			}
 		}
 		else {
-			$this->config_class->set($name, $value, $comment);
+			return $this->config_class->set($name, $value, $comment);
 		}
 	}
 

@@ -16,26 +16,30 @@ class User //TODO: Complete
 {
 	const table = "{prefix}users";
 	const id = "user_id";
-	private static $cache = array ();
-	private static $cache_exist = array ();
+	const name = "user_name";
+	protected static $cache = array ();
+	protected static $cache_exist = array ();
 
-	public static function get ($user_id = 0, $reload = FALSE)
+	public static function get ($ids = 0, $reload = FALSE)
 	{
-		if (is_string($user_id)) {
-			return self::search(array ("user_name" => $user_id));
+		$class = get_called_class();
+		if (is_string($ids) && !is_numeric($ids)) {
+			return self::search(array (self::name => $ids));
 		}
-		if (is_array($user_id) || is_int($user_id)) {
-			if (is_array($user_id)) {
-				self::exist($user_id);
+		if (is_numeric($ids)) {
+			$ids = intval($ids);
+		}
+		if (is_array($ids) || is_int($ids)) {
+			if (is_array($ids)) {
+				self::exist($ids);
 			}
-			if (is_int($user_id)) {
-				$user_id = array ($user_id);
+			if (is_int($ids)) {
+				$ids = array ($ids);
 			}
 			$user_array = array ();
-			foreach ($user_id as $id) {
+			foreach ($ids as $id) {
 				if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
 					if (self::exist($id, $reload)) {
-						$class = str_replace(__NAMESPACE__ . "/", "", get_called_class());
 						self::$cache[ $id ] = new $class($id);
 						array_push($user_array, self::$cache[ $id ]);
 					}
@@ -57,7 +61,8 @@ class User //TODO: Complete
 
 	public static function search ($args = array (), $or = FALSE) // TODO: Complete Function for Searching after single and Mutliple user
 	{
-		$sql = "SELECT " . self::id . " FROM " . self::table . " WHERE";
+		$class = get_called_class();
+		$sql = "SELECT " . self::id . " FROM " . $class::table . " WHERE";
 		$equal = ($or) ? "OR" : "AND";
 		if (count($args) > 0) {
 			$i = count($args);
@@ -96,38 +101,39 @@ class User //TODO: Complete
 	}
 
 	/**
-	 * @param int  $user_id
+	 * @param int  $ids
 	 * @param bool $reload
 	 *
 	 * @return bool|mixed
 	 */
-	public static function exist ($user_id = 0, $reload = FALSE)
+	public static function exist ($ids = 0, $reload = FALSE)
 	{
-		if ($user_id != 0 && $user_id != NULL) {
-			$statement = Core::$PDO->prepare("SELECT user_id FROM " . self::table . " WHERE " . self::id . " = :user_id");
-			if (is_string($user_id) || is_int($user_id)) {
-				if (!isset(self::$cache_exist[ $user_id ]) || $reload) {
-					$statement->bindParam(':user_id', $user_id);
+		$class = get_called_class();
+		if ($ids != 0 && $ids != NULL) {
+			$statement = Core::$PDO->prepare("SELECT " . $class::id . " FROM " . $class::table . " WHERE " . $class::id . " = :ids");
+			if (is_string($ids) || is_int($ids)) {
+				if (!isset(self::$cache_exist[ $ids ]) || $reload) {
+					$statement->bindParam(':ids', $ids);
 					$statement->execute();
 					if ($statement->rowCount() > 0) {
-						self::$cache_exist[ $user_id ] = TRUE;
+						self::$cache_exist[ $ids ] = TRUE;
 
 						return TRUE;
 					}
 					else {
-						self::$cache_exist[ $user_id ] = FALSE;
+						self::$cache_exist[ $ids ] = FALSE;
 
 						return FALSE;
 					}
 				}
 
-				return self::$cache_exist[ $user_id ];
+				return self::$cache_exist[ $ids ];
 			}
 			else {
-				if (is_array($user_id)) {
-					foreach ($user_id as $id) {
+				if (is_array($ids)) {
+					foreach ($ids as $id) {
 						if (!isset(self::$cache_exist[ $id ]) || $reload) {
-							$statement->bindParam(':user_id', $id);
+							$statement->bindParam(':ids', $id);
 							$statement->execute();
 							if ($statement->rowCount() > 0) {
 								self::$cache_exist[ $id ] = TRUE;
@@ -151,6 +157,11 @@ class User //TODO: Complete
 	}
 
 	private static $session_user = FALSE;
+
+	/**
+	 *
+	 * @return void
+	 */
 	public static function session ()
 	{
 		$user_id = intval(define_session("user_id", "0"));
@@ -179,12 +190,13 @@ class User //TODO: Complete
 		}
 		$class = self::search($search);
 		if ($class !== FALSE) {
-			$pass_hash = get_hash($password);
+			$pass_hash = $class->salt($password);
 			if ($pass_hash == $class->get_password()) {
 				set_session("user_id", $class->get_ID());
 				if (intval(read_session("user_id")) == $class->get_ID()) {
 					return TRUE;
 				}
+
 				return FALSE;
 			}
 			else {
@@ -196,17 +208,15 @@ class User //TODO: Complete
 		}
 	}
 
-	private function salt ($user)
-	{
-		if (!$user instanceof User) {
-			$user = self::get($user);
-		}
-		/*
+	/*
 		 * Id + Datejoined password datejoined%id
 		 *
 		 */
-
-	}
+	/**
+	 * @param $user
+	 *
+	 * @return string
+	 */
 	private $id;
 	private $name;
 	private $password;
@@ -216,7 +226,7 @@ class User //TODO: Complete
 	private $about_user;
 	private $location_id;
 	private $gender;
-	private $date_joined;
+	private $date_joined; // user_date_joined
 	private $birthday;
 	private $chosen_template_id;
 	private $timezone_id;
@@ -249,6 +259,14 @@ class User //TODO: Complete
 		else {
 			throw new Exception("User does not exist: User_ID = " . $user_id . "");
 		}
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function is_own ()
+	{
+		return ($this === self::get_session()) ? TRUE : FALSE;
 	}
 
 	/**
@@ -324,6 +342,40 @@ class User //TODO: Complete
 	public function get_joined_Time ()
 	{
 		return $this->date_joined;
+	}
+
+	/**
+	 * @param $pass
+	 *
+	 * @return string
+	 *
+	 * The salt is for more security
+	 */
+	public function salt ($pass)
+	{
+		$dj = $this->get_joined_Time();
+		$id = $this->get_Id();
+		$pint = ($a = preg_replace('/[^\-\d]*(\-?\d*).*/', '$1', $pass)) ? $a : '1';
+		$t = phpversion();
+		$salt = (($dj % $id) + $pint) * ($dj - ($id * $pint)) . $pass . (($dj % $id) + $pint) . phpversion() . $pass . ($pint + $id + $dj);
+
+		return get_hash($salt);
+	}
+
+	public function change_password ($old, $new, $sec)
+	{
+
+		$s_old = $this->salt($old);
+		$s_new = $this->salt($new);
+		$s_sec = $this->salt($sec);
+		if ($this->get_password() == $s_old && $s_new == $s_sec) {
+
+		}
+	}
+
+	public function get_permission_class ()
+	{
+		return Permissions::get($this);
 	}
 }
 

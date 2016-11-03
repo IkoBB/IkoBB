@@ -19,9 +19,9 @@ namespace Iko;
 class config_value
 {
 	/**
-	 * @param unknown $var
+	 * @param mixed $var
 	 *
-	 * @return NULL|string|unknown
+	 * @return string
 	 */
 	public static function get_Convert ($var)
 	{
@@ -35,11 +35,11 @@ class config_value
 	private $module_name;
 	private $class_main;
 
+
 	/**
-	 * @param unknown $name
-	 * @param unknown $wert
-	 * @param string  $comment
-	 * @param unknown $config_loader
+	 * config_value constructor.
+	 *
+	 * @param $args
 	 */
 	public function __construct ($args)
 	{
@@ -50,9 +50,7 @@ class config_value
 	}
 
 	/**
-	 * @param string $type
-	 *
-	 * @return NULL|unknown
+	 * @return mixed
 	 */
 	public function get ()
 	{
@@ -64,7 +62,7 @@ class config_value
 	 * $var->equals($other);
 	 * This Funtion use string converted objects and look if the two objects are similar
 	 *
-	 * @param unknown $value
+	 * @param mixed $value
 	 *
 	 * @return boolean
 	 */
@@ -84,7 +82,7 @@ class config_value
 	}
 
 	/**
-	 * @return unknown
+	 * @return string
 	 */
 	public function get_name ()
 	{
@@ -99,12 +97,13 @@ class config_value
 		return $this->comment;
 	}
 
+
 	/**
-	 * @param unknown $wert
+	 * @param $value
 	 *
-	 * @return \Iko\NULL|\Iko\unknown
+	 * @return mixed
 	 */
-	public function __get ($wert)
+	public function __get ($value = NULL)
 	{
 		return $this->get();
 	}

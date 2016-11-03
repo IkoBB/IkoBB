@@ -297,7 +297,11 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 				$this->check();
 			}
 			if ($this->is_Checked()) {
-				return $this->load();
+				if ($this->load()) {
+					$this->get_loader()->final_load();
+				}
+
+				return $this->is_load();
 			}
 			else {
 				return $this->is_load();
