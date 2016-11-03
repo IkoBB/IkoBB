@@ -13,7 +13,7 @@
 
 namespace Iko;
 
-class language_loader extends module_loader
+class language_loader extends \Iko\module_loader
 {
     public function __construct($modul)
     {
