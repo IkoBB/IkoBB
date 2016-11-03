@@ -1,7 +1,8 @@
 INSERT INTO `iko_modules` VALUES ('IkoBB','iko','Core Engine','1.0.0a',1),
 ('IkoBB','forum','Forum Engine','1.0.0a',1),
 ('IkoBB','cms','Template Engine','1.0.0a',1),
-('IkoBB','user','User Engine','1.0.0a',1);
+('IkoBB','user','User Engine','1.0.0a',1),
+('IkoBB','language','Language Engine','1.0.0a',1);
 
 
 INSERT INTO `iko_configs` VALUES ('site_name', 's:10:"Test Value";', 'The name of the site', 'iko'),
