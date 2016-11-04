@@ -32,7 +32,7 @@ class language
 
 	private $german = array ();
 	private $english = array ();
-	private $lang;
+	private $lang = "english";
 
 	private $translations = array ();
 
@@ -55,11 +55,11 @@ class language
 	{
 		if (array_search($language, self::supported) !== FALSE) {
 			try {
-				$statement = Core::$PDO->query("SELECT translation_id, " . $language . " FROM " . self::translation . " ");
+				$statement = Core::$PDO->query("SELECT translation_key, " . $language . " FROM " . self::translation . " ");
 				$fetchall = $statement->fetchAll(PDO::FETCH_ASSOC);
 				foreach ($fetchall as $item) {
 					foreach ($item as $key => $value) {
-						if ($key == "translation_id") {
+						if ($key == "translation_key") {
 							$id = $value;
 						}
 						if ($key == $language) {
@@ -76,5 +76,10 @@ class language
 		}
 	}
 
+	public function __get ($value)
+	{
+		return (isset($this->{$this->lang}[ $value ])) ? $this->{$this->lang}[ $value ] : "";
+		// (Bedienung)?TRUE:ELSE
+	}
 
 }

@@ -36,21 +36,23 @@ CREATE TABLE `iko_users` (
 	`user_password`           TEXT         NOT NULL,
 	`user_email`              VARCHAR(255) NOT NULL,
 	`user_avatar_id`          INT(11)               DEFAULT '1',
-	`user_signature`          VARCHAR(255)          DEFAULT NULL,
-	`user_about_user`         TEXT,
-	`user_location_id`        INT(11)               DEFAULT NULL,
-	`user_gender`             TINYINT(1)            DEFAULT NULL,
-	`user_date_joined`        INT(11)      NOT NULL,
-	`user_birthday`           DATE                  DEFAULT NULL,
-	`user_timezone_id`        INT(11)               DEFAULT '1',
-	`user_last_login`              INT(11),
-	`user_language`           varchar(255)     NOT NULL Default 'english',
+	`user_signature`   VARCHAR(255)          DEFAULT NULL,
+	`user_about_user`  TEXT,
+	`user_location_id` INT(11)               DEFAULT NULL,
+	`user_gender`      TINYINT(1)            DEFAULT NULL,
+	`user_date_joined` INT(11)      NOT NULL,
+	`user_birthday`    DATE                  DEFAULT NULL,
+	`user_timezone_id` INT(11)               DEFAULT '1',
+	`user_last_login`  INT(11),
+	`user_language`    varchar(255) NOT NULL Default 'english',
+	`user_template`    INT(11)      NOT NULL DEFAULT '1',
 	PRIMARY KEY (`user_id`),
 	UNIQUE KEY `user_name` (`user_name`),
 	UNIQUE KEY `user_email` (`user_email`),
 	KEY `user_avatar_id` (`user_avatar_id`),
 	KEY `user_location_id` (`user_location_id`),
-	KEY `user_timezone_id` (`user_timezone_id`)
+	KEY `user_timezone_id` (`user_timezone_id`),
+	KEY `user_template` (`user_template`)
 );
 
 
@@ -107,12 +109,6 @@ CREATE TABLE `iko_user_permissions` (
 	KEY `iko_group_permission_id_user` (`user_id`)
 );
 
-CREATE TABLE `iko_template_assignment` (
-	`user_id`         INT(11)       NOT NULL,
-	`template_id` 		INT(11)       NOT NULL,
-	UNIQUE KEY `user_id` (`user_id`),
-	KEY `template_id` (`template_id`)
-);
 
 CREATE TABLE `iko_translation` (
   `translation_key`     varchar(255)   NOT NULL  ,
@@ -181,20 +177,6 @@ ALTER TABLE iko_group_assignment
 FOREIGN KEY (`child_group_id`)
 REFERENCES `iko_usergroups` (`usergroup_id`);
 
-ALTER TABLE iko_template_assignment
-	ADD CONSTRAINT `iko_template_assignment_ibfk1`
-FOREIGN KEY (`user_id`)
-REFERENCES `iko_users` (`user_id`)
-	ON DELETE CASCADE
-	ON UPDATE CASCADE;
-
-ALTER TABLE iko_template_assignment
-	ADD CONSTRAINT `iko_template_assignment_ibfk2`
-FOREIGN KEY (`template_id`)
-REFERENCES `iko_templates` (`template_id`)
-	ON DELETE CASCADE
-	ON UPDATE CASCADE;
-
 
 ALTER TABLE iko_configs
 	ADD CONSTRAINT `iko_configs_ibfk1`
@@ -202,3 +184,8 @@ FOREIGN KEY (`module_name`)
 REFERENCES `iko_modules` (`module_name`)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE;
+
+ALTER TABLE iko_templates
+	ADD CONSTRAINT `iko_user_template_ibfk_2`
+FOREIGN KEY (`template_id`)
+REFERENCES `iko_users` (`user_template`);

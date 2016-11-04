@@ -40,3 +40,7 @@ INSERT INTO `iko_user_permissions` VALUES ('1','controll_everything'),
 
 INSERT INTO `iko_group_permissions` VALUES ('1','controll_everything'),
 ('1','delete_user');
+
+
+INSERT INTO `iko_translation` VALUES ('user_name','Benutzername','username'),
+('password','Kennwort','password');
