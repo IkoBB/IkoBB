@@ -25,9 +25,7 @@ class language_loader extends module_loader
 
         //Add Tables like User and choosen language assignment and more
         $tables = array(
-            "language",
-            "translation",
-            "language_assignment"
+	        "translation",
         );
 
         return $this->check_PDO_Tables($tables);
@@ -36,6 +34,7 @@ class language_loader extends module_loader
     protected function pre_check_Files()
     {
         $files = array(// TODO: Add Files
+                       "language.class.php",
         );
 
         return $this->check_Files($files);
@@ -44,6 +43,7 @@ class language_loader extends module_loader
     public function load($files = array())
     {
         $files = array(//TODO: Add files to load
+                       "language.class.php",
         );
         return parent::load($files);
     }

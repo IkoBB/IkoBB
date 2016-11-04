@@ -43,7 +43,8 @@ CREATE TABLE `iko_users` (
 	`user_date_joined`        INT(11)      NOT NULL,
 	`user_birthday`           DATE                  DEFAULT NULL,
 	`user_timezone_id`        INT(11)               DEFAULT '1',
-	`last_login`              INT(11),
+	`user_last_login`              INT(11),
+	`user_language`           varchar(255)     NOT NULL Default 'english',
 	PRIMARY KEY (`user_id`),
 	UNIQUE KEY `user_name` (`user_name`),
 	UNIQUE KEY `user_email` (`user_email`),
@@ -114,26 +115,13 @@ CREATE TABLE `iko_template_assignment` (
 );
 
 CREATE TABLE `iko_translation` (
-  `translation_id`      int(11)   NOT NULL  AUTO_INCREMENT,
+  `translation_key`     varchar(255)   NOT NULL  ,
   `german`              text      NOT NULL,
   `english`             text      NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`translation_key`)
 );
 
-CREATE TABLE `iko_language` (
-  `language_id`       int(11)           NOT NULL  AUTO_INCREMENT,
-  `language_name`     varchar(255)      NOT NULL,
-  PRIMARY KEY (`id`)
-);
 
-CREATE TABLE `iko_language_assignment` (
-	`user_id`         INT(11)       NOT NULL,
-	`language_id` 		INT(11)       DEFAULT '1',
-	UNIQUE KEY `user_id` (`user_id`),
-	KEY `language_id` (`language_id`)
-);
-
-/*TODO: Add Relations of the language components. */
 
 /*Relation between Tables */
 
