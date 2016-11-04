@@ -233,6 +233,7 @@ class User extends operators //TODO: Complete
 	private $timezone_id;
 	private $last_login;
 	private $language;
+	private $template;
 
 
 	/**
@@ -431,6 +432,10 @@ class User extends operators //TODO: Complete
 		return $this->language;
 	}
 
+	public function get_template ()
+	{
+		return $this->template;
+	}
 }
 
 /*
