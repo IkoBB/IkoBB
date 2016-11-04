@@ -24,7 +24,7 @@ CREATE TABLE `iko_templates` (
 	`template_version`               VARCHAR(20)           DEFAULT '1',
 	`template_directory`             VARCHAR(255) NOT NULL,
 	`template_required_core_version` VARCHAR(20)  NOT NULL,
-	PRIMARY KEY (`template_id`),
+	KEY (`template_id`),
 	UNIQUE KEY `template_directory` (`template_directory`),
 	UNIQUE KEY `template_auth_name` (`template_name`, `template_author`)
 );
