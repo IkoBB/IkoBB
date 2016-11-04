@@ -12,7 +12,7 @@
  */
 namespace Iko;
 
-class User //TODO: Complete
+class User extends operators //TODO: Complete
 {
 	const table = "{prefix}users";
 	const id = "user_id";
@@ -194,6 +194,7 @@ class User //TODO: Complete
 			if ($pass_hash == $class->get_password()) {
 				set_session("user_id", $class->get_ID());
 				if (intval(read_session("user_id")) == $class->get_ID()) {
+					$class->update_last_login($password);
 					return TRUE;
 				}
 
@@ -230,7 +231,8 @@ class User //TODO: Complete
 	private $birthday;
 	private $chosen_template_id;
 	private $timezone_id;
-	private $permission;
+	private $last_login;
+	private $language;
 
 
 	/**
@@ -300,6 +302,9 @@ class User //TODO: Complete
 		}
 	}
 
+	/**
+	 * @param $group
+	 */
 	private function load_groups_recursive ($group)
 	{
 		$parent_list = $group->get_Parents();
@@ -319,16 +324,25 @@ class User //TODO: Complete
 		return $this->name;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function get_groups ()
 	{
 		return $this->groups;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function get_Permission ()
 	{
 		return $this->permission;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	private function get_password ()
 	{
 		return $this->password;
@@ -344,6 +358,16 @@ class User //TODO: Complete
 		return $this->date_joined;
 	}
 
+	public function get_last_login_Date ()
+	{
+		return date(Core::date_format(), $this->get_last_login_Time());
+	}
+
+	public function get_last_login_Time ()
+	{
+		return $this->last_login;
+	}
+
 	/**
 	 * @param $pass
 	 *
@@ -357,14 +381,16 @@ class User //TODO: Complete
 		$id = $this->get_Id();
 		$pint = ($a = preg_replace('/[^\-\d]*(\-?\d*).*/', '$1', $pass)) ? $a : '1';
 		$t = phpversion();
-		$salt = (($dj % $id) + $pint) * ($dj - ($id * $pint)) . $pass . (($dj % $id) + $pint) . phpversion() . $pass . ($pint + $id + $dj);
+		$ll = $this->get_last_login_Time();
+		$pi = round(pi());
+		$salt = sqrt($ll) + (($dj % $id) + ($pint * $ll)) * ($dj - ($id * $pint)) . $pass
+			(($ll % $id) + $pint) * $pi . $t . $pass . sqrt($pint + $id + $dj + $ll);
 
 		return get_hash($salt);
 	}
 
 	public function change_password ($old, $new, $sec)
 	{
-
 		$s_old = $this->salt($old);
 		$s_new = $this->salt($new);
 		$s_sec = $this->salt($sec);
@@ -373,10 +399,33 @@ class User //TODO: Complete
 		}
 	}
 
-	public function get_permission_class ()
+	public function update_last_login ($pass)
 	{
-		return Permissions::get($this);
+		if ($this->is_own()) {
+			$s_pass = $this->salt($pass);
+			if ($s_pass == $this->get_password()) {
+				Core::$PDO->beginTransaction();
+				$new_last_login = time();
+				$statement = Core::$PDO->execute("UPDATE " . self::table . " Set user_last_login = '" . $new_last_login . "' WHERE " . self::id . " = " . $this->get_Id());
+				if ($statement !== FALSE) {
+					$this->last_login = $new_last_login;
+					$new_pass = $this->salt($pass);
+					$statement_two = Core::$PDO->execute("UPDATE " . self::table . " Set user_password = '" . $new_pass . "' WHERE " . self::id . " = " . $this->get_Id());
+					if ($statement_two !== FALSE) {
+						$this->password = $new_pass;
+						Core::$PDO->commit();
+					}
+					else {
+						Core::$PDO->rollBack();
+					}
+				}
+				else {
+					Core::$PDO->rollBack();
+				}
+			}
+		}
 	}
+
 }
 
 /*

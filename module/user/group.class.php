@@ -19,7 +19,7 @@
  */
 namespace Iko;
 
-class Group
+class Group extends operators
 {
 	const table = "{prefix}usergroups";
 	const assignment = Permissions::group_assignment;
@@ -264,9 +264,4 @@ class Group
 	{
 		return $this->style;
 	}*/
-
-	public function get_permission_class ()
-	{
-		return Permissions::get($this);
-	}
 }
