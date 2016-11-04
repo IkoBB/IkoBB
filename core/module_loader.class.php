@@ -18,6 +18,7 @@ abstract class module_loader
 	public $checked = FALSE;
 	public $is_load = FALSE;
 	protected $final_load = NULL;
+	protected $depend_on = array ();
 	public function __construct ($module)
 	{
 		$this->class_module = $module;
@@ -28,8 +29,14 @@ abstract class module_loader
 		if ($this->pre_check_Files() && $this->pre_check_PDO_Tables()) {
 			$this->checked = TRUE;
 		}
+		$result = TRUE;
+		foreach ($this->depend_on as $item) {
+			if (module::request($item) == FALSE) {
+				$result = FALSE;
+			}
+		}
 
-		return $this->is_Checked();
+		return ($this->is_Checked() && $result) ? TRUE : FALSE;
 	}
 
 	public function is_Checked ()
