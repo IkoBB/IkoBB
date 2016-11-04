@@ -233,7 +233,7 @@ class parser
 			},
 			// YouTube
 			'#\\[youtube\\](.*?)\\[/youtube\\]#uis' => '<iframe width="560" height="315" src="//www.youtube.com/embed/\\1?rel=0" frameborder="0" allowfullscreen></iframe>'
-			/* ToDo: Add the following BBCodes: [latex], [asciimath], [mathml], [spoiler], [post], [thread], [php], [html]
+			/* ToDo: Add the following BBCodes: [latex], [asciimath], [mathml], [spoiler], [post], [thread], [php], [html]; FontAwesome BBCode? MarkDown ML?
 			// LaTeX
 			'#\\[latex\\](.*?)\\[/latex\\]#uis' => '$$\\1$$', Not included yet
 			// LaTeX

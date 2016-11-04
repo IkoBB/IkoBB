@@ -120,8 +120,8 @@ class template
 			'$1<?php $2; ?>',
 			'$1<?php $2: ?>$3',
 			'$1<?php if( ! ($2)): ?>',
-			'<?php echo $this->param["$1"]; ?>',
-			'<?php echo $this->entity["$1"]; ?>');
+			'<?php echo (isset($this->param["$1"]))?$this->param["$1"]:""; ?>',
+			'<?php echo (isset($this->entity["$1"]))?$this->entity["$1"]:""; ?>');
 		$string = preg_replace($syntax_blade, $syntax_php, $string);
 		//@empty
 		$string = str_replace('@empty', '<?php endforeach; ?><?php else: ?>', $string);
