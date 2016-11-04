@@ -426,6 +426,11 @@ class User extends operators //TODO: Complete
 		}
 	}
 
+	public function get_language ()
+	{
+		return $this->language;
+	}
+
 }
 
 /*
