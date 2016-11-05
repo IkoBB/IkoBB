@@ -15,7 +15,7 @@ namespace Iko;
 
 class template
 {
-	private static $instance = null;
+	private static $instance = NULL;
 
 	/**
 	 * Initiation of the class
@@ -23,9 +23,9 @@ class template
 	 *
 	 * @return \Iko\template|null
 	 */
-	public static function get_instance()
+	public static function get_instance ()
 	{
-		if (self::$instance == null) {
+		if (self::$instance == NULL) {
 			self::$instance = new template();
 		}
 
@@ -51,24 +51,24 @@ class template
 	 *
 	 * @throws \Iko\Exception
 	 */
-	private function __construct()
+	private function __construct ()
 	{
-		if (strpos(Core::$currentfile, Core::$adminpath) === false) {
-			// ToDo: Get template which the user wants to have
-			// $this->template_id = Core::template;
-			$this->template_id = 1;
-			// Get all variables from table
-			try {
-				$statement = Core::$PDO->prepare("SELECT * FROM iko_templates WHERE template_id = :template_id");
-				$statement->bindParam(':template_id', $this->template_id);
-				$statement->execute();
-				$result = $statement->fetch(PDO::FETCH_ASSOC);
-				foreach ($result as $key => $value) {
-					$this->{$key} = $value;
+		if (strpos(Core::$currentfile, Core::$adminpath) === FALSE) {
+			// Check if the user module is loaded
+			if (module::load_status("user")) {
+				// Check if user is logged in
+				if ($user = User::get_session() !== FALSE) {
+					// Get the template of the user
+					$this->template_id = $user->get_template();
+				}
+				else { // if user is not logged in load default template
+					$config = config::load("pdo", "cms");
+					$this->template_id = $config->site_template;
 				}
 			}
-			catch (\PDOException $exception) {
-				throw new Exception("Error #1234: " . $exception);
+			else { // load default template when no user module is activated
+				$config = config::load("pdo", "cms");
+				$this->template_id = $config->site_template;
 			}
 		}
 		else {
@@ -80,14 +80,39 @@ class template
 			$this->template_version = '1.0.0a';
 		}
 
-		// check directory & check required version core::version <= $template_required_version
-		if (file_exists(Core::$basepath . 'template/' . $this->template_directory . '/template.html') && version_compare(Core::version, $this->template_required_core_version, '<=')) {
-			$this->template = file_get_contents(Core::$basepath . '/template/' . $this->template_directory . '/template.html');
+
+		if ($this->template_id != "") {
+			if ($this->template_id != 0) {
+				// Get all variables from table
+				try {
+					$statement = Core::$PDO->prepare("SELECT * FROM iko_templates WHERE template_id = :template_id");
+					$statement->bindParam(':template_id', $this->template_id);
+					$statement->execute();
+					$result = $statement->fetch(PDO::FETCH_ASSOC);
+					foreach ($result as $key => $value) {
+						$this->{$key} = $value;
+					}
+				}
+				catch (\PDOException $exception) {
+					throw new Exception("Error #1234: " . $exception);
+				}
+			}
+
+			// check directory & check required version core::version <= $template_required_version
+			if (file_exists(Core::$basepath . 'template/' . $this->template_directory . '/template.html') && version_compare(Core::version,
+					$this->template_required_core_version, '<=')
+			) {
+				$this->template = file_get_contents(Core::$basepath . '/template/' . $this->template_directory . '/template.html');
+			}
+			else {
+				throw new Exception("Error #4321: The version of the template is lower than the version of the core. Please update your template.<br>Core version: " . Core::version . "<br> Required Core Version: " . $this->template_required_core_version);
+				// ToDo: Set user template to default template core::User->set_template(default);
+			}
 		}
 		else {
-			throw new Exception("Error #4321: The version of the template is lower than the version of the core. Please update your template.<br>Core version: " . Core::version . "<br> Required Core Version: " . $this->template_required_core_version);
-			// ToDo: Set user template to default template core::User->set_template(default);
+			throw new Exception("Error #1234: No template id set.");
 		}
+
 	}
 
 	/**
@@ -100,7 +125,7 @@ class template
 	 *
 	 * @return mixed|string
 	 */
-	private function bladeSyntax($string)
+	private function bladeSyntax ($string)
 	{
 		$syntax_blade = array (
 			'/{{ (.*) }}/U',
@@ -147,31 +172,33 @@ class template
 	 *
 	 * @return bool
 	 */
-	public function entity($entity, $parameters = array (), $return = false)
+	public function entity ($entity, $parameters = array (), $return = FALSE)
 	{
 		if (file_exists(Core::$basepath . 'template/' . $this->template_directory . '/entities.html')) {
 			$entities = file_get_contents(Core::$basepath . 'template/' . $this->template_directory . '/entities.html');
-			preg_match("/<!-- start:" . $entity . " -->(.*)<!-- end:" . $entity . " -->/is", $entities, $unparsed_entity);
+			preg_match("/<!-- start:" . $entity . " -->(.*)<!-- end:" . $entity . " -->/is", $entities,
+				$unparsed_entity);
 			foreach ($parameters as $parameter => $value) {
-				$this->param[$parameter] = $value;
+				$this->param[ $parameter ] = $value;
 			}
 			$parsed_entity = $this->bladeSyntax($unparsed_entity[1]);
-			if ($return === false) {
-				$this->entity[$entity] = $parsed_entity;
+			if ($return === FALSE) {
+				$this->entity[ $entity ] = $parsed_entity;
 			}
 			else {
 				return $parsed_entity;
 			}
 
 		}
-		return false;
+
+		return FALSE;
 	}
 
 	/**
 	 * @return mixed|string
 	 *
 	 */
-	public function __toString()
+	public function __toString ()
 	{
 		return $this->bladeSyntax($this->template);
 	}
@@ -183,10 +210,10 @@ class template
 	 *
 	 * @return mixed|string
 	 */
-	public function __get($var)
+	public function __get ($var)
 	{
-		if (isset($this->param[$var])) {
-			return $this->param[$var];
+		if (isset($this->param[ $var ])) {
+			return $this->param[ $var ];
 		}
 		else {
 			return "";
@@ -199,8 +226,8 @@ class template
 	 * @param $var
 	 * @param $value
 	 */
-	public function __set($var, $value)
+	public function __set ($var, $value)
 	{
-		$this->param[$var] = $value;
+		$this->param[ $var ] = $value;
 	}
 }
