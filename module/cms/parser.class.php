@@ -235,7 +235,7 @@ class parser
 			},
 			// YouTube
 			'#\\[youtube\\](.*?)\\[/youtube\\]#uis' => '<iframe width="560" height="315" src="//www.youtube.com/embed/\\1?rel=0" frameborder="0" allowfullscreen></iframe>'
-			/* ToDo: Add the following BBCodes: [latex], [asciimath], [mathml], [spoiler], [post], [thread], [php], [html]; FontAwesome BBCode? MarkDown ML?
+			/* ToDo: Add the following BBCodes: [latex], [asciimath], [mathml], [spoiler], [post], [thread], [php], [html]; MarkDown ML?
 			// LaTeX
 			'#\\[latex\\](.*?)\\[/latex\\]#uis' => '$$\\1$$', Not included yet
 			// LaTeX
@@ -363,5 +363,35 @@ class parser
 		}
 
 		return $return;
+	}
+
+	public static function dynamic_time($time) {
+		if(is_valid_unix_timestamp($time) !== TRUE) {
+			$time = strtotime($time);
+		}
+		$now = time();
+		$dif = $now - $time;
+		if($dif <= 60) {
+			return "Just now"; // Just now
+		}
+		elseif($dif > 60 && $dif <= 300) {
+			return "A few minutes ago"; // A few minutes ago
+		}
+		elseif ($dif > 300 && $dif <= 3600) {
+			return round($dif/60) . " minutes ago"; // 6 minutes ago
+		}
+		elseif ($dif > 3600 && $dif <= 7200) {
+			return round($dif/3600) . " hour ago"; // 2 hours ago
+		}
+		elseif ($dif > 7200 && $dif <= 86400) {
+			return round($dif/3600) . " hours ago"; // 2 hours ago
+		}
+		elseif ($dif > 86400 && $dif <= 604800) {
+			return round($dif/86400) . " days ago";
+		}
+		else {
+			return date(Core::date_format(), $time);
+		}
+
 	}
 }

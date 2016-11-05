@@ -28,7 +28,7 @@ interface iUser
 	/**
 	 * @return integer
 	 */
-	public function get_Id ();
+	public function get_id ();
 
 	/**
 	 * @return string

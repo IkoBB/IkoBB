@@ -290,7 +290,7 @@ class User extends operators implements iUser //TODO: Complete
 		return ($this === self::get_session()) ? TRUE : FALSE;
 	}
 
-	public function get_Id ()
+	public function get_id ()
 	{
 		return intval($this->id);
 	}
@@ -300,7 +300,7 @@ class User extends operators implements iUser //TODO: Complete
 
 	private function load_groups ()
 	{
-		$sql = "SELECT * FROM " . Permissions::user_assignment . " WHERE " . self::id . " = " . $this->get_ID();
+		$sql = "SELECT * FROM " . Permissions::user_assignment . " WHERE " . self::id . " = " . $this->get_id();
 		$statement = Core::$PDO->query($sql);
 		$fetch_all = $statement->fetchAll(PDO::FETCH_ASSOC);
 		foreach ($fetch_all as $fetch) {
@@ -364,7 +364,7 @@ class User extends operators implements iUser //TODO: Complete
 	public function salt ($pass)
 	{
 		$dj = $this->get_joined_Time();
-		$id = $this->get_Id();
+		$id = $this->get_id();
 		$a = preg_replace("/[^0-9]/", "", $pass);
 		$pint = (is_numeric($a)) ? (int)$a : 1;
 		$t = 7;
@@ -393,11 +393,11 @@ class User extends operators implements iUser //TODO: Complete
 			if ($s_pass == $this->get_password()) {
 				Core::$PDO->beginTransaction();
 				$new_last_login = time();
-				$statement = Core::$PDO->exec("UPDATE " . self::table . " Set user_last_login = '" . $new_last_login . "' WHERE " . self::id . " = " . $this->get_Id());
+				$statement = Core::$PDO->exec("UPDATE " . self::table . " Set user_last_login = '" . $new_last_login . "' WHERE " . self::id . " = " . $this->get_id());
 				if ($statement > 0) {
 					$this->last_login = $new_last_login;
 					$new_pass = $this->salt($pass);
-					$statement_two = Core::$PDO->exec("UPDATE " . self::table . " Set user_password = '" . $new_pass . "' WHERE " . self::id . " = " . $this->get_Id());
+					$statement_two = Core::$PDO->exec("UPDATE " . self::table . " Set user_password = '" . $new_pass . "' WHERE " . self::id . " = " . $this->get_id());
 					if ($statement_two > 0) {
 						$this->password = $new_pass;
 						Core::$PDO->commit();
@@ -421,5 +421,10 @@ class User extends operators implements iUser //TODO: Complete
 	public function get_template ()
 	{
 		return $this->template;
+	}
+
+	public function get_email ()
+	{
+		return $this->email;
 	}
 }

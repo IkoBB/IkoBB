@@ -208,6 +208,17 @@ function get_hash ($var)
 	return hash("sha256", $var);
 }
 
+/**
+ * @param $timestamp
+ *
+ * @return bool
+ */
+function is_valid_unix_timestamp($timestamp)
+{
+	return ((string) (int) $timestamp === $timestamp) && ($timestamp <= PHP_INT_MAX) && ($timestamp >= ~PHP_INT_MAX);
+}
+
+
 class functions
 {
 	/**
@@ -342,5 +353,9 @@ class functions
 	public static function set_session ($name, $value)
 	{
 		return set_session($name, $value);
+	}
+	public static function is_valid_unix_timestamp($timestamp)
+	{
+		return is_valid_unix_timestamp($timestamp);
 	}
 }

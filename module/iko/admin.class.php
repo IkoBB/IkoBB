@@ -16,27 +16,52 @@ namespace Iko;
 
 class admin
 {
-	public function list_modules() {
+	public function list_modules ()
+	{
 		$template = template::get_instance();
 		$modules = '';
-
-		$data = "SELECT * FROM " . module::table . " ORDER BY module_name";
-		foreach (Core::$PDO->query($data) as $value) {
-
-			if ($value["module_status"]) {
-				$status = '<span class="label label-success">Active</span>';
+		try {
+			$data = "SELECT * FROM " . module::table . " ORDER BY module_name";
+			foreach (Core::$PDO->query($data) as $value) {
+				if ($value["module_status"]) {
+					$status = '<span class="label label-success">Active</span>';
+				}
+				else {
+					$status = '<span class="label label-danger">Disabled</span>';
+				}
+				$modules .= $template->entity("module_list_entry", array (
+					"module_displayname" => $value["module_displayname"],
+					"module_name"        => $value["module_name"],
+					"module_author"      => $value["module_author"],
+					"module_version"     => $value["module_version"],
+					"module_status"      => $status,), TRUE);
 			}
-			else {
-				$status = '<span class="label label-danger">Disabled</span>';
-			}
-			$modules .= $template->entity("module_list_entry", array (
-				"module_displayname" => $value["module_displayname"],
-				"module_name" => $value["module_name"],
-				"module_author" => $value["module_author"],
-				"module_version" => $value["module_version"],
-				"module_status" => $status,), true);
+
+
+			return $template->entity("module_list", array ("module_list_modules" => $modules), TRUE);
+		}
+		catch (\PDOException $exception) {
+			echo $exception->getMessage() . "<br>";
+		}
+	}
+
+	public function list_users ()
+	{
+		module::request("user");
+		$template = template::get_instance();
+		$users = User::get_all();
+		$user_entities = "";
+
+		foreach ($users as $user) {
+			$user_entities .= $template->entity("user_list_entry", array (
+				"user_id" => $user->get_id(),
+				"user_name" => $user->get_user_name(),
+				"user_email" => $user->get_email(),
+				"user_date_joined" => parser::dynamic_time($user->get_joined_Time()),
+				), TRUE);
 		}
 
-		return $template->entity("module_list", array("module_list_modules" => $modules), true);
+		$template->content = $template->entity("user_list", array ("user_list_entries" => $user_entities), TRUE);
+
 	}
 }

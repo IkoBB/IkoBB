@@ -34,7 +34,7 @@ class User extends Permissions
 	public static function get ($class, $reload = FALSE)
 	{
 		if ($class instanceof users) {
-			$id = intval($class->get_Id());
+			$id = intval($class->get_id());
 		}
 		if (is_int($class)) {
 			$id = $class;
@@ -60,7 +60,7 @@ class User extends Permissions
 	public function __construct ($user)
 	{
 		if ($user instanceof users) {
-			$id = $user->get_Id();
+			$id = $user->get_id();
 		}
 		else {
 			if (is_int($user)) {
