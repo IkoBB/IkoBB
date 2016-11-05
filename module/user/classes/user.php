@@ -12,7 +12,7 @@
  */
 namespace Iko;
 
-class User extends operators //TODO: Complete
+class User extends operators implements iUser //TODO: Complete
 {
 	const table = "{prefix}users";
 	const id = "user_id";
@@ -156,6 +156,17 @@ class User extends operators //TODO: Complete
 		}
 	}
 
+	public static function get_all ()
+	{
+		$statement = Core::$PDO->query("SELECT " . self::id . " FROM " . self::table);
+		$fetchAll = $statement->fetchAll(PDO::FETCH_ASSOC);
+		$users = array ();
+		foreach ($fetchAll as $item) {
+			array_push($users, self::get($item["user_id"]));
+		}
+
+		return $users;
+	}
 	private static $session_user = FALSE;
 
 	/**
@@ -209,15 +220,7 @@ class User extends operators //TODO: Complete
 		}
 	}
 
-	/*
-		 * Id + Datejoined password datejoined%id
-		 *
-		 */
-	/**
-	 * @param $user
-	 *
-	 * @return string
-	 */
+
 	private $id;
 	private $name;
 	private $password;
@@ -229,7 +232,6 @@ class User extends operators //TODO: Complete
 	private $gender;
 	private $date_joined; // user_date_joined
 	private $birthday;
-	private $chosen_template_id;
 	private $timezone_id;
 	private $last_login;
 	private $language;
@@ -264,17 +266,11 @@ class User extends operators //TODO: Complete
 		}
 	}
 
-	/**
-	 * @return boolean
-	 */
 	public function is_own ()
 	{
 		return ($this === self::get_session()) ? TRUE : FALSE;
 	}
 
-	/**
-	 * @return integer
-	 */
 	public function get_Id ()
 	{
 		return intval($this->id);
@@ -283,9 +279,6 @@ class User extends operators //TODO: Complete
 	private $groups = array ();
 	private $groups_all = array ();
 
-	/**
-	 *
-	 */
 	private function load_groups ()
 	{
 		$sql = "SELECT * FROM " . Permissions::user_assignment . " WHERE " . self::id . " = " . $this->get_ID();
@@ -303,9 +296,6 @@ class User extends operators //TODO: Complete
 		}
 	}
 
-	/**
-	 * @param $group
-	 */
 	private function load_groups_recursive ($group)
 	{
 		$parent_list = $group->get_Parents();
@@ -317,33 +307,16 @@ class User extends operators //TODO: Complete
 		}
 	}
 
-	/**
-	 * @return mixed
-	 */
 	public function get_user_name ()
 	{
 		return $this->name;
 	}
 
-	/**
-	 * @return array
-	 */
 	public function get_groups ()
 	{
 		return $this->groups;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function get_Permission ()
-	{
-		return $this->permission;
-	}
-
-	/**
-	 * @return mixed
-	 */
 	private function get_password ()
 	{
 		return $this->password;
@@ -369,22 +342,16 @@ class User extends operators //TODO: Complete
 		return $this->last_login;
 	}
 
-	/**
-	 * @param $pass
-	 *
-	 * @return string
-	 *
-	 * The salt is for more security
-	 */
 	public function salt ($pass)
 	{
 		$dj = $this->get_joined_Time();
 		$id = $this->get_Id();
-		$pint = ($a = preg_replace('/[^\-\d]*(\-?\d*).*/', '$1', $pass)) ? $a : '1';
-		$t = phpversion();
+		$a = preg_replace("/[^0-9]/", "", $pass);
+		$pint = (is_numeric($a)) ? (int)$a : 1;
+		$t = 7;
 		$ll = $this->get_last_login_Time();
 		$pi = round(pi());
-		$salt = sqrt($ll) + (($dj % $id) + ($pint * $ll)) * ($dj - ($id * $pint)) . $pass
+		$salt = sqrt($ll) + (($dj % $id) + ($pint * $ll)) * ($dj - ($id * $pint)) . $pass .
 			(($ll % $id) + $pint) * $pi . $t . $pass . sqrt($pint + $id + $dj + $ll);
 
 		return get_hash($salt);
@@ -407,12 +374,12 @@ class User extends operators //TODO: Complete
 			if ($s_pass == $this->get_password()) {
 				Core::$PDO->beginTransaction();
 				$new_last_login = time();
-				$statement = Core::$PDO->execute("UPDATE " . self::table . " Set user_last_login = '" . $new_last_login . "' WHERE " . self::id . " = " . $this->get_Id());
-				if ($statement !== FALSE) {
+				$statement = Core::$PDO->exec("UPDATE " . self::table . " Set user_last_login = '" . $new_last_login . "' WHERE " . self::id . " = " . $this->get_Id());
+				if ($statement > 0) {
 					$this->last_login = $new_last_login;
 					$new_pass = $this->salt($pass);
-					$statement_two = Core::$PDO->execute("UPDATE " . self::table . " Set user_password = '" . $new_pass . "' WHERE " . self::id . " = " . $this->get_Id());
-					if ($statement_two !== FALSE) {
+					$statement_two = Core::$PDO->exec("UPDATE " . self::table . " Set user_password = '" . $new_pass . "' WHERE " . self::id . " = " . $this->get_Id());
+					if ($statement_two > 0) {
 						$this->password = $new_pass;
 						Core::$PDO->commit();
 					}
@@ -437,7 +404,3 @@ class User extends operators //TODO: Complete
 		return $this->template;
 	}
 }
-
-/*
- * Load actually User session. If user is logged in.
- */

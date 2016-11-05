@@ -16,14 +16,18 @@ class user_module_loader extends module_loader
 {
 	protected $final_load = __NAMESPACE__ . "\\User::session";
 	private $files = array (
-		"operators.class.php",
-		"user.class.php",
-		"group.class.php",
+		"interfaces" => array (
+			"user.php",
+			"permissions" => array (),),
+		"classes"    => array (
+			"operators.php",
+			"user.php",
+			"group.php",
 		"permissions" => array (
-			"permissions.class.php",
-			"value.class.php",
-			"group.class.php",
-			"user.class.php"));
+			"permissions.php",
+			"value.php",
+			"group.php",
+			"user.php")),);
 	public function __construct ($module)
 	{
 		parent::__construct($module);
