@@ -1,0 +1,27 @@
+.ikobb .branding {
+    height: 20vh;
+    background: url(../../assets/img/bg.png) -25%;
+}
+.ikobb .branding .container {
+  padding-top: 8vh;
+  color: #FFFFFF;
+}
+.ikobb .branding .share {
+  margin-top: 150px;
+}
+.ikobb .branding h1 {
+  font-weight: 600;
+}
+.ikobb .header .title {
+  color: #FFFFFF;
+}
+.ikobb .wrapper {
+  background: #CCCCCC;
+}
+
+.ikobb .navbar-transparent,
+.profile-page .navbar-transparent,
+.signup-page .navbar-transparent,
+.index-page .navbar-transparent {
+  padding-top: 25px;
+}
