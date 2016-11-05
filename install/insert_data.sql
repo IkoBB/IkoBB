@@ -15,7 +15,10 @@ INSERT INTO `iko_configs` VALUES ('site_name', 's:10:"Test Value";', 'The name o
 INSERT INTO `iko_templates` (`template_name`, `template_author`, `template_version`, `template_directory`, `template_required_core_version`)
 VALUES ('Default Template', 'IkoBB', '0.0.1', 'default', '1.0.0a');
 
-INSERT INTO `iko_users` VALUES ('1','Administrator','admin_password','admin@ikobb.de','1','signature','about me','1','1','11021996','12.09.1998','1','05112016','german','1');
+INSERT INTO `iko_users` (`user_id`, `user_name`, `user_password`, `user_email`, `user_avatar_id`, `user_signature`, `user_about_user`, `user_location_id`, `user_gender`, `user_date_joined`, `user_birthday`, `user_timezone_id`, `user_last_login`, `user_language`, `user_template`)
+VALUES
+	(1, 'Administrator', '54d5ace062310f6f617d5f29d70ceb457441b1bbd3869334c9753ab68c8d0969', 'admin@ikobb.de', 1,
+		'signature', 'about me', 1, 1, 11021996, '0000-00-00', 1, 1478377625, 'german', 1);
 
 
 INSERT INTO `iko_usergroups` VALUES ('1','Admin','<span class="color: red; ">%% group_name %%</span>'),
