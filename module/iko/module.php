@@ -46,7 +46,9 @@ class core_loader extends module_loader
 
 	public function load($files = array ())
 	{
-		$files = array ("admin.class.php",);
+		$files = array (
+			"admin.class.php",
+			"handler.class.php");
 
 		return parent::load($files);
 	}

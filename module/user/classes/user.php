@@ -220,6 +220,29 @@ class User extends operators implements iUser //TODO: Complete
 		}
 	}
 
+	public static function test ()
+	{
+		echo "Ich bins";
+	}
+
+	public static function chat ($text)
+	{
+		return str_replace("Penis", "", $text);
+	}
+
+	/*
+	 * Event\Handler Test Functions
+	 */
+	public static function chat2 ($text, $pre)
+	{
+		if ($text != $pre) {
+			return str_replace("Jannik", "Penner", $pre);
+		}
+		else {
+			return str_replace("Jannik", "Suesser", $pre);
+		}
+	}
+
 
 	private $id;
 	private $name;
@@ -256,10 +279,6 @@ class User extends operators implements iUser //TODO: Complete
 				$this->{$temp_key} = $value;
 			}
 			$this->load_groups();
-			//$this->permission = Permissions::get($this);
-			/*if (!$this->permission instanceof Permissions) {
-				throw new Exception("Permission konnte nicht aufgerufen werden.");
-			}*/
 		}
 		else {
 			throw new Exception("User does not exist: User_ID = " . $user_id . "");
