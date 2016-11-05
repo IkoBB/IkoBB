@@ -169,6 +169,8 @@ class parser
 			'#\\[td\](.*?)\\[/td\]#uis' => '<td>\\1</td>',
 			// Table head
 			'#\\[th\](.*?)\\[/th\]#uis' => '<th>\\1</th>',
+			// FontAwesome
+			'#\\[fa\](.*?)\\[/fa\]#uis' => '<i class="fa \\1" aria-hidden="true"></i>',
 			// unordered list
 			'#\\[ul\\](.*?)\[/ul\\]#uis' => '<ul>\\1</ul>',
 			'#\\[list\\](.*?)\[/list\\]#uis' => '<ul>\\1</ul>',
