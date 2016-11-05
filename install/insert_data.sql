@@ -39,14 +39,14 @@ INSERT INTO `iko_template_assignment` VALUES ('1','2'),
 ('1','4');
 */
 
-INSERT INTO `iko_permissions` VALUES ('controll_everything','iko','Can do what they want to do.'),
-('delete_user','iko','Have the opportunity to delete an user');
+INSERT INTO `iko_permissions` VALUES ('*', 'iko', 'Can do what they want to do.'),
+	('iko.admin.user.delete', 'iko', 'Have the opportunity to delete an user');
 
-INSERT INTO `iko_user_permissions` VALUES ('1','controll_everything'),
-('1','delete_user');
+INSERT INTO `iko_user_permissions` VALUES ('1', '*'),
+	('1', 'iko.admin.user.delete');
 
-INSERT INTO `iko_group_permissions` VALUES ('1','controll_everything'),
-('1','delete_user');
+INSERT INTO `iko_group_permissions` VALUES ('1', '*'),
+	('1', 'iko.admin.user.delete');
 
 
 INSERT INTO `iko_translation` VALUES ('user_name','Benutzername','username'),

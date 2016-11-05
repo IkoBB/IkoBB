@@ -124,7 +124,9 @@ CREATE TABLE `iko_translation` (
 ALTER TABLE iko_user_assignment
 	ADD CONSTRAINT `iko_users_ibfk_1`
 FOREIGN KEY (`user_id`)
-REFERENCES `iko_users` (`user_id`);
+REFERENCES `iko_users` (`user_id`)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE;
 
 ALTER TABLE iko_user_assignment
 	ADD CONSTRAINT `iko_user_assignment_ibfk_1`
@@ -158,6 +160,7 @@ ALTER TABLE iko_user_permissions
 	ADD CONSTRAINT `iko_user_permissions_ibfk_1`
 FOREIGN KEY (`user_id`)
 REFERENCES `iko_users` (`user_id`)
+	ON DELETE CASCADE
 	ON UPDATE CASCADE;
 
 ALTER TABLE iko_user_permissions
@@ -170,12 +173,16 @@ REFERENCES `iko_permissions` (`permission_name`)
 ALTER TABLE iko_group_assignment
 	ADD CONSTRAINT `iko_group_assignment_ibfk_1`
 FOREIGN KEY (`parent_group_id`)
-REFERENCES `iko_usergroups` (`usergroup_id`);
+REFERENCES `iko_usergroups` (`usergroup_id`)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE;
 
 ALTER TABLE iko_group_assignment
 	ADD CONSTRAINT `iko_group_assignment_ibfk_2`
 FOREIGN KEY (`child_group_id`)
-REFERENCES `iko_usergroups` (`usergroup_id`);
+REFERENCES `iko_usergroups` (`usergroup_id`)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE;
 
 
 ALTER TABLE iko_configs
