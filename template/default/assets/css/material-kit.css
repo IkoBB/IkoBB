@@ -3645,38 +3645,10 @@ h2.title {
   background: -webkit-linear-gradient(135deg, rgba(101, 47, 142, 0.88) 0%, rgba(125, 46, 185, 0.45) 100%);
 }
 
-.ikobb .branding {
-    height: 35vh;
-    background: url(../../assets/img/bg.png) -25%;
-}
-.ikobb .branding .container {
-  padding-top: 8vh;
-  color: #FFFFFF;
-}
-.ikobb .branding .share {
-  margin-top: 150px;
-}
-.ikobb .branding h1 {
-  font-weight: 600;
-}
-.ikobb .header .title {
-  color: #FFFFFF;
-}
-.ikobb .wrapper {
-  background: #CCCCCC;
-}
-
-.ikobb .navbar-transparent,
-.profile-page .navbar-transparent,
-.signup-page .navbar-transparent,
-.index-page .navbar-transparent {
-  padding-top: 25px;
-}
-
 @media (max-width: 991px) {
   .ikobb .branding {
     height: auto;
-    min-height: 40vh;
+    min-height: 20vh;
   }
   .ikobb .header .container {
     padding-bottom: 70px;
