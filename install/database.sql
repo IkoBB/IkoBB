@@ -185,7 +185,7 @@ REFERENCES `iko_modules` (`module_name`)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE;
 
-ALTER TABLE iko_templates
+ALTER TABLE iko_users
 	ADD CONSTRAINT `iko_user_template_ibfk_2`
-FOREIGN KEY (`template_id`)
-REFERENCES `iko_users` (`user_template`);
+FOREIGN KEY (`user_template`)
+REFERENCES `iko_templates` (`template_id`);
