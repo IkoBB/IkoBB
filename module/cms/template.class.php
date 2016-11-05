@@ -13,8 +13,15 @@
 
 namespace Iko;
 
+/**
+ * Class template
+ * @package Iko
+ */
 class template
 {
+	/**
+	 * @var null
+	 */
 	private static $instance = NULL;
 
 	/**
@@ -33,14 +40,41 @@ class template
 	}
 
 
+	/**
+	 * @var int
+	 */
 	private $template_id;
+	/**
+	 * @var string
+	 */
 	private $template_author;
+	/**
+	 * @var string
+	 */
 	private $template_directory;
+	/**
+	 * @var string
+	 */
 	private $template_name;
+	/**
+	 * @var string
+	 */
 	private $template_required_core_version;
+	/**
+	 * @var string
+	 */
 	private $template_version;
+	/**
+	 * @var string
+	 */
 	private $template;
+	/**
+	 * @var array
+	 */
 	private $param = array ();
+	/**
+	 * @var array
+	 */
 	private $entity = array ();
 
 	/**
@@ -81,7 +115,7 @@ class template
 		}
 
 
-		if ($this->template_id != "") {
+		if ($this->template_id !== NULL) {
 			if ($this->template_id != 0) {
 				// Get all variables from table
 				try {
