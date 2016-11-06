@@ -30,3 +30,6 @@ $admin = User::get(1);
 $admin->change_user_name("test");
 var_dump($admin->is_own());
 var_dump(module::version("user"));
+var_dump(Permissions\Value::get("iko.user.change.user_name"));
+var_dump(Permissions\Value::search(array (Permissions::name => array ("LIKE" => "iko.user.change.%")), FALSE,
+	"LIMIT 0,1"));

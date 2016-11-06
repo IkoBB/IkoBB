@@ -59,7 +59,7 @@ class User extends operators implements iUser //TODO: Complete
 		return NULL;
 	}
 
-	public static function search ($args = array (), $or = FALSE) // TODO: Complete Function for Searching after single and Mutliple user
+	public static function search ($args = array (), $or = FALSE, $suffix = "") // TODO: Complete Function for Searching after single and Mutliple user
 	{
 		$class = get_called_class();
 		$sql = "SELECT " . self::id . " FROM " . $class::table . " WHERE";
@@ -68,15 +68,13 @@ class User extends operators implements iUser //TODO: Complete
 			$i = count($args);
 			$string = "";
 			foreach ($args as $key => $var) {
-				if (is_string($var)) {
+				if (is_array($var)) {
+					foreach ($var as $operator => $value) {
+						$string .= ' ' . $key . " " . $operator . " '" . $value . "'";
+					}
+				}
+				else {
 					$string .= ' ' . $key . " = '" . $var . "'";
-				}
-				if (is_int($var)) {
-					$string .= ' ' . $key . ' = ' . $var . '';
-				}
-				if (is_bool($var)) {
-					$var = intval($var);
-					$string .= ' ' . $key . ' = ' . $var . '';
 				}
 				if ($i > 1) {
 					$string .= " " . $equal;
@@ -84,6 +82,7 @@ class User extends operators implements iUser //TODO: Complete
 			}
 			$sql .= $string;
 		}
+		$sql .= " " . $suffix;
 		$ids = array ();
 		$statement = Core::$PDO->query($sql);
 		if ($statement !== FALSE) {

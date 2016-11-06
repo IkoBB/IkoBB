@@ -25,6 +25,7 @@ use Iko\Permissions\Value as Value;
 abstract class Permissions
 {
 	const table = "{prefix}permissions";
+	const name = "permission_name";
 
 	const group_assignment = "{prefix}group_assignment";
 	const group_permissions = "{prefix}group_permissions";

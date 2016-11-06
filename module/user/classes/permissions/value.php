@@ -25,102 +25,124 @@ use Iko\PDO as PDO;
 class Value
 {
 	const table = Permissions::table;
+	const name = Permissions::name;
+
 	private static $cache = array ();
 	private static $cache_exist = array ();
 
-	public static function get ($value = 0, $reload = FALSE)
+	public static function get ($ids = 0, $reload = FALSE)
 	{
-
-		if ($value != "" && $value != NULL) {
-			if (is_array($value)) {
-				self::exist($value);
+		$class = get_called_class();
+		if (is_array($ids) || is_string($ids)) {
+			if (is_array($ids)) {
+				self::exist($ids);
 			}
-			if (is_string($value)) {
-				$value = array ($value);
+			if (is_string($ids)) {
+				$ids = array ($ids);
 			}
-			$user_array = array ();
-			foreach ($value as $name) {
-				if (!isset(self::$cache[ $name ]) || self::$cache[ $name ] == NULL || $reload) {
-					if (self::exist($name, $reload)) {
-						$class = str_replace(__NAMESPACE__ . "/", "", __CLASS__);
-						self::$cache[ $name ] = new $class($name);
-						array_push($user_array, self::$cache[ $name ]);
+			$array = array ();
+			foreach ($ids as $id) {
+				if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
+					if (self::exist($id, $reload)) {
+						self::$cache[ $id ] = new $class($id);
+						array_push($array, self::$cache[ $id ]);
 					}
 				}
 				else {
-					array_push($user_array, self::$cache[ $name ]);
+					array_push($array, self::$cache[ $id ]);
 				}
 			}
-			if (count($user_array) == 1) {
-				return $user_array[0];
+			if (count($array) == 1) {
+				return $array[0];
 			}
 			else {
-				return $user_array;
+				return $array;
 			}
 		}
 
 		return NULL;
 	}
 
-	public static function search ($args = array (), $or = FALSE) // TODO: Complete Function for Searching after single and Mutliple user
+	public static function search ($args = array (), $or = FALSE, $suffix = "") // TODO: Complete Function for Searching after single and Mutliple user
 	{
-		$sql = "SELECT * FROM " . self::table . " WHERE";
+		$sql = "SELECT " . self::name . " FROM " . self::table . " WHERE";
 		$equal = ($or) ? "OR" : "AND";
 		if (count($args) > 0) {
+			$i = count($args);
 			$string = "";
 			foreach ($args as $key => $var) {
-				if (is_string($var)) {
-					$string .= ' ' . $key . ' LIKE "' . $var . '"';
+				if (is_array($var)) {
+					foreach ($var as $operator => $value) {
+						$string .= ' ' . $key . " " . $operator . " '" . $value . "'";
+					}
 				}
-				if (is_int($var)) {
-					$string .= ' ' . $key . ' = ' . $var . '"';
+				else {
+					$string .= ' ' . $key . " = '" . $var . "'";
 				}
-				if (is_bool($var)) {
-					$var = intval($var);
-					$string .= ' ' . $key . ' = ' . $var . '"';
+				if ($i > 1) {
+					$string .= " " . $equal;
 				}
 			}
+			$sql .= $string;
+		}
+		$sql .= " " . $suffix;
+		$ids = array ();
+		$statement = Core::$PDO->query($sql);
+		if ($statement !== FALSE) {
+			$fetch_all = $statement->fetchAll();
+			foreach ($fetch_all as $fetch) {
+				array_push($ids, $fetch[ self::name ]);
+			}
+			$user_array = self::get($ids);
+
+			return $user_array;
+		}
+		else {
+			return NULL;
 		}
 	}
 
 	/**
-	 * @param int  $names
+	 * @param int  $ids
 	 * @param bool $reload
 	 *
 	 * @return bool|mixed
 	 */
-	public static function exist ($names = 0, $reload = FALSE)
+	public static function exist ($ids = 0, $reload = FALSE)
 	{
-		if ($names != "" && $names != NULL) {
-			$statement = Core::$PDO->prepare("SELECT * FROM " . self::table . " WHERE permission_name = :perm_name");
-			if (is_string($names) || is_int($names)) {
-				if (!isset(self::$cache_exist[ $names ]) || $reload) {
-					$statement->bindParam(':perm_name', $names);
+		if ($ids !== NULL) {
+			$statement = Core::$PDO->prepare("SELECT " . self::name . " FROM " . self::table . " WHERE " . self::name . " = :ids");
+			if (is_string($ids) || is_int($ids)) {
+				if (!isset(self::$cache_exist[ $ids ]) || $reload) {
+					$statement->bindParam(':ids', $ids);
 					$statement->execute();
+
 					if ($statement->rowCount() > 0) {
-						self::$cache_exist[ $names ] = TRUE;
+						self::$cache_exist[ $ids ] = TRUE;
 
 						return TRUE;
 					}
 					else {
-						self::$cache_exist[ $names ] = FALSE;
+						self::$cache_exist[ $ids ] = FALSE;
 
 						return FALSE;
 					}
 				}
-				return self::$cache_exist[ $names ];
+
+				return self::$cache_exist[ $ids ];
 			}
 			else {
-				if (is_array($names)) {
-					foreach ($names as $name) {
-						if (!isset(self::$cache_exist[ $name ]) || $reload) {
-							$statement->bindParam(':perm_name', $name);
+				if (is_array($ids)) {
+
+					foreach ($ids as $id) {
+						if (!isset(self::$cache_exist[ $id ]) || $reload) {
+							$statement->bindParam(':ids', $id);
 							$statement->execute();
 							if ($statement->rowCount() > 0) {
-								self::$cache_exist[ $name ] = TRUE;
+								self::$cache_exist[ $id ] = TRUE;
 							}
 							else {
-								self::$cache_exist[ $name ] = FALSE;
+								self::$cache_exist[ $id ] = FALSE;
 							}
 						}
 					}
@@ -140,11 +162,12 @@ class Value
 
 	private $name;
 	private $module;
+	private $comment;
 
 	protected function __construct ($name)
 	{
 		if (is_string($name) && self::exist($name)) {
-			$sql = "SELECT * FROM " . self::table . " WHERE permission_name = '" . $name . "'";
+			$sql = "SELECT * FROM " . self::table . " WHERE " . self::name . " = '" . $name . "'";
 			$statement = Core::$PDO->query($sql);
 			$fetch = $statement->fetch(PDO::FETCH_ASSOC);
 			foreach ($fetch as $key => $value) {
@@ -155,11 +178,18 @@ class Value
 		}
 	}
 
-	public function get_Name ()
+	public function get_name ()
 	{
 		return $this->name;
 	}
-	public function get_Module () {
+
+	public function get_module () {
 		return $this->module;
 	}
+
+	public function get_comment ()
+	{
+		return $this->comment;
+	}
+
 }
