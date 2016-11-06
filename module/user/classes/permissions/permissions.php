@@ -59,7 +59,6 @@ abstract class Permissions
 		if (count($array)) {
 			return $array;
 		}
-
 		return array ();
 	}
 

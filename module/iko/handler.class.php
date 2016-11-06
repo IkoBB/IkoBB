@@ -57,10 +57,10 @@ class Handler
 				$array = &self::$event;
 			break;
 		}
-		$result = TRUE;
+		$result = FALSE;
+		$var = NULL;
 		if (isset($array[ $name ]) && $array[ $name ] != NULL && is_array($array[ $name ])) {
-			$i = 0;
-			$var = NULL;
+			$false_counter = 0;
 			foreach ($array[ $name ] as $value) {
 				if (!isset($value[3]) || $value[3] == FALSE) {
 					$class = $value[0];
@@ -75,24 +75,25 @@ class Handler
 					else {
 						$class = $reflection->newInstance($init_Args);
 					}
-					$var = $class->$function($args, $var);
+					$var = $class->$function($name, $args, $var);
 				}
 				else {
 					$class = $value[0];
 					$function = $value[1];
-					$var = eval("return " . $class . "::" . $function . "(" . var_export($args,
+					$var = eval("return " . $class . "::" . $function . "(" . var_export($name,
+							TRUE) . "," . var_export($args,
 							TRUE) . ", " . var_export($var, TRUE) . ");");
 				}
-				if ($type == "event" && $var !== FALSE) {
-					$i++;
+				if ($type == "event" && $var === FALSE) {
+					$false_counter++;
 				}
 			}
-			if ($type == "event" && $i != count($array[ $name ])) {
-				$result = FALSE;
+			if ($type == "event" && $false_counter != count($array[ $name ]) && $false_counter < 1) {
+				$result = TRUE;
 			}
 		}
 		if ($type == "event") {
-			if (!is_bool($var)) {
+			if (isset($var) && !is_bool($var)) {
 				return $var;
 			}
 			else {

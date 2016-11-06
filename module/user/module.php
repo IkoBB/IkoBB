@@ -14,10 +14,11 @@ namespace Iko;
 
 class user_module_loader extends module_loader
 {
-	protected $final_load = __NAMESPACE__ . "\\User::session";
+	protected $final_load = __NAMESPACE__ . "\\User::init";
 	private $files = array (
 		"interfaces" => array (
 			"user.php",
+			"group.php",
 			"permissions" => array (),),
 		"classes"    => array (
 			"operators.php",

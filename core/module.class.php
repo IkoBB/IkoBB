@@ -145,6 +145,11 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 		self::request("iko");
 	}
 
+	public static function version ($name)
+	{
+		return self::get($name)->get_version();
+	}
+
 	private static function pre_check ()
 	{
 		$statement = Core::$PDO->query("SELECT module_name FROM " . self::table . " ");
@@ -315,5 +320,10 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 	public function load_ajax ()
 	{
 		return $this->get_loader()->load_ajax_file();
+	}
+
+	public function get_version ()
+	{
+		return $this->version;
 	}
 }

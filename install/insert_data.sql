@@ -41,7 +41,8 @@ INSERT INTO `iko_template_assignment` VALUES ('1','2'),
 */
 
 INSERT INTO `iko_permissions` VALUES ('*', 'iko', 'Can do what they want to do.'),
-	('iko.admin.user.delete', 'iko', 'Have the opportunity to delete an user');
+	('iko.admin.user.delete', 'iko', 'Have the opportunity to delete an user'),
+	('iko.user.change.user_name', 'user', 'Change the Username');
 
 INSERT INTO `iko_user_permissions` VALUES ('1', '*'),
 	('1', 'iko.admin.user.delete');

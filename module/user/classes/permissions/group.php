@@ -33,7 +33,7 @@ class Group extends Permissions
 	public static function get ($class, $reload = FALSE)
 	{
 		if ($class instanceof groups) {
-			$id = intval($class->get_Id());
+			$id = intval($class->get_id());
 		}
 		if (is_int($class)) {
 			$id = $class;
@@ -58,7 +58,7 @@ class Group extends Permissions
 	public function __construct ($group)
 	{
 		if ($group instanceof groups) {
-			$id = $group->get_Id();
+			$id = $group->get_id();
 		}
 		else {
 			if (is_int($group)) {

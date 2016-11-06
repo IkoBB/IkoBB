@@ -19,7 +19,7 @@
  */
 namespace Iko;
 
-class Group extends operators
+class Group extends operators implements iGroup 
 {
 	const table = "{prefix}usergroups";
 	const assignment = Permissions::group_assignment;
@@ -195,7 +195,7 @@ class Group extends operators
 	private function load_parents ()
 	{
 		$this->group_parents = array ();
-		$sql = "SELECT * FROM " . self::assignment . " WHERE child_group_id = " . $this->get_Id();
+		$sql = "SELECT * FROM " . self::assignment . " WHERE child_group_id = " . $this->get_id();
 		$statement = Core::$PDO->query($sql);
 		if ($statement !== FALSE) {
 			foreach ($statement->fetchAll() as $row) {
@@ -229,7 +229,7 @@ class Group extends operators
 	/**
 	 * @return mixed
 	 */
-	public function get_Id ()
+	public function get_id ()
 	{
 		return intval($this->id);
 	}

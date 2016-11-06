@@ -243,6 +243,12 @@ class User extends operators implements iUser //TODO: Complete
 		}
 	}
 
+	public static function init ()
+	{
+		User::session();
+		Event\Handler::add_event("iko.user.change.user_name", get_called_class(), "own_permission", NULL, FALSE, "get");
+	}
+
 
 	private $id;
 	private $name;
@@ -326,6 +332,15 @@ class User extends operators implements iUser //TODO: Complete
 		}
 	}
 
+	public function own_permission ($permission, $args = NULL, $pre = NULL)
+	{
+		if ($this->is_own()) {
+			return TRUE;
+		}
+		else {
+			return User::get_session()->has_permission($permission, $args, $pre);
+		}
+	}
 	public function get_user_name ()
 	{
 		return $this->name;
@@ -426,5 +441,15 @@ class User extends operators implements iUser //TODO: Complete
 	public function get_email ()
 	{
 		return $this->email;
+	}
+
+	public function change_user_name ($username)
+	{
+		if (Event\Handler::event("iko.user.change.user_name", User::get_session(), $this->get_id())) {
+			echo "Ja";
+		}
+		else {
+			echo "nein";
+		}
 	}
 }

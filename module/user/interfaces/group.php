@@ -20,7 +20,7 @@ namespace Iko;
 
 interface iGroup
 {
-	public function get_Id ();
+	public function get_id ();
 
 	public function get_Rang ();
 
