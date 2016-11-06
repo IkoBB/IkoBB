@@ -2937,11 +2937,11 @@ h2.title {
   padding-right: 12px;
 }
 .card-signup .social-line {
-  margin-top: 15px;
+  margin-top: 2px;
   text-align: center;
 }
 .card-signup .social-line .btn {
-  color: #FFFFFF;
+  color: #555;
   margin-left: 5px;
   margin-right: 5px;
 }
