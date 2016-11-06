@@ -12,6 +12,8 @@ namespace Iko;
 
 class language
 {
+	//TODO: Add dbname somewhere else
+	const dbname = "ikobb";
 	const table = "{prefix}language";
 	const translation = " {prefix}translation";
 	const supported = array (
@@ -19,6 +21,7 @@ class language
 		"english");
 
 	private static $instance = NULL;
+	private static $default_language = "english";
 
 	public static function get_instance ()
 	{
@@ -51,6 +54,40 @@ class language
 		$this->load_language("english");
 	}
 
+
+	//TODO: User logged in ?
+	//      load language of user
+	//          -> if no language choosen than standard
+	public static function ckeck_user_language ()
+	{
+		$session = User::get_session();
+		//$session = 1;
+		if ($session != 0) {
+			//user logged in
+			$choosen_language = User::get_language();
+			//$choosen_language = "german";
+			if (array_search($choosen_language, self::supported) === FALSE) {
+				$language = self::$default_language;
+
+				return $language;
+			}
+			else {
+				return $choosen_language;
+			}
+
+		}
+		else {
+			//no user logged in -> Option to find out guest changed language ?
+			$language = self::$default_language;
+
+			return $language;
+
+		}
+
+	}
+
+	//TODO: Are all needed modules have the correct version ? module::user for example
+
 	public function load_language ($language)
 	{
 		if (array_search($language, self::supported) !== FALSE) {
@@ -67,7 +104,6 @@ class language
 						}
 					}
 				}
-
 
 			}
 			catch (\PDOException $exception) {

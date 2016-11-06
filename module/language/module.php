@@ -26,6 +26,7 @@ class language_loader extends module_loader
         //Add Tables like User and choosen language assignment and more
         $tables = array(
 	        "translation",
+	        "users",
         );
 
         return $this->check_PDO_Tables($tables);
