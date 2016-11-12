@@ -19,6 +19,7 @@ abstract class module_loader
 	public $is_load = FALSE;
 	protected $final_load = NULL;
 	protected $depend_on = array ();
+
 	public function __construct ($module)
 	{
 		$this->class_module = $module;
@@ -48,6 +49,8 @@ abstract class module_loader
 
 	abstract protected function pre_check_Files ();
 
+	abstract protected function pre_load ();
+
 	public function check_PDO_Tables ($tables = array ())
 	{
 		$result = TRUE;
@@ -69,6 +72,7 @@ abstract class module_loader
 				$result = FALSE;
 			}
 		}
+
 		return $result;
 	}
 
@@ -129,12 +133,15 @@ abstract class module_loader
 
 	public function load ($files = array ())
 	{
+		if (!$this->is_load()) {
+			$this->is_load = TRUE;
+			$this->pre_load();
+		}
 		if (is_string($files)) {
 			$files = array ($files);
 		}
 		if (is_array($files)) {
 			$this->load_file($files, $this->class_module->get_path());
-			$this->is_load = TRUE;
 		}
 
 		return $this->is_load();

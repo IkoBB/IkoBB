@@ -33,3 +33,18 @@ var_dump(module::version("user"));
 var_dump(Permissions\Value::get("iko.user.change.user_name"));
 var_dump(Permissions\Value::search(array (Permissions::name => array ("LIKE" => "iko.user.change.%")), FALSE,
 	"LIMIT 0,1"));
+?>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script>
+	SSID = '<?php
+		echo session_id();
+		?>';
+</script>
+<script>
+	function test() {
+		$.post("./ajax.php", {ikobb_ssid: SSID, module: "user", func: "test"}, function (data) {
+			$("body").append(data);
+		});
+	}
+	test();
+</script>

@@ -46,7 +46,7 @@ class template_loader extends \Iko\module_loader
 		return $this->check_Files($files);
 	}
 
-	public function load($files = array ())
+	public function pre_load ()
 	{
 		$files = array (
 			"template.class.php",

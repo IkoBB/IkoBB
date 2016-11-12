@@ -41,7 +41,7 @@ class language_loader extends module_loader
         return $this->check_Files($files);
     }
 
-    public function load($files = array())
+	public function pre_load ()
     {
         $files = array(//TODO: Add files to load
                        "language.class.php",

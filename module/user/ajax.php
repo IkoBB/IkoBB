@@ -17,20 +17,22 @@
  * Time: 23:03
  */
 namespace Iko;
+
 $function = define_post("func", "");
-if ($function != "") {
-	@$function();
-}
-function login ()
-{
-	$user = define_post("user", "");
-	$pass = define_post("pass", "");
-	if ($user != "" && $pass != "") {
-		if (User::login($user, $pass)) {
-			echo "TRUE";
+switch ($function) {
+	case "login":
+		$user = define_post("user", "");
+		$pass = define_post("pass", "");
+		if ($user != "" && $pass != "") {
+			if (User::login($user, $pass)) {
+				echo "TRUE";
+			}
+			else {
+				echo "FALSE";
+			}
 		}
-		else {
-			echo "FALSE";
-		}
-	}
+	break;
+	case "test":
+		Event\Handler::test();
+	break;
 }

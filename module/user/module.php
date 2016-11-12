@@ -46,7 +46,7 @@ class user_module_loader extends module_loader
 		return $this->check_Files($this->files);
 	}
 
-	public function load ($files = array ())
+	public function pre_load ()
 	{
 		return parent::load($this->files);
 	}

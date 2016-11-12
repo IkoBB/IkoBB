@@ -33,7 +33,7 @@ class forum_module_loader extends \Iko\module_loader // TODO: Create Module
 		return $this->check_Files($files);
 	}
 
-	public function load ($files = array ())
+	public function pre_load ()
 	{
 		$files = array ();
 

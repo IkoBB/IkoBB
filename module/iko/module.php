@@ -44,7 +44,7 @@ class core_loader extends module_loader
 			"sql/modules.sql"), true);
 	}
 
-	public function load($files = array ())
+	public function pre_load ()
 	{
 		$files = array (
 			"admin.class.php",);

@@ -166,6 +166,7 @@ class User extends operators implements iUser //TODO: Complete
 
 		return $users;
 	}
+
 	private static $session_user = FALSE;
 
 	/**
@@ -205,6 +206,7 @@ class User extends operators implements iUser //TODO: Complete
 				set_session("user_id", $class->get_ID());
 				if (intval(read_session("user_id")) == $class->get_ID()) {
 					$class->update_last_login($password);
+
 					return TRUE;
 				}
 
@@ -245,7 +247,10 @@ class User extends operators implements iUser //TODO: Complete
 	public static function init ()
 	{
 		User::session();
-		Event\Handler::add_event("iko.user.change.user_name", get_called_class(), "own_permission", NULL, FALSE, "get");
+		$permissions = Permissions\Value::search(array ("permission_name" => array ("LIKE" => "iko.user.change.%")));
+		foreach ($permissions as $item) {
+			Event\Handler::add_event($item->get_name(), get_called_class(), "own_permission", NULL, FALSE, "get");
+		}
 	}
 
 
@@ -336,10 +341,14 @@ class User extends operators implements iUser //TODO: Complete
 		if ($this->is_own()) {
 			return TRUE;
 		}
-		else {
+		else if (self::get_session() !== FALSE) {
 			return User::get_session()->has_permission($permission, $args, $pre);
 		}
+		else {
+			return FALSE;
+		}
 	}
+
 	public function get_user_name ()
 	{
 		return $this->name;
@@ -384,8 +393,7 @@ class User extends operators implements iUser //TODO: Complete
 		$t = 7;
 		$ll = $this->get_last_login_Time();
 		$pi = round(pi());
-		$salt = sqrt($ll) + (($dj % $id) + ($pint * $ll)) * ($dj - ($id * $pint)) . $pass .
-			(($ll % $id) + $pint) * $pi . $t . $pass . sqrt($pint + $id + $dj + $ll);
+		$salt = sqrt($ll) + (($dj % $id) + ($pint * $ll)) * ($dj - ($id * $pint)) . $pass . (($ll % $id) + $pint) * $pi . $t . $pass . sqrt($pint + $id + $dj + $ll);
 
 		return get_hash($salt);
 	}
@@ -396,7 +404,9 @@ class User extends operators implements iUser //TODO: Complete
 		$s_new = $this->salt($new);
 		$s_sec = $this->salt($sec);
 		if ($this->get_password() == $s_old && $s_new == $s_sec) {
+			if ($this->is_own()) {
 
+			}
 		}
 	}
 

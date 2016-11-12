@@ -192,4 +192,8 @@ class Value
 		return $this->comment;
 	}
 
+	public function __toString ()
+	{
+		return $this->get_name();
+	}
 }
