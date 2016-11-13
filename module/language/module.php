@@ -28,8 +28,9 @@ class language_loader extends module_loader
 	        "translation",
 	        "users",
         );
+	    
 
-        return $this->check_PDO_Tables($tables);
+	    return $this->check_PDO_Tables($tables);
     }
 
     protected function pre_check_Files()

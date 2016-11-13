@@ -12,9 +12,6 @@ namespace Iko;
 
 class language
 {
-	//TODO: Add dbname somewhere else
-	const dbname = "ikobb";
-	const table = "{prefix}language";
 	const translation = " {prefix}translation";
 	const supported = array (
 		"german",
@@ -22,6 +19,7 @@ class language
 
 	private static $instance = NULL;
 	private static $default_language = "english";
+
 
 	public static function get_instance ()
 	{
@@ -33,11 +31,6 @@ class language
 	}
 
 
-	private $german = array ();
-	private $english = array ();
-	private $lang = "english";
-
-	private $translations = array ();
 
 	private function __construct ()
 	{
@@ -54,38 +47,48 @@ class language
 		$this->load_language("english");
 	}
 
-
-	//TODO: User logged in ?
 	//      load language of user
 	//          -> if no language choosen than standard
 	public static function ckeck_user_language ()
 	{
-		$session = User::get_session();
-		//$session = 1;
-		if ($session != 0) {
+		//required modules
+		module::request("user");
+
+		//check status of user module
+		if (module::load_status("user")) {
+
+			$session = User::get_session();
+			//$session = 1;
+
 			//user logged in
-			$choosen_language = User::get_language();
-			//$choosen_language = "german";
-			if (array_search($choosen_language, self::supported) === FALSE) {
+			if ($session != 0) {
+				//try to load choosen language form database
+				$choosen_language = &$session->get_language();
+				//$choosen_language = "german";
+				if (array_search($choosen_language, self::supported) === FALSE) {
+					$language = self::$default_language;
+
+					return $language;
+				}
+				else {
+					return $choosen_language;
+				}
+
+			}
+			else {
+				//no user logged in -> Option to find out guest changed language ?
 				$language = self::$default_language;
 
 				return $language;
-			}
-			else {
-				return $choosen_language;
-			}
 
+			}
 		}
 		else {
-			//no user logged in -> Option to find out guest changed language ?
-			$language = self::$default_language;
-
-			return $language;
-
+			//TODO: Whats happening if module loading failed ?
+			throw new Exception("Error #1234: ");
 		}
-
 	}
-
+	//TODO: Implement function which will use check_language and load language and can load words by id
 	//TODO: Are all needed modules have the correct version ? module::user for example
 
 	public function load_language ($language)
@@ -114,7 +117,7 @@ class language
 
 	public function __get ($value)
 	{
-		return (isset($this->{$this->lang}[ $value ])) ? $this->{$this->lang}[ $value ] : "";
+		return (isset($this->{$this->supported}[ $value ])) ? $this->{$this->supported}[ $value ] : "";
 		// (Bedienung)?TRUE:ELSE
 	}
 
