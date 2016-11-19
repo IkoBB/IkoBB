@@ -62,11 +62,11 @@ class User extends operators implements iUser //TODO: Complete
 	public static function search ($args = array (), $or = FALSE, $suffix = "") // TODO: Complete Function for Searching after single and Mutliple user
 	{
 		$class = get_called_class();
-		$sql = "SELECT " . self::id . " FROM " . $class::table . " WHERE";
+		$sql = "SELECT " . self::id . " FROM " . $class::table . "";
 		$equal = ($or) ? "OR" : "AND";
 		if (count($args) > 0) {
 			$i = count($args);
-			$string = "";
+			$string = " WHERE";
 			foreach ($args as $key => $var) {
 				if (is_array($var)) {
 					foreach ($var as $operator => $value) {
@@ -167,8 +167,6 @@ class User extends operators implements iUser //TODO: Complete
 		return $users;
 	}
 
-	private static $session_user = FALSE;
-
 	/**
 	 *
 	 * @return void
@@ -182,6 +180,8 @@ class User extends operators implements iUser //TODO: Complete
 			}
 		}
 	}
+
+	private static $session_user = FALSE;
 
 	/**
 	 * @return bool|User

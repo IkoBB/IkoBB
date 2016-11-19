@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * This file is part of IkoBB Forum and belongs to the module <User>.
+ * This file is part of IkoBB Forum and belongs to the module <Iko>.
  *
  * @copyright (c) IkoBB <https://www.ikobb.de>
  * @license       GNU General Public License, version 3 (GPL-3.0)
@@ -10,21 +10,57 @@
  * the LICENSE file.
  *
  */
-
 /**
  * Created by PhpStorm.
  * User: Marcel
- * Date: 28.09.2016
- * Time: 19:47
+ * Date: 12.11.2016
+ * Time: 21:36
  */
 namespace Iko;
 
-class Group extends operators implements iGroup 
+class log
 {
-	const table = "{prefix}usergroups";
-	const assignment = Permissions::group_assignment;
-	const id = "usergroup_id";
-	const name = "usergroup_name";
+	const table = "{prefix}log";
+	const id = "log_id";
+	private static $int_to_string = array (
+		"info",
+		"error",
+		"alert",
+		"warning");
+	private static $string_to_int = array (
+		"info"    => 0,
+		"error"   => 1,
+		"alert"   => 2,
+		"warning" => 3);
+
+	public static function add ($module, $type, $code, $msg, $extra = NULL)
+	{
+		$time = time();
+		if ($module != NULL && (array_search($type, self::$int_to_string) || array_search($type,
+					self::$string_to_int)) && is_numeric($code) && trim($msg) != ""
+		) {
+			echo "ja";
+			if (is_string($type)) {
+				$type = self::$string_to_int[ strtolower($type) ];
+			}
+			if ($extra !== NULL) {
+				$extra = serialize($extra);
+			}
+			$sql = "INSERT INTO " . self::table . " (module_name, log_type, log_code, log_message, log_time, log_extra) VALUES('$module', '$type', '$code', :log_message, '$time', '$extra')";
+			$statement = Core::$PDO->prepare($sql);
+			$statement->bindParam(":log_message", $msg);
+			$statement->execute();
+			if ($statement !== FALSE) {
+				return TRUE;
+			}
+			else {
+				return FALSE;
+			}
+		}
+		else {
+			return FALSE;
+		}
+	}
 
 	protected static $cache = array ();
 	protected static $cache_exist = array ();
@@ -32,9 +68,6 @@ class Group extends operators implements iGroup
 	public static function get ($ids = 0, $reload = FALSE)
 	{
 		$class = get_called_class();
-		if (is_string($ids) && !is_numeric($ids)) {
-			return self::search(array (self::name => $ids));
-		}
 		if (is_numeric($ids)) {
 			$ids = intval($ids);
 		}
@@ -45,23 +78,23 @@ class Group extends operators implements iGroup
 			if (is_int($ids)) {
 				$ids = array ($ids);
 			}
-			$user_array = array ();
+			$array = array ();
 			foreach ($ids as $id) {
 				if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
 					if (self::exist($id, $reload)) {
 						self::$cache[ $id ] = new $class($id);
-						array_push($user_array, self::$cache[ $id ]);
+						array_push($array, self::$cache[ $id ]);
 					}
 				}
 				else {
-					array_push($user_array, self::$cache[ $id ]);
+					array_push($array, self::$cache[ $id ]);
 				}
 			}
-			if (count($user_array) == 1) {
-				return $user_array[0];
+			if (count($array) == 1) {
+				return $array[0];
 			}
 			else {
-				return $user_array;
+				return $array;
 			}
 		}
 
@@ -163,104 +196,89 @@ class Group extends operators implements iGroup
 			return FALSE;
 		}
 	}
+
+	public static function get_last_log ($LIMIT = 1)
+	{
+		return self::search(array (), FALSE, "ORDER BY log_id DESC LIMIT 0," . $LIMIT);
+	}
+
 	private $id;
-	private $name;
-	private $style;
-	private $group_rang;
-	private $group_parents = array ();
+	private $module;
+	private $type;
+	private $code;
+	private $message;
+	private $time;
+	private $extra;
 
-	/**
-	 * group constructor.
-	 *
-	 * @param $group_id
-	 */
-	protected function __construct ($group_id)
+	public function __construct ($id)
 	{
-		if (self::exist($group_id)) {
-			$statement = Core::$PDO->query("SELECT * FROM " . self::table . " WHERE " . self::id . " = " . $group_id);
-			$fetch = $statement->fetch(PDO::FETCH_ASSOC);
-			foreach ($fetch as $key => $value) {
-				$temp_key = str_replace("usergroup_", "", $key);
-				$this->{$temp_key} = $value;
-			}
-			$this->load_parents();
-
-		}
-	}
-
-	/**
-	 *
-	 */
-	private function load_parents ()
-	{
-		$this->group_parents = array ();
-		$sql = "SELECT * FROM " . self::assignment . " WHERE child_group_id = " . $this->get_id();
+		$id = Core::$PDO->quote($id);
+		$sql = "SELECT * FROM " . self::table . " WHERE " . self::id . " = " . $id;
 		$statement = Core::$PDO->query($sql);
-		if ($statement !== FALSE) {
-			foreach ($statement->fetchAll() as $row) {
-				$parent = self::get($row["parent_group_id"]);
-				if (array_search($parent, $this->group_parents, TRUE) === FALSE) {
-					array_push($this->group_parents, $parent);
-				}
-				$this->load_parents_recursive($parent);
-			}
+		$fetch = $statement->fetch(PDO::FETCH_ASSOC);
+		foreach ($fetch as $key => $value) {
+			$temp_key = str_replace("log_", "", $key);
+			$temp_key = str_replace("_name", "", $temp_key);
+			$this->{$temp_key} = $value;
 		}
 	}
 
-	private function load_parents_recursive ($group)
-	{
-		$parent_list = $group->get_Parents();
-		foreach ($parent_list as $item) {
-			if (array_search($item, $this->group_parents) === FALSE) {
-				array_push($this->group_parents, $item);
-				$this->load_parents_recursive($item);
-			}
-		}
-	}
-	/*
-	 * Parent | Child
-	 * Gast   | Member
-	 * Member | VIP
-	 * Member | Moderator
-	 * Test   | Moderator
-	 *
-	 */
-	/**
-	 * @return mixed
-	 */
 	public function get_id ()
 	{
-		return intval($this->id);
+		return $this->id;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function get_Rang ()
+	public function get_module ()
 	{
-		return $this->rang;
+		return $this->module;
 	}
 
-	/**
-	 * @param mixed $group_rang
-	 */
-	public function set_Rang ($group_rang)
+	public function get_module_name ()
 	{
-		$this->group_rang = $group_rang;
+		return $this->get_module()->getName();
 	}
 
-	public function get_Parents ()
+	public function get_type ($string = FALSE)
 	{
-		return $this->group_parents;
+		if ($string) {
+			return self::$int_to_string[ $this->type ];
+		}
+		else {
+			return $this->type;
+		}
 	}
 
-	public function get_Style ()
+	public function get_message ()
 	{
-		return $this->style;
+		return $this->msg;
 	}
 
-	/*public function get_Displayname ()
+	public function get_extra ()
 	{
-		return $this->style;
-	}*/
+		try {
+			$result = unserialize($this->extra);
+		}
+		catch (Exception $ex) {
+			$result = $this->extra;
+		}
+
+		return $result;
+	}
+
+	public function get_time ()
+	{
+		return $this->time;
+	}
+
+	public function get_date ()
+	{
+		return date(Core::date_format(), $this->get_time());
+	}
+
+	public function __toString ()
+	{
+		return ucfirst($this->get_type(TRUE)) . " | " . $this->msg . " | " . $this->get_date() . "";
+	}
 }
+
+?>

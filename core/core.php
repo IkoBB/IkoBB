@@ -178,11 +178,12 @@ Core::init(0);
 /**
  *  Load Config Loader
  */
+require_once Core::$corepath . "log.class.php";
+require_once Core::$corepath . "exception.class.php";
+require_once Core::$corepath . "pdo.class.php";
 require_once Core::$corepath . "functions.php";
 require_once Core::$corepath . "event.php";
-require_once Core::$corepath . "exception.class.php";
 require_once Core::$corepath . 'config.php';
-require_once Core::$corepath . "pdo.class.php";
 require_once Core::$corepath . "sessions.php";
 
 /**

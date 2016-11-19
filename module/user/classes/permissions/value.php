@@ -65,11 +65,11 @@ class Value
 
 	public static function search ($args = array (), $or = FALSE, $suffix = "") // TODO: Complete Function for Searching after single and Mutliple user
 	{
-		$sql = "SELECT " . self::name . " FROM " . self::table . " WHERE";
+		$sql = "SELECT " . self::name . " FROM " . self::table . "";
 		$equal = ($or) ? "OR" : "AND";
 		if (count($args) > 0) {
 			$i = count($args);
-			$string = "";
+			$string = " WHERE";
 			foreach ($args as $key => $var) {
 				if (is_array($var)) {
 					foreach ($var as $operator => $value) {

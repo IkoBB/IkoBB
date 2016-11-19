@@ -124,7 +124,7 @@ CREATE TABLE `iko_log` (
 	`log_code`    TEXT         NOT NULL,
 	`log_message` TEXT         NOT NULL,
 	`log_time`    INT(11)      NOT NULL,
-	`log_extra`   TEXT         NOT NULL,
+	`log_extra`   TEXT,
 	PRIMARY KEY (`log_id`),
 	KEY (`module_name`)
 );
