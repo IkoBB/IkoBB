@@ -117,6 +117,18 @@ CREATE TABLE `iko_translation` (
   PRIMARY KEY (`translation_key`)
 );
 
+CREATE TABLE `iko_log` (
+	`log_id`      INT(11)      NOT NULL        AUTO_INCREMENT,
+	`module_name` VARCHAR(255) NOT NULL,
+	`log_type`    INT(11)      NOT NULL,
+	`log_code`    TEXT         NOT NULL,
+	`log_message` TEXT         NOT NULL,
+	`log_time`    INT(11)      NOT NULL,
+	`log_extra`   TEXT         NOT NULL,
+	PRIMARY KEY (`log_id`),
+	KEY (`module_name`)
+);
+
 
 
 /*Relation between Tables */
@@ -196,3 +208,10 @@ ALTER TABLE iko_users
 	ADD CONSTRAINT `iko_user_template_ibfk_2`
 FOREIGN KEY (`user_template`)
 REFERENCES `iko_templates` (`template_id`);
+
+ALTER TABLE iko_log
+	ADD CONSTRAINT `iko_log_ibfk_1`
+FOREIGN KEY (`module_name`)
+REFERENCES `iko_modules` (`module_name`)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE;
