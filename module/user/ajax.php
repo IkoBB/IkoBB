@@ -33,6 +33,6 @@ switch ($function) {
 		}
 	break;
 	case "test":
-		Event\Handler::test();
+		print_r(Log::get_last_log());
 	break;
 }

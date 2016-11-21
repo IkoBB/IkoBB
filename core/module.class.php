@@ -326,4 +326,9 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 	{
 		return $this->version;
 	}
+
+	public function __toString ()
+	{
+		return $this->get_name();
+	}
 }
