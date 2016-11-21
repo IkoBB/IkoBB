@@ -91,7 +91,8 @@ class template
 			// Check if the user module is loaded
 			if (module::load_status("user")) {
 				// Check if user is logged in
-				if ($user = User::get_session() !== FALSE) {
+				$user = User::get_session();
+				if ($user !== FALSE) {
 					// Get the template of the user
 					$this->template_id = $user->get_template();
 				}
@@ -106,6 +107,7 @@ class template
 			}
 		}
 		else {
+			// If user is in admin path load admin template
 			$this->template_id = 0;
 			$this->template_author = 'IkoBB';
 			$this->template_directory = 'admin';
@@ -117,7 +119,7 @@ class template
 
 		if ($this->template_id !== NULL) {
 			if ($this->template_id != 0) {
-				// Get all variables from table
+				// Get all template variables from table
 				try {
 					$statement = Core::$PDO->prepare("SELECT * FROM iko_templates WHERE template_id = :template_id");
 					$statement->bindParam(':template_id', $this->template_id);
