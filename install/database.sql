@@ -130,10 +130,11 @@ CREATE TABLE `iko_log` (
 );
 
 CREATE TABLE `iko_cms` (
-	`cms_id`      INT(11)   NOT NULL        AUTO_INCREMENT,
-	`cms_content` TEXT      NOT NULL,
-	`user_id`     INT(11)   NOT NULL,
-	`cms_time`    TIMESTAMP NOT NULL,
+	`cms_id`      INT(11)      NOT NULL        AUTO_INCREMENT,
+	`cms_content` TEXT         NOT NULL,
+	`user_id`     INT(11)      NOT NULL,
+	`cms_time`    TIMESTAMP    NOT NULL,
+	`cms_title`   VARCHAR(255) NOT NULL,
 	PRIMARY KEY (`cms_id`),
 	KEY (`user_id`)
 );
