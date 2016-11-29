@@ -19,8 +19,11 @@
 
 namespace Iko\Event;
 
+use Iko\module;
+
 class Handler
 {
+
 	private static $event = array ();
 	private static $eventFinal = array ();
 	private static $FinalAll = array ();
@@ -62,15 +65,19 @@ class Handler
 		if (isset($array[ $name ]) && $array[ $name ] != NULL && is_array($array[ $name ])) {
 			$false_counter = 0;
 			foreach ($array[ $name ] as $value) {
-				if (!isset($value[3]) || $value[3] == FALSE) {
-					$class = $value[0];
-					$function = $value[1];
+				$module = module::get($value["module"]);
+				if (!$module->is_load()) {
+					$module->load_complete();
+				}
+				$class = $value["class"];
+				$function = $value["function"];
+				if (!isset($value["is_func_static"]) || $value["is_func_static"] == FALSE) {
 					$reflection = new \ReflectionClass($class);
-					if (isset($value[2]) && $value[2] != NULL && get_class($value[2]) == $reflection->getName()) {
-						$class = $value[2];
+					if (isset($value["instance"]) && $value["instance"] != NULL && get_class($value["instance"]) == $reflection->getName()) {
+						$class = $value["instance"];
 					}
-					elseif (isset($value[4]) && $value[4] != NULL) {
-						$class = eval("return " . $class . "::" . $value[4] . "(" . $init_Args . ");");
+					elseif (isset($value["can_init_over"]) && $value["can_init_over"] != NULL) {
+						$class = eval("return " . $class . "::" . $value["can_init_over"] . "(" . $init_Args . ");");
 					}
 					else {
 						$class = $reflection->newInstance($init_Args);
@@ -78,8 +85,6 @@ class Handler
 					$var = $class->$function($name, $args, $var);
 				}
 				else {
-					$class = $value[0];
-					$function = $value[1];
 					$var = eval("return " . $class . "::" . $function . "(" . var_export($name,
 							TRUE) . "," . var_export($args,
 							TRUE) . ", " . var_export($var, TRUE) . ");");
@@ -113,68 +118,84 @@ class Handler
 		$init_Args = NULL;
 		foreach (self::$FinalAll as $name => $xyz) {
 			foreach (self::$FinalAll[ $name ] as $value) {
-				if (!isset($value[3]) || $value[3] === FALSE) {
-					$class = $value[0];
-					$function = $value[1];
+				$class = $value["class"];
+				$function = $value["function"];
+				if (!isset($value["is_func_static"]) || $value["is_func_static"] === FALSE) {
 					$reflection = new ReflectionClass($class);
-					if (isset($value[2]) && $value[2] != NULL && get_class($value[2]) == $reflection->getName()) {
-						$class = $value[2];
+					if (isset($value["instance"]) && $value["instance"] != NULL && get_class($value["instance"]) == $reflection->getName()) {
+						$class = $value["instance"];
 					}
-					elseif (isset($value[4]) && $value[4] != NULL) {
-						$class = eval("return " . $class . "::" . $value[4] . "(" . $init_Args . ");");
+					elseif (isset($value["can_init_over"]) && $value["can_init_over"] != NULL) {
+						$class = eval("return " . $class . "::" . $value["can_init_over"] . "(" . $init_Args . ");");
 					}
 					else {
 						$class = $reflection->newInstance($init_Args);
 					}
-					$class->$function($args);
+					$class->$function($name, $args);
 				}
 				else {
-					$class = $value[0];
-					$function = $value[1];
-					eval($class . "::" . $function . "(" . $args . ");");
+					eval($class . "::" . $function . "(" . var_export($name, TRUE) . "," . var_export($args,
+							TRUE) . ");");
 				}
 			}
 		}
 	}
 
-	public static function add_event ($name, $class, $func, $instance = NULL, $isFuncStatic = FALSE, $canInitialOver = NULL)
+	public static function add_event ($module, $name, $class, $func, $instance = NULL, $isFuncStatic = FALSE, $canInitialOver = NULL)
 	{
-		self::add_trigger(__FUNCTION__, $name, $class, $func, $instance, $isFuncStatic, $canInitialOver);
+		self::add_trigger(__FUNCTION__, $module, $name, $class, $func, $instance, $isFuncStatic, $canInitialOver);
 	}
 
-	public static function add_event_final ($name, $class, $func, $instance = NULL, $isFuncStatic = FALSE, $canInitialOver = NULL)
+	public static function add_event_final ($module, $name, $class, $func, $instance = NULL, $isFuncStatic = FALSE, $canInitialOver = NULL)
 	{
-		self::add_trigger(__FUNCTION__, $name, $class, $func, $instance, $isFuncStatic, $canInitialOver);
+		self::add_trigger(__FUNCTION__, $module, $name, $class, $func, $instance, $isFuncStatic, $canInitialOver);
 	}
 
-	public static function add_last_event ($name, $class, $func, $instance = NULL, $isFuncStatic = FALSE, $canInitialOver = NULL)
+	public static function add_last_event ($module, $name, $class, $func, $instance = NULL, $isFuncStatic = FALSE, $canInitialOver = NULL)
 	{
-		self::add_trigger(__FUNCTION__, $name, $class, $func, $instance, $isFuncStatic, $canInitialOver);
+		self::add_trigger(__FUNCTION__, $module, $name, $class, $func, $instance, $isFuncStatic, $canInitialOver);
 	}
 
-	private static function add_trigger ($type, $name, $class, $func, $instance = NULL, $isFuncStatic = FALSE, $canInitialOver = NULL)
+	private static function add_trigger ($type, $module, $name, $class, $func, $instance = NULL, $isFuncStatic = FALSE, $canInitialOver = NULL)
 	{
-		switch ($type) {
-			case 'add_event_final':
-				$array = &self::$eventFinal;
-			break;
-			case 'add_last_event':
-				$array = &self::$FinalAll;
-			break;
-			default:
-				$array = &self::$event;
-			break;
+		if ($module instanceof module) {
+			$module = $module->get_name();
 		}
-		if (!isset($array[ $name ]) || $array[ $name ] == NULL) {
-			$array[ $name ] = array ();
+		if (module::exist($module)) {
+			switch ($type) {
+				case 'add_event_final':
+					$array = &self::$eventFinal;
+				break;
+				case 'add_last_event':
+					$array = &self::$FinalAll;
+				break;
+				default:
+					$array = &self::$event;
+				break;
+			}
+			if (!isset($array[ $name ]) || $array[ $name ] == NULL) {
+				$array[ $name ] = array ();
+			}
+			array_push($array[ $name ], array (
+				"module"         => $module,
+				"class"          => $class,
+				"function"       => $func,
+				"instance"       => $instance,
+				"is_func_static" => $isFuncStatic,
+				"can_init_over"  => $canInitialOver));
 		}
-		array_push($array[ $name ], array (
-			$class,
-			$func,
-			$instance,
-			$isFuncStatic,
-			$canInitialOver));
 	}
+
+	/*
+	 * array(
+	 * "module" => "MODULENAME",        0
+	 * "class" => "class",              1
+	 * "function" => "functionname",    2
+	 * "instance" => "instance",        3
+	 * "is_func_static" => false,       4
+	 * "can_init_over" => ""            5
+	 * )
+	 */
 
 	public static function init ()
 	{

@@ -16,6 +16,7 @@ class module extends \Iko\module_loader
 {
 	public function __construct ($module)
 	{
+		//$this->handler = array($this->get_module()->get_name() , "EVENT_NAME","CLASS WITH NAMESPACE", "FUNCTION", "INSTANCE", "IS_A_STATIC_FUNCTION", "INITALOVER_STATIC");
 		parent::__construct($module);
 	}
 

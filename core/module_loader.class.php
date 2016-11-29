@@ -19,12 +19,22 @@ abstract class module_loader
 	public $is_load = FALSE;
 	protected $final_load = NULL;
 	protected $depend_on = array ();
+	protected $handler_file = "";
+	protected $handler = array ();
+	protected $handler_final = array ();
 
+	/*
+	 * array(array($this->class_module, "class", "function", "instance", "is_func_static", "can_init_over"));
+	 */
 	public function __construct ($module)
 	{
 		$this->class_module = $module;
 	}
 
+	public function get_module ()
+	{
+		return $this->class_module;
+	}
 	public function check ()
 	{
 		if ($this->pre_check_Files() && $this->pre_check_PDO_Tables()) {
@@ -215,6 +225,35 @@ abstract class module_loader
 			if (is_callable($this->final_load)) {
 				call_user_func($this->final_load);
 			}
+		}
+	}
+
+	private function add_event_handler_array ($array, $type)
+	{
+		if (is_array($array)) {
+			foreach ($array as $item) {
+				if (count($item) > 0) {
+					if ($type == 1) {
+						Event\Handler::add_event($item[0], $item[1], $item[2], $item[3], $item[4], $item[5]);
+					}
+					if ($type == 2) {
+						Event\Handler::add_event_final($item[0], $item[1], $item[2], $item[3], $item[4], $item[5]);
+					}
+				}
+			}
+		}
+	}
+
+	public function event_handler_init ()
+	{
+		if (isset($this->handler_file) && $this->handler_file != NULL) {
+			$this->load($this->handler_file);
+		}
+		if (isset($this->handler) && is_array($this->handler)) {
+			$this->add_event_handler_array(array ($this->handler), 1);
+		}
+		if (isset($this->handler) && is_array($this->handler)) {
+			$this->add_event_handler_array(array ($this->handler_final), 2);
 		}
 	}
 }
