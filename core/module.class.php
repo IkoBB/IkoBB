@@ -141,8 +141,8 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 	}
 	public static function init ()
 	{
-		self::pre_check();
 		self::request("iko");
+		self::pre_check();
 	}
 
 	public static function version ($name)
@@ -155,10 +155,12 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 		$statement = Core::$PDO->query("SELECT module_name FROM " . self::table . " ");
 		$fetch_all = $statement->fetchAll();
 		foreach ($fetch_all as $item) {
+			$module = module::get($item["module_name"]);
 			$filename = Core::$modulepath . $item["module_name"] . "/module.php";
 			if (!file_exists($filename)) {
 				throw new \Exception("Needed File module.php to implement the Module " . $item["module_name"] . " does not exist.");
 			}
+			$module->event_handler_init();
 		}
 	}
 
@@ -330,5 +332,12 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 	public function __toString ()
 	{
 		return $this->get_name();
+	}
+
+	public function event_handler_init ()
+	{
+		if ($this->get_loader() instanceof module_loader) {
+			$this->get_loader()->event_handler_init();
+		}
 	}
 }

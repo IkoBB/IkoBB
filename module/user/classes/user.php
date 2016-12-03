@@ -226,7 +226,7 @@ class User extends operators implements iUser //TODO: Complete
 		echo "Ich bins";
 	}
 
-	public static function chat ($text)
+	public static function chat ($name, $text, $pre)
 	{
 		return str_replace("Penis", "", $text);
 	}
@@ -237,12 +237,12 @@ class User extends operators implements iUser //TODO: Complete
 	public static function chat2 ($text, $pre)
 	{
 		if ($text != $pre) {
-			return str_replace("Jannik", "Penner", $pre);
+			return str_replace("Jeder", "Penner", $pre);
 		}
 		else {
-			return str_replace("Jannik", "Suesser", $pre);
+			return str_replace("Jeder", "Suesser", $pre);
 		}
-	}
+	} // Only for Testing
 
 	public static function init ()
 	{
