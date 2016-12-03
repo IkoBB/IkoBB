@@ -10,115 +10,116 @@
 namespace Iko;
 
 
-class language
+class language extends languageFunction
 {
-	const translation = " {prefix}translation";
-	const supported = array (
-		"german",
-		"english");
-
-	private static $instance = NULL;
-	private static $default_language = "english";
 
 
-	public static function get_instance ()
+}
+
+
+class languageConfigs
+{
+	const tableTranslation = "iko_translation";
+	const defaultLanguage = "english";
+
+	const supportedLanguages = array (
+		"english",
+		"german",);
+
+	public function getDefaultLanguage ()
 	{
-		if (self::$instance == NULL) {
-			self::$instance = new language();
-		}
+		$defaultLanguage = self::defaultLanguage;
 
-		return self::$instance;
+		return $defaultLanguage;
 	}
 
-
-
-	private function __construct ()
+	public function getSupportedLanguages ()
 	{
-		/*module::request("user");
-		if(module::load_status("user")) {
-			if($user = User::get_session() !== FALSE) {
-				$this->lang = $user->get_system_language();
-			}
-		}
-		else{
+		$supportedLanguages = self::supportedLanguages;
 
-		}*/
-		$this->load_language("german");
-		$this->load_language("english");
+		return $supportedLanguages;
 	}
 
-	//      load language of user
-	//          -> if no language choosen than standard
-	public static function ckeck_user_language ()
+	public function supportedLanguageExist ($supportedLanguage)
 	{
-		//required modules
-		module::request("user");
+		$sql = "SELECT " . $supportedLanguage . " FROM " . self::tableTranslation . "";
+		$statement = Core::$PDO->query($sql);
 
-		//check status of user module
-		if (module::load_status("user")) {
+		if ($statement !== FALSE) {
+			return TRUE;
+		}
+		else {
+			//TODO throw exeption
+			echo "Language : {$supportedLanguage} do not exist";
 
-			$session = User::get_session();
-			//$session = 1;
+			return FALSE;
+		}
+	}
 
-			//user logged in
-			if ($session != 0) {
-				//try to load choosen language form database
-				$choosen_language = &$session->get_language();
-				//$choosen_language = "german";
-				if (array_search($choosen_language, self::supported) === FALSE) {
-					$language = self::$default_language;
+	//TODO: Wenn irgendetwas aus der Klasse geladen wird, soll dies überprüft werden
+}
 
-					return $language;
+class languageFunction extends languageConfigs
+{
+
+	public function getLanguage ($language)
+	{
+		if ($this->supportedLanguageExist($language) === TRUE) {
+			if (array_search($language, self::supportedLanguages) !== FALSE) {
+				try {
+					$sql = "SELECT translation_key, " . $language . " FROM " . self::tableTranslation . "";
+					$statement = Core::$PDO->query($sql);
+					$fetchall = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+					/*foreach($fetchall as $item){
+						foreach($item as $key=>$value){
+							if($key=="translation_key"){
+								$translationKey=$value;
+							}
+							if($key==$language){
+								$translation=$value;
+							}
+						}
+					}
+					*/
+
+					return $fetchall;
 				}
-				else {
-					return $choosen_language;
+				catch (\PDOException $exception) {
+					throw new Exception("Error#1234:" . $exception);
 				}
-
 			}
 			else {
-				//no user logged in -> Option to find out guest changed language ?
-				$language = self::$default_language;
+				//language do not exists
+				throw new Exception("Error#1234:");
+			}
+		}
 
-				return $language;
 
+	}
+
+	public function insertData ($translation_key, $language = self::supportedLanguages, $data = array ())
+	{
+		//TODO: Für jeden translation_key überprüfen ob dieser schon vorhanden ist, wenn nicht Datensatz erstellen, bei jeder Sprache, welche leer bleiben soll, muss dieser Wert leer bleiben
+		// -> Array anlegen, vielleicht mit anderer Funktion aufrufen, dass jede Sprache abgefrufen wird und der Wert für jede Spalte erstellt wird
+		var_dump($language);
+		if (count(self::supportedLanguages == count($data))) {
+			$x = 0;
+			while ($x <= count($language) - 1) {
+				if ($this->supportedLanguageExist($language[ $x ]) === TRUE) {
+					echo $data[ $x ];
+				}
+				$x++;
 			}
 		}
 		else {
-			//TODO: Whats happening if module loading failed ?
-			throw new Exception("Error #1234: ");
-		}
-	}
-	//TODO: Implement function which will use check_language and load language and can load words by id
-	//TODO: Are all needed modules have the correct version ? module::user for example
-
-	public function load_language ($language)
-	{
-		if (array_search($language, self::supported) !== FALSE) {
-			try {
-				$statement = Core::$PDO->query("SELECT translation_key, " . $language . " FROM " . self::translation . " ");
-				$fetchall = $statement->fetchAll(PDO::FETCH_ASSOC);
-				foreach ($fetchall as $item) {
-					foreach ($item as $key => $value) {
-						if ($key == "translation_key") {
-							$id = $value;
-						}
-						if ($key == $language) {
-							$this->{$language}[ $id ] = $value;
-						}
-					}
-				}
-
+			if (count(self::supportedLanguages < count($data))) {
+				echo "Error";
+				//TODO: throw new exepction
 			}
-			catch (\PDOException $exception) {
-				throw new Exception("Error #1234: " . $exception);
+			else {
+				//TODO; rethink
 			}
 		}
 	}
-
-	public function __get ($value)
-	{
-		return (isset($this->{$this->supported}[ $value ])) ? $this->{$this->supported}[ $value ] : "";
-		// (Bedienung)?TRUE:ELSE
-	}
-
 }
