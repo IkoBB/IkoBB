@@ -17,6 +17,7 @@ class User extends operators implements iUser //TODO: Complete
 	const table = "{prefix}users";
 	const id = "user_id";
 	const name = "user_name";
+	const mail = "user_email";
 	protected static $cache = array ();
 	protected static $cache_exist = array ();
 
@@ -79,6 +80,7 @@ class User extends operators implements iUser //TODO: Complete
 				if ($i > 1) {
 					$string .= " " . $equal;
 				}
+				$i--;
 			}
 			$sql .= $string;
 		}
@@ -206,7 +208,7 @@ class User extends operators implements iUser //TODO: Complete
 				set_session("user_id", $class->get_ID());
 				if (intval(read_session("user_id")) == $class->get_ID()) {
 					$class->update_last_login($password);
-
+					self::$session_user = $class;
 					return TRUE;
 				}
 
@@ -219,6 +221,63 @@ class User extends operators implements iUser //TODO: Complete
 		else {
 			return FALSE;
 		}
+	}
+
+	public static function create ($user_name, $mail, $password, $other = NULL)
+	{
+		$array = array (
+			"user_name" => $user_name,
+			"mail"      => $mail,);
+		if (is_array($other)) {
+			foreach ($other as $key => $item) {
+				if ($key != "user_name" && $key != "mail") {
+					$array[ $key ] = $item;
+				}
+			}
+		}
+		if (!self::search(array (self::name => $array["user_name"])) instanceof User && !self::search(array (self::mail => $array["mail"])) instanceof User) {
+			if (Event\Handler::event("iko.user.registration", $array)) {
+				Core::$PDO->beginTransaction();
+				$time = time();
+				$statement = Core::$PDO->exec("INSERT INTO " . self::table . "(" . self::name . ", " . self::mail . ", " . "user_date_joined) VALUES('" . $array["user_name"] . "', '" . $array["mail"] . "', '" . $time . "')");
+				if ($statement > 0) {
+					Core::$PDO->commit();
+					$user = self::search(array (
+						self::name => $array["user_name"],
+						self::mail => $array["mail"]));
+					Core::$PDO->beginTransaction();
+					if ($user instanceof User) {
+						$gen_password = $user->salt($password);
+						$statement_two = Core::$PDO->exec("UPDATE " . self::table . " Set user_password = '" . $gen_password . "' WHERE " . self::id . " = " . $user->get_id());
+						if ($statement_two > 0) {
+							Core::$PDO->commit();
+							$array["user_id"] = $user->get_id();
+							Event\Handler::event_Final("iko.user.registration", $array);
+							log::add("user", 0, 0,
+								"Iko.User.Registration: User_name = '" . $user->get_user_name() . "'", $array);
+
+							return TRUE;
+						}
+						else {
+							Core::$PDO->rollBack();
+							echo 1;
+
+							return FALSE;
+						}
+					}
+					else {
+						throw new Exception("User Error");
+					}
+				}
+				else {
+					Core::$PDO->rollBack();
+					echo 3;
+
+					return FALSE;
+				}
+			}
+		}
+
 	}
 
 	public static function test ()
@@ -234,7 +293,7 @@ class User extends operators implements iUser //TODO: Complete
 	/*
 	 * Event\Handler Test Functions
 	 */
-	public static function chat2 ($text, $pre)
+	public static function chat2 ($name, $text, $pre)
 	{
 		if ($text != $pre) {
 			return str_replace("Jeder", "Penner", $pre);

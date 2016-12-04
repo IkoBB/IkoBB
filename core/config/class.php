@@ -112,17 +112,22 @@ class config extends config_loader
 	public function add ($name, $value, $comment = "")
 	{
 		/** @noinspection PhpUndefinedMethodInspection */
-		if ($this->config_loader->add($name, $value, $comment)) {
-			$this->load_Config();
-			if (isset($this->config[ $name ])) {
-				return TRUE;
+		if (!isset($this->config[ $name ])) {
+			if ($this->config_loader->add($name, $value, $comment)) {
+				$this->load_Config();
+				if (isset($this->config[ $name ])) {
+					return TRUE;
+				}
+				else {
+					return FALSE;
+				}
 			}
 			else {
 				return FALSE;
 			}
 		}
 		else {
-			return FALSE;
+			return $this->set($name, $value, $comment);
 		}
 	}
 
@@ -132,7 +137,7 @@ class config extends config_loader
 	 */
 	public function set ($name, $value, $comment = "")
 	{
-		if ($this->config[ $name ] != $value) {
+		if (isset($this->config[ $name ]) && $this->config[ $name ] != $value) {
 			/** @noinspection PhpUndefinedMethodInspection */
 			if ($this->config_loader->set($name, $value, $comment)) {
 				$this->load_Config();
@@ -147,8 +152,11 @@ class config extends config_loader
 				return FALSE;
 			}
 		}
-		else {
+		else if (isset($this->config[ $name ]) && $this->config[ $name ] == $value) {
 			return TRUE;
+		}
+		else {
+			return $this->add($name, $value, $comment);
 		}
 	}
 

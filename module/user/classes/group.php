@@ -88,6 +88,7 @@ class Group extends operators implements iGroup
 				if ($i > 1) {
 					$string .= " " . $equal;
 				}
+				$i--;
 			}
 			$sql .= $string;
 		}

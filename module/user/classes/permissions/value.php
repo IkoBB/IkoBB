@@ -83,6 +83,7 @@ class Value
 					$string .= " " . $equal;
 				}
 			}
+			$i--;
 			$sql .= $string;
 		}
 		$sql .= " " . $suffix;

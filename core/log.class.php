@@ -46,9 +46,10 @@ class log
 			if ($extra !== NULL) {
 				$extra = serialize($extra);
 			}
-			$sql = "INSERT INTO " . self::table . " (module_name, log_type, log_code, log_message, log_time, log_extra) VALUES('$module', '$type', '$code', :log_message, '$time', '$extra')";
+			$sql = "INSERT INTO " . self::table . " (module_name, log_type, log_code, log_message, log_time, log_extra) VALUES('$module', '$type', '$code', :log_message, '$time', :log_extra )";
 			$statement = Core::$PDO->prepare($sql);
 			$statement->bindParam(":log_message", $msg);
+			$statement->bindParam(":log_extra", $extra);
 			$statement->execute();
 			if ($statement !== FALSE) {
 				return TRUE;
@@ -121,6 +122,7 @@ class log
 				if ($i > 1) {
 					$string .= " " . $equal;
 				}
+				$i--;
 			}
 			$sql .= $string;
 		}

@@ -141,9 +141,9 @@ abstract class module_loader
 		}
 	}
 
-	public function load ($files = array ())
+	public function load ($files = array (), $event_handler = FALSE)
 	{
-		if (!$this->is_load()) {
+		if (!$this->is_load() && !$event_handler) {
 			$this->is_load = TRUE;
 			$this->pre_load();
 		}
@@ -247,7 +247,7 @@ abstract class module_loader
 	public function event_handler_init ()
 	{
 		if (isset($this->handler_file) && $this->handler_file != NULL) {
-			$this->load($this->handler_file);
+			$this->load($this->handler_file, TRUE);
 		}
 		if (isset($this->handler) && is_array($this->handler)) {
 			$this->add_event_handler_array(array ($this->handler), 1);

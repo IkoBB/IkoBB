@@ -5,46 +5,36 @@ use Iko\Permissions\User as PUser;
 
 
 require_once 'core/core.php';
-module::request("user");
-//$puser = User::get("MatPlayTV");
-//var_dump($puser);
-/*$permuser = PUser::get($puser);
-print_r($permuser);
-var_dump($permuser->has_Permission("iko.*"));
-echo "<br>" . Core::$basepath;
-echo "<br>" . Core::$currentfile;
-echo $_SESSION['user_ip'] . "<br>";
-echo time() . "<br>";
-var_dump($puser->is_own());
-*/
-set_session("user_id", 2);
-Event\Handler::add_event("iko.viewpage", "Iko\\User", "test", NULL, TRUE);
-Event\Handler::add_event("iko.send.message", "Iko\\User", "chat", NULL, TRUE);
-Event\Handler::add_event("iko.send.message", "Iko\\User", "chat2", NULL, TRUE);
-Event\Handler::test();
-Event\Handler::event("iko.viewpage");
-$matze = User::get(2);
-$matze->change_user_name("hallo");
-var_dump($matze->is_own());
-$admin = User::get(1);
-$admin->change_user_name("test");
-var_dump($admin->is_own());
-var_dump(module::version("user"));
-var_dump(Permissions\Value::get("iko.user.change.user_name"));
-var_dump(Permissions\Value::search(array (Permissions::name => array ("LIKE" => "iko.user.change.%")), FALSE,
-	"LIMIT 0,1"));
-?>
-<script src="http://code.jquery.com/jquery-latest.js"></script>
-<script>
-	SSID = '<?php
-		echo session_id();
-		?>';
-</script>
-<script>
-	function test() {
-		$.post("./ajax.php", {ikobb_ssid: SSID, module: "user", func: "test"}, function (data) {
-			$("body").append(data);
-		});
+set_session("user_id", 1);
+$config = config::load("file", Core::$basepath . "meineconfig.php");
+$config->set("test", array (
+	"Jetzt",
+	"nur",
+	"Arrays"), "Warum nicht!!!!");
+print_r($config);
+/*
+$test = (new class(user::get_session()->get_id(), "Pascal") extends User {
+	public function __construct ($user_id, $kuerzel)
+	{
+		parent::__construct($user_id);
+		$this->kuerzel = $kuerzel;
 	}
-	test();
-</script>
+	public function get_user_name ()
+	{
+		return $this->kuerzel;
+	}
+});
+print_r($test);
+echo $test->get_user_name();
+if($test instanceof User) {
+	echo "erfolg";
+}
+else
+	echo "fehler";
+*/
+$lang = module::get("language");
+$user = module::get("user");
+print_r($user);
+print_r($lang);
+Event\Handler::event("iko.user.registration", "Ich halt");
+print_r($lang);

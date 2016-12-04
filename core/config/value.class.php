@@ -103,7 +103,7 @@ class config_value
 	 *
 	 * @return mixed
 	 */
-	public function __get ($value = NULL)
+	public function __get ($value)
 	{
 		return $this->get();
 	}

@@ -97,17 +97,26 @@ class Handler
 				$result = TRUE;
 			}
 		}
+		else {
+			return TRUE;
+		}
 		if ($type == "event") {
-			if (isset($var) && !is_bool($var)) {
-				return $var;
+			if (count($array[ $name ]) > 0) {
+				if (isset($var) && !is_bool($var)) {
+					return $var;
+				}
+				else {
+					return $result;
+				}
 			}
 			else {
-				return $result;
+				return TRUE;
 			}
 		}
 	}
 
-	public static function eventFinal ($name, $args = NULL, $init_Args = NULL)
+
+	public static function event_Final ($name, $args = NULL, $init_Args = NULL)
 	{
 		self::trigger(__FUNCTION__, $name, $args, $init_Args);
 	}
