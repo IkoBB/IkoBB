@@ -45,7 +45,7 @@ CREATE TABLE `iko_users` (
 	`user_timezone_id` INT(11)               DEFAULT '1',
 	`user_last_login`  INT(11),
 	`user_language`    varchar(255) NOT NULL Default 'english',
-	`user_template`    INT(11)      NOT NULL DEFAULT '1',
+	`user_template`    INT(11)      NOT NULL DEFAULT '0',
 	PRIMARY KEY (`user_id`),
 	UNIQUE KEY `user_name` (`user_name`),
 	UNIQUE KEY `user_email` (`user_email`),

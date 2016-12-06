@@ -31,6 +31,34 @@ switch ($function) {
 				echo "FALSE";
 			}
 		}
+		else {
+			echo "FALSE";
+		}
+	break;
+	case "registration":
+		$user = define_post("user", "");
+		$pass = define_post("pass", "");
+		$mail = define_post("mail", "");
+		$array = array ();
+		foreach ($_POST as $key => $item) {
+			if (strpos($key, "user_") !== FALSE) {
+				$array[ $key ] = $item;
+			}
+		}
+		if ($user != "" && $pass != "" && $mail != "") {
+			if (User::create($user, $mail, $pass, $array)) {
+				echo "TRUE";
+			}
+			else {
+				echo "2FALSE";
+			}
+		}
+		else {
+			echo $user . PHP_EOL;
+			echo $pass . PHP_EOL;
+			echo $mail . PHP_EOL;
+			echo "1FALSE";
+		}
 	break;
 	case "test":
 		print_r(Log::get_last_log());

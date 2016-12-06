@@ -211,7 +211,6 @@ class User extends operators implements iUser //TODO: Complete
 					self::$session_user = $class;
 					return TRUE;
 				}
-
 				return FALSE;
 			}
 			else {
@@ -260,8 +259,6 @@ class User extends operators implements iUser //TODO: Complete
 						}
 						else {
 							Core::$PDO->rollBack();
-							echo 1;
-
 							return FALSE;
 						}
 					}
@@ -271,11 +268,15 @@ class User extends operators implements iUser //TODO: Complete
 				}
 				else {
 					Core::$PDO->rollBack();
-					echo 3;
-
 					return FALSE;
 				}
 			}
+			else {
+				return FALSE;
+			}
+		}
+		else {
+			return FALSE;
 		}
 
 	}
