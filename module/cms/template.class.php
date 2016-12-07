@@ -95,10 +95,12 @@ class template
 				if ($user !== FALSE) {
 					// Get the template of the user
 					$this->template_id = $user->get_template();
+					if ($this->template_id == 0) {
+						$this->set_default_template();
+					}
 				}
 				else { // if user is not logged in load default template
-					$config = config::load("pdo", "cms");
-					$this->template_id = $config->site_template;
+					$this->set_default_template();
 				}
 			}
 			else { // load default template when no user module is activated
@@ -118,7 +120,7 @@ class template
 
 
 		if ($this->template_id !== NULL) {
-			if ($this->template_id != 0) {
+			if (isset($this->template_directory) && $this->template_directory != '') {
 				// Get all template variables from table
 				try {
 					$statement = Core::$PDO->prepare("SELECT * FROM iko_templates WHERE template_id = :template_id");
@@ -228,6 +230,15 @@ class template
 		}
 
 		return FALSE;
+	}
+
+	/**
+	 * Sets the current template to the default site template
+	 */
+	private function set_default_template ()
+	{
+		$config = config::load("pdo", "cms");
+		$this->template_id = $config->site_template;
 	}
 
 	/**
