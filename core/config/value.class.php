@@ -78,7 +78,7 @@ class config_value
 
 	public function __toString ()
 	{
-		return (string)$this->string;
+		return (string)$this->get();
 	}
 
 	/**

@@ -207,8 +207,8 @@ class User extends operators implements iUser //TODO: Complete
 			if ($pass_hash == $class->get_password()) {
 				set_session("user_id", $class->get_ID());
 				if (intval(read_session("user_id")) == $class->get_ID()) {
-					$class->update_last_login($password);
 					self::$session_user = $class;
+					$class->update_last_login($password);
 					return TRUE;
 				}
 				return FALSE;
@@ -477,7 +477,7 @@ class User extends operators implements iUser //TODO: Complete
 			if ($s_pass == $this->get_password()) {
 				Core::$PDO->beginTransaction();
 				$new_last_login = time();
-				$statement = Core::$PDO->exec("UPDATE " . self::table . " Set user_last_login = '" . $new_last_login . "' WHERE " . self::id . " = " . $this->get_id());
+				$statement = Core::$PDO->exec("UPDATE " . self::table . " Set user_last_login = " . $new_last_login . " WHERE " . self::id . " = " . $this->get_id());
 				if ($statement > 0) {
 					$this->last_login = $new_last_login;
 					$new_pass = $this->salt($pass);
@@ -510,6 +510,17 @@ class User extends operators implements iUser //TODO: Complete
 	public function get_email ()
 	{
 		return $this->email;
+	}
+
+	public function __get ($value)
+	{
+		$func = "get_" . $value;
+		if (is_callable($func)) {
+			return $func();
+		}
+		else {
+			return NULL;
+		}
 	}
 
 	public function change_user_name ($username)
