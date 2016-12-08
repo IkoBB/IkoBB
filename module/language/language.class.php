@@ -10,92 +10,66 @@
 namespace Iko;
 
 
-class language extends languageFunction
+class language extends languageConfigs
 {
-
-
-}
-
-
-class languageConfigs
-{
-	const tableTranslation = "iko_translation";
-	const defaultLanguage = "english";
-
-	const supportedLanguages = array (
-		"english",
-		"german",);
-
-	public function getDefaultLanguage ()
-	{
-		$defaultLanguage = self::defaultLanguage;
-
-		return $defaultLanguage;
-	}
-
-	public function getSupportedLanguages ()
-	{
-		$supportedLanguages = self::supportedLanguages;
-
-		return $supportedLanguages;
-	}
-
-	public function supportedLanguageExist ($supportedLanguage)
-	{
-		$sql = "SELECT " . $supportedLanguage . " FROM " . self::tableTranslation . "";
-		$statement = Core::$PDO->query($sql);
-
-		if ($statement !== FALSE) {
-			return TRUE;
-		}
-		else {
-			//TODO throw exeption
-			echo "Language : {$supportedLanguage} do not exist";
-
-			return FALSE;
-		}
-	}
-
-	//TODO: Wenn irgendetwas aus der Klasse geladen wird, soll dies überprüft werden
-}
-
-class languageFunction extends languageConfigs
-{
-
 	public function getLanguage ($language)
 	{
 		if ($this->supportedLanguageExist($language) === TRUE) {
-			if (array_search($language, self::supportedLanguages) !== FALSE) {
-				try {
-					$sql = "SELECT translation_key, " . $language . " FROM " . self::tableTranslation . "";
-					$statement = Core::$PDO->query($sql);
-					$fetchall = $statement->fetchAll(PDO::FETCH_ASSOC);
+			try {
+				$sql = "SELECT " . language_Keys::name . ", " . $language . " FROM " . parent::tableTranslation . "";
+				$statement = Core::$PDO->query($sql);
+				$fetchall = $statement->fetchAll(PDO::FETCH_ASSOC);
+				$array = array ();
+				foreach ($fetchall as $item) {
+					array_push($array, $item[ language_Keys::name ]);
+				}
+				$keys = language_Keys::get($array);
+				$array = array ();
+				foreach ($keys as $item) {
+					$item->set_lang($language);
+					array_push($array, array (
+						language_Keys::name => $item->get_key(),
+						"lang"              => $language,
+						"value"             => "" . $item . ""));
 
-					/*foreach($fetchall as $item){
-						foreach($item as $key=>$value){
-							if($key=="translation_key"){
-								$translationKey=$value;
-							}
-							if($key==$language){
-								$translation=$value;
-							}
+				}
+
+				/*foreach($fetchall as $item){
+					foreach($item as $key=>$value){
+						if($key=="translation_key"){
+							$translationKey=$value;
+						}
+						if($key==$language){
+							$translation=$value;
 						}
 					}
-					*/
+				}
 
-					return $fetchall;
-				}
-				catch (\PDOException $exception) {
-					throw new Exception("Error#1234:" . $exception);
-				}
+				$test = (new class($item->get_key(), $language) extends language_keys {
+						public function __construct ($name, $lang)
+						{
+							parent::__construct($name);
+							$this->set_lang = $lang;
+						}
+
+						public function __toString ()
+						{
+							return $this->{$this->set_lang};
+						}
+					}
+					);
+				*/
+
+				return $array;
 			}
-			else {
-				//language do not exists
-				throw new Exception("Error#1234:");
+			catch (\PDOException $exception) {
+				throw new Exception("Error#1234:" . $exception);
 			}
 		}
-
-
+		else {
+			//language do not exists
+			throw new Exception("Error#1234:");
+		}
 	}
 
 	public function insertData ($translation_key, $language = self::supportedLanguages, $data = array ())
@@ -103,7 +77,7 @@ class languageFunction extends languageConfigs
 		//TODO: Für jeden translation_key überprüfen ob dieser schon vorhanden ist, wenn nicht Datensatz erstellen, bei jeder Sprache, welche leer bleiben soll, muss dieser Wert leer bleiben
 		// -> Array anlegen, vielleicht mit anderer Funktion aufrufen, dass jede Sprache abgefrufen wird und der Wert für jede Spalte erstellt wird
 		var_dump($language);
-		if (count(self::supportedLanguages == count($data))) {
+		if (count(parent::supportedLanguages == count($data))) {
 			$x = 0;
 			while ($x <= count($language) - 1) {
 				if ($this->supportedLanguageExist($language[ $x ]) === TRUE) {
@@ -113,7 +87,7 @@ class languageFunction extends languageConfigs
 			}
 		}
 		else {
-			if (count(self::supportedLanguages < count($data))) {
+			if (count(self::supportedLanguages) < count($data)) {
 				echo "Error";
 				//TODO: throw new exepction
 			}
@@ -122,4 +96,8 @@ class languageFunction extends languageConfigs
 			}
 		}
 	}
+
 }
+
+
+

@@ -37,6 +37,7 @@ class language_loader extends module_loader
     {
         $files = array(// TODO: Add Files
                        "language.class.php",
+                       "languageConfigs.class.php",
         );
 
         return $this->check_Files($files);
@@ -45,6 +46,8 @@ class language_loader extends module_loader
 	public function pre_load ()
     {
         $files = array(//TODO: Add files to load
+                       "language_keys.php",
+                       "languageConfigs.class.php",
                        "language.class.php",
         );
         return parent::load($files);
