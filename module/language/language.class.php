@@ -9,6 +9,8 @@
 
 namespace iko\language;
 
+use iko\Core;
+use iko;
 
 class language extends languageConfigs
 {
@@ -18,7 +20,7 @@ class language extends languageConfigs
 			try {
 				$sql = "SELECT " . language_Keys::name . ", " . $language . " FROM " . parent::tableTranslation . "";
 				$statement = Core::$PDO->query($sql);
-				$fetchall = $statement->fetchAll(PDO::FETCH_ASSOC);
+				$fetchall = $statement->fetchAll(iko\PDO::FETCH_ASSOC);
 				$array = array ();
 				foreach ($fetchall as $item) {
 					array_push($array, $item[ language_Keys::name ]);

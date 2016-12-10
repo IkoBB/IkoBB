@@ -8,6 +8,9 @@
 
 namespace iko\language;
 
+use iko\Core;
+use iko;
+
 
 class language_Keys
 {
@@ -159,7 +162,7 @@ class language_Keys
 		if (is_string($name) && self::exist($name)) {
 			$sql = "SELECT * FROM " . self::table . " WHERE " . self::name . " = '" . $name . "'";
 			$statement = Core::$PDO->query($sql);
-			$fetch = $statement->fetch(PDO::FETCH_ASSOC);
+			$fetch = $statement->fetch(iko\PDO::FETCH_ASSOC);
 			foreach ($fetch as $key => $value) {
 				$this->{$key} = $value;
 			}

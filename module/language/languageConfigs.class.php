@@ -8,6 +8,7 @@
 
 namespace iko\language;
 
+use iko\Core;
 
 class languageConfigs
 {
