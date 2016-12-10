@@ -16,11 +16,11 @@
  * Date: 28.09.2016
  * Time: 21:17
  */
-namespace Iko;
+namespace iko\user;
 
-use Iko\Permissions\User as users;
-use Iko\Permissions\Group as groups;
-use Iko\Permissions\Value as Value;
+use Iko\user\permissions\User as users;
+use Iko\user\permissions\Group as groups;
+use Iko\user\permissions\Value as Value;
 
 abstract class Permissions
 {
@@ -170,6 +170,11 @@ abstract class Permissions
 
 		 */
 		return $result;
+	}
+
+	public function __invoke ($values)
+	{
+		return $this->has_permission($values);
 	}
 
 	/**

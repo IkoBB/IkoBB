@@ -14,7 +14,7 @@
  * @author Marcel
  *
  */
-namespace Iko;
+namespace iko;
 $files = array(
 	"interface.php",
 	"abstract.class.php",

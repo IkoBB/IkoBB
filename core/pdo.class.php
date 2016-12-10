@@ -14,7 +14,7 @@
  * @author Marcel
  *
  */
-namespace Iko;
+namespace iko;
 
 use \PDO as DB;
 

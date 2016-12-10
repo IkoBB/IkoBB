@@ -11,7 +11,7 @@
  *
  */
 
-namespace Iko;
+namespace iko\cms;
 
 
 class cms

@@ -10,7 +10,7 @@
  * the LICENSE file.
  *
  */
-namespace Iko;
+namespace iko\user;
 
 class User extends operators implements iUser //TODO: Complete
 {
@@ -514,22 +514,42 @@ class User extends operators implements iUser //TODO: Complete
 
 	public function __get ($value)
 	{
-		$func = "get_" . $value;
-		if (is_callable($func)) {
-			return $func();
+		$func = 'get_' . $value;
+		if (is_callable(get_called_class(), $func)) {
+			return $this->{$func}();
 		}
 		else {
 			return NULL;
 		}
 	}
 
+	public function __set ($name, $values)
+	{
+		$func = "change_" . $name;
+		if ($name != "password") {
+			if (is_callable(get_called_class(), $func)) {
+				return $this->{$func}($values);
+			}
+		}
+	}
+
+	public function __isset ($name)
+	{
+		// TODO: Implement __isset() method.
+	}
+
+	public function __empty ()
+	{
+
+	}
+
 	public function change_user_name ($username)
 	{
 		if (Event\Handler::event("iko.user.change.user_name", User::get_session(), $this->get_id())) {
-			echo "Ja";
+			return "Ja";
 		}
 		else {
-			echo "nein";
+			return "nein";
 		}
 	}
 }

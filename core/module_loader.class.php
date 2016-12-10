@@ -10,7 +10,7 @@
  * the LICENSE file.
  *
  */
-namespace Iko;
+namespace iko;
 
 abstract class module_loader
 {
@@ -132,7 +132,7 @@ abstract class module_loader
 					throw new \Exception("Code #1236 " . $filename);
 				}
 				else {
-					$include = include($filename);
+					$include = include_once($filename);
 					if ($include === FALSE) {
 						throw new \Exception("Code #1236 " . $filename);
 					}

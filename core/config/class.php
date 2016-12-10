@@ -14,7 +14,7 @@
  * @author Marcel
  *
  */
-namespace Iko;
+namespace iko;
 
 class config extends config_loader
 {

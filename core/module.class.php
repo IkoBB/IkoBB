@@ -10,7 +10,7 @@
  * the LICENSE file.
  *
  */
-namespace Iko;
+namespace iko;
 class module // TODO: Implemnt autoloading of Modules and posibility to load Modules simple over one function.
 {
 	const table = "{prefix}modules";
@@ -215,7 +215,7 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 			}
 		}
 		fclose($handle);
-		$include = include($filename);
+		$include = include_once($filename);
 		if ($include === FALSE) {
 			throw new \Exception("Need File module.php to implement the Module " . $this->name . " does not exist.");
 		}

@@ -1,17 +1,18 @@
 <?php
-namespace Iko;
+namespace iko;
 
-use Iko\Permissions\User as PUser;
-
+use Iko\user\permissions\User as PUser;
 
 require_once 'core/core.php';
-set_session("user_id", 1);
-$config = config::load("file", Core::$basepath . "meineconfig.php");
-$config->set("test", array (
+
+/*$config = config::load("file", Core::$basepath . "meineconfig.php");
+var_dump($config->set("main", array (
 	"Jetzt",
 	"nur",
-	"Arrays"), "Warum nicht!!!!");
-print_r($config);
+	"Arrays","testiii",
+	"Penis"), "Warum nicht!!!!"));
+var_dump($config->add("hans", "lisa", "Im Glueck"));
+print_r($config);*/
 /*
 $test = (new class(user::get_session()->get_id(), "Pascal") extends User {
 	public function __construct ($user_id, $kuerzel)
@@ -32,9 +33,12 @@ if($test instanceof User) {
 else
 	echo "fehler";
 */
-$lang = module::get("language");
-$user = module::get("user");
-print_r($user);
-print_r($lang);
-Event\Handler::event("iko.user.registration", "Ich halt");
-print_r($lang);
+try {
+	user\User::get("penis");
+	$user = User::get("Marcel");
+	$user->user_name = "Pennis";
+	echo $user->user_name;
+}
+catch (\Exception $ex) {
+	echo NULL;
+}

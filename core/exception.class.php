@@ -10,7 +10,7 @@
  * the LICENSE file.
  *
  */
-namespace Iko;
+namespace iko;
 
 use \Exception as Exi;
 

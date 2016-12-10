@@ -17,12 +17,12 @@
  * Date: 28.09.2016
  * Time: 19:47
  */
-namespace Iko;
+namespace iko\user;
 
 class Group extends operators implements iGroup 
 {
 	const table = "{prefix}usergroups";
-	const assignment = Permissions::group_assignment;
+	const assignment = permissions::group_assignment;
 	const id = "usergroup_id";
 	const name = "usergroup_name";
 

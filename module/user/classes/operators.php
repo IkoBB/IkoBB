@@ -5,7 +5,7 @@
  * Date: 04.11.2016
  * Time: 22:00
  */
-namespace Iko;
+namespace iko\user;
 
 abstract class operators
 {

@@ -16,7 +16,7 @@
  * Date: 28.09.2016
  * Time: 21:29
  */
-namespace Iko\Permissions;
+namespace Iko\user\permissions;
 
 use Iko;
 use Iko\Permissions;

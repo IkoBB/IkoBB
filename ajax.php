@@ -16,7 +16,7 @@
  * Date: 30.10.2016
  * Time: 23:07
  */
-namespace Iko;
+namespace iko;
 require_once './core/core.php';
 $module = define_post("module", "");
 if ($module != "" && module::exist($module)) {

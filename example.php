@@ -10,7 +10,7 @@
  * the LICENSE file.
  *
  */
-namespace Iko;
+namespace iko;
 
 /**
  * @author Marcel

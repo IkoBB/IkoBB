@@ -11,7 +11,7 @@
  *
  */
 
-namespace Iko;
+namespace iko\cms;
 
 /**
  * Class template
@@ -194,7 +194,7 @@ class template
 		$string = str_replace('@endunless', '<?php endif; ?>', $string);
 
 		ob_start();
-		eval('namespace Iko; ?>' . $string . '');
+		eval('namespace iko; ?>' . $string . '');
 		$string = ob_get_clean();
 		if (ob_get_length()) ob_end_clean();
 

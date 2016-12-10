@@ -7,7 +7,7 @@
  */
 
 
-namespace Iko;
+namespace iko\language;
 
 
 class language extends languageConfigs

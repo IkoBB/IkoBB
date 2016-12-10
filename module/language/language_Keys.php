@@ -6,7 +6,7 @@
  * Time: 14:55
  */
 
-namespace Iko;
+namespace iko\language;
 
 
 class language_Keys
