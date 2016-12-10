@@ -132,7 +132,6 @@ class template
 					$statement->bindParam(':template_id', $this->template_id);
 					$statement->execute();
 					$result = $statement->fetch(PDO::FETCH_ASSOC);
-					var_dump($result);
 					foreach ($result as $key => $value) {
 						$this->{$key} = $value;
 					}

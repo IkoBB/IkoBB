@@ -17,7 +17,6 @@ require_once 'core/core.php';
 
 use iko\cms\parser;
 
-print_r($_SESSION);
 // Loading and checking template engine
 $template = cms\template::get_instance();
 

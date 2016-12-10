@@ -10,7 +10,7 @@
  * the LICENSE file.
  *
  */
-namespace Example;
+namespace example;
 
 class module extends \Iko\module_loader
 {
