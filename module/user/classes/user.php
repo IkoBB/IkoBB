@@ -12,6 +12,9 @@
  */
 namespace iko\user;
 
+use iko\Core;
+use iko\PDO;
+use iko\Event\Handler;
 class User extends operators implements iUser //TODO: Complete
 {
 	const table = "{prefix}users";
@@ -309,7 +312,7 @@ class User extends operators implements iUser //TODO: Complete
 		User::session();
 		$permissions = Permissions\Value::search(array ("permission_name" => array ("LIKE" => "iko.user.change.%")));
 		foreach ($permissions as $item) {
-			Event\Handler::add_event($item->get_name(), get_called_class(), "own_permission", NULL, FALSE, "get");
+			Handler::add_event($item->get_name(), get_called_class(), "own_permission", NULL, FALSE, "get");
 		}
 	}
 
@@ -545,7 +548,7 @@ class User extends operators implements iUser //TODO: Complete
 
 	public function change_user_name ($username)
 	{
-		if (Event\Handler::event("iko.user.change.user_name", User::get_session(), $this->get_id())) {
+		if (Handler::event("iko.user.change.user_name", User::get_session(), $this->get_id())) {
 			return "Ja";
 		}
 		else {

@@ -16,12 +16,12 @@
  * Date: 28.09.2016
  * Time: 21:29
  */
-namespace Iko\user\permissions;
+namespace iko\user\permissions;
 
-use Iko;
-use Iko\Permissions;
-use Iko\User as users;
-use Iko\Core as Core;
+use iko;
+use iko\user\Permissions;
+use iko\User as users;
+use iko\Core as Core;
 
 
 class User extends Permissions

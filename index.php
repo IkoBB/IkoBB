@@ -15,11 +15,11 @@ namespace iko;
 require_once 'core/core.php';
 
 
+use iko\cms\parser;
 
+print_r($_SESSION);
 // Loading and checking template engine
-module::request("cms");
-module::request("user");
-$template = template::get_instance();
+$template = cms\template::get_instance();
 
 // Create 4 new parameters called "content", "title", "sub_title" and "username". They can be accessed with blade syntax with %% content %%, %% title %%, %% sub_title %% and %% username %%.
 $template->content = parser::bbCodes("[b]Welcome to the IkoBB demo and testing page[/b]");

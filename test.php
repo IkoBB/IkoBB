@@ -35,7 +35,7 @@ else
 */
 try {
 	user\User::get("penis");
-	$user = User::get("Marcel");
+	$user = user\User::get("Marcel");
 	$user->user_name = "Pennis";
 	echo $user->user_name;
 }

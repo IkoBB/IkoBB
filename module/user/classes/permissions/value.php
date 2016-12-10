@@ -16,11 +16,11 @@
  * Date: 30.09.2016
  * Time: 22:09
  */
-namespace Iko\user\permissions;
+namespace iko\user\permissions;
 
-use Iko\Permissions;
-use Iko\Core as Core;
-use Iko\PDO as PDO;
+use iko\user\Permissions;
+use iko\Core as Core;
+use iko\PDO as PDO;
 
 class Value
 {

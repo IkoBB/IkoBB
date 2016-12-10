@@ -19,10 +19,12 @@
  */
 namespace iko\user;
 
+use iko\Core;
+
 class Group extends operators implements iGroup 
 {
 	const table = "{prefix}usergroups";
-	const assignment = permissions::group_assignment;
+	const assignment = Permissions::group_assignment;
 	const id = "usergroup_id";
 	const name = "usergroup_name";
 
@@ -164,6 +166,7 @@ class Group extends operators implements iGroup
 			return FALSE;
 		}
 	}
+
 	private $id;
 	private $name;
 	private $style;
