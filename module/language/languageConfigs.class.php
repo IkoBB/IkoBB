@@ -49,5 +49,16 @@ class languageConfigs
 		}
 	}
 
-	//TODO: Wenn irgendetwas aus der Klasse geladen wird, soll dies überprüft werden
+	public function createDataTranslationKey ($translationKey)
+	{
+		$sql = "SELECT " . $translationKey . " FROM " . self::tableTranslation . "";
+		$statement = Core::$PDO->query($sql);
+
+		if ($statement === FALSE) {
+			$sql = "INSERT INTO " . self::tableTranslation . " VALUES " . "( " . $translationKey . ")" . "";
+			$statement = Core::$PDO->query($sql);
+
+		}
+
+		//TODO: Wenn irgendetwas aus der Klasse geladen wird, soll dies überprüft werden
 }
