@@ -33,7 +33,7 @@ interface iUser
 	/**
 	 * @return string
 	 */
-	public function get_user_name ();
+	public function get_name ();
 
 	/**
 	 * @return array|Group
@@ -94,5 +94,13 @@ interface iUser
 	 * @return integer
 	 */
 	public function get_template ();
+
+	public function change_name ($name);
+
+	public function change_email ($mail);
+
+	public function change_template ($template);
+
+	public function change_language ($language);
 
 }

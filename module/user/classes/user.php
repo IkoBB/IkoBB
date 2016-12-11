@@ -15,6 +15,13 @@ namespace iko\user;
 use iko\Core;
 use iko\PDO;
 use iko\Event\Handler;
+use iko\log;
+use function iko\set_session;
+use function iko\check_mail;
+use function iko\define_session;
+use function iko\get_hash;
+use function iko\read_session;
+
 class User extends operators implements iUser //TODO: Complete
 {
 	const table = "{prefix}users";
@@ -52,12 +59,11 @@ class User extends operators implements iUser //TODO: Complete
 					array_push($user_array, self::$cache[ $id ]);
 				}
 			}
-			if (count($user_array) == 1) {
-				return $user_array[0];
+			if (count($user_array) == 0) {
+				return FALSE;
 			}
-			else {
-				return $user_array;
-			}
+
+			return $user_array;
 		}
 
 		return NULL;
@@ -96,11 +102,14 @@ class User extends operators implements iUser //TODO: Complete
 				array_push($ids, intval($fetch[ self::id ]));
 			}
 			$user_array = self::get($ids);
+			if (count($user_array) == 0) {
+				return FALSE;
+			}
 
 			return $user_array;
 		}
 		else {
-			return NULL;
+			return FALSE;
 		}
 	}
 
@@ -206,14 +215,17 @@ class User extends operators implements iUser //TODO: Complete
 		}
 		$class = self::search($search);
 		if ($class !== FALSE) {
+			$class = $class[0];
 			$pass_hash = $class->salt($password);
 			if ($pass_hash == $class->get_password()) {
 				set_session("user_id", $class->get_ID());
 				if (intval(read_session("user_id")) == $class->get_ID()) {
 					self::$session_user = $class;
 					$class->update_last_login($password);
+
 					return TRUE;
 				}
+
 				return FALSE;
 			}
 			else {
@@ -238,7 +250,7 @@ class User extends operators implements iUser //TODO: Complete
 			}
 		}
 		if (!self::search(array (self::name => $array["user_name"])) instanceof User && !self::search(array (self::mail => $array["mail"])) instanceof User) {
-			if (Event\Handler::event("iko.user.registration", $array)) {
+			if (Handler::event("iko.user.registration", $array)) {
 				Core::$PDO->beginTransaction();
 				$time = time();
 				$statement = Core::$PDO->exec("INSERT INTO " . self::table . "(" . self::name . ", " . self::mail . ", " . "user_date_joined) VALUES('" . $array["user_name"] . "', '" . $array["mail"] . "', '" . $time . "')");
@@ -254,7 +266,7 @@ class User extends operators implements iUser //TODO: Complete
 						if ($statement_two > 0) {
 							Core::$PDO->commit();
 							$array["user_id"] = $user->get_id();
-							Event\Handler::event_Final("iko.user.registration", $array);
+							Handler::event_Final("iko.user.registration", $array);
 							log::add("user", 0, 0,
 								"Iko.User.Registration: User_name = '" . $user->get_user_name() . "'", $array);
 
@@ -262,6 +274,7 @@ class User extends operators implements iUser //TODO: Complete
 						}
 						else {
 							Core::$PDO->rollBack();
+
 							return FALSE;
 						}
 					}
@@ -271,6 +284,7 @@ class User extends operators implements iUser //TODO: Complete
 				}
 				else {
 					Core::$PDO->rollBack();
+
 					return FALSE;
 				}
 			}
@@ -412,7 +426,7 @@ class User extends operators implements iUser //TODO: Complete
 		}
 	}
 
-	public function get_user_name ()
+	public function get_name ()
 	{
 		return $this->name;
 	}
@@ -531,28 +545,92 @@ class User extends operators implements iUser //TODO: Complete
 		$func = "change_" . $name;
 		if ($name != "password") {
 			if (is_callable(get_called_class(), $func)) {
-				return $this->{$func}($values);
+				$this->{$func}($values);
 			}
 		}
 	}
 
 	public function __isset ($name)
 	{
-		// TODO: Implement __isset() method.
+		return (isset($this->{$name}) && $this->{$name} !== NULL);
 	}
 
-	public function __empty ()
+	private function change ($name, $value)
 	{
+		$handler_name = "iko.user.change." . str_replace("change_", "", $name);
+		$table_name = "user_" . str_replace("change_", "", $name);
+		$class_name = str_replace("user_", "", $table_name);
+		if (Handler::event($handler_name, User::get_session(), $this->get_id())) {
+			if ($value !== NULL && $value != $this->{$class_name}) {
+				Core::$PDO->beginTransaction();
+				$sql = "UPDATE " . self::table . " Set " . $table_name . " = ";
+				if (is_string($value) || is_string($this->{$class_name})) {
+					$sql .= "'" . $value . "'";
+				}
+				else {
+					$sql .= $value;
+				}
+				$sql .= " WHERE user_id = " . $this->get_id();
+				$statement = Core::$PDO->exec($sql);
+				if ($statement > 0) {
+					$old = $this->{$class_name};
+					$this->{$class_name} = $value;
+					Core::$PDO->commit();
+					log::add("user", "info", 2, "Changed " . $class_name . " from " . $old . " to " . $value . "",
+						array (
+							"old" => $old,
+							"new" => $value,
+							"id"  => $this->get_id()));
 
-	}
+					return TRUE;
+				}
+				else {
+					Core::$PDO->rollBack();
 
-	public function change_user_name ($username)
-	{
-		if (Handler::event("iko.user.change.user_name", User::get_session(), $this->get_id())) {
-			return "Ja";
+					return FALSE;
+				}
+			}
+			else {
+				return FALSE;
+			}
 		}
 		else {
-			return "nein";
+			return FALSE;
+		}
+	}
+
+	public function change_name ($name)
+	{
+		return $this->change(__FUNCTION__, $name);
+	}
+
+	public function change_email ($email)
+	{
+		if (check_mail($email) && self::search(array ("user_email" => $email)) === FALSE) {
+			return $this->change(__FUNCTION__, $email);
+		}
+		else {
+			return FALSE;
+		}
+	}
+
+	public function change_template ($value)
+	{
+		if (\iko\cms\template::exist($value)) {
+			return $this->change(__FUNCTION__, $value);
+		}
+		else {
+			return FALSE;
+		}
+	}
+
+	public function change_language ($value)
+	{
+		if (\iko\language\language::exist($value)) {
+			return $this->change(__FUNCTION__, $value);
+		}
+		else {
+			return FALSE;
 		}
 	}
 }
