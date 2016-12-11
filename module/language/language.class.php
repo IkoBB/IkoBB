@@ -95,11 +95,40 @@ class language extends languageConfigs
 			else {
 				//Für jede Spalte wird ein Wert hinzugefügt mit einem SQL Befehl
 				//Langueg muss noch mit DAT verglichen werden
+				$countLanguage = count($language);
+				$countData = count($data);
+
+				if ($countLanguage >= $countData) {
+					while ($countLanguage > $countData) {
+						array_push($data, "NULL");
+						$countData++;
+						var_dump($data);
+					}
+
+					/*try
+					{
+						$sql = "Insert " . language_Keys::name . ", " . $language . " FROM " . parent::tableTranslation . "";
+
+						$statement = Core::$PDO->query($sql);
+					}
+					catch(iko\Exception $exception)
+					{
+
+					}
+					*/
+
+				}
+				else {
+					return FALSE;
+				}
+
 			}
 		}
 
 
 	}
+
+
 }
 
 
