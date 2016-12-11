@@ -74,31 +74,32 @@ class language extends languageConfigs
 		}
 	}
 
-	public function insertData ($translation_key, $language = self::supportedLanguages, $data = array ())
+
+	public function insertData ($translation_key, $language = array (), $data = array ())
 	{
-		//TODO: Für jeden translation_key überprüfen ob dieser schon vorhanden ist, wenn nicht Datensatz erstellen, bei jeder Sprache, welche leer bleiben soll, muss dieser Wert leer bleiben
-		// -> Array anlegen, vielleicht mit anderer Funktion aufrufen, dass jede Sprache abgefrufen wird und der Wert für jede Spalte erstellt wird
-		var_dump($language);
-		if (count(parent::supportedLanguages == count($data))) {
-			$x = 0;
-			while ($x <= count($language) - 1) {
-				if ($this->supportedLanguageExist($language[ $x ]) === TRUE) {
-					echo $data[ $x ];
-				}
-				$x++;
+		foreach ($language as $languages) {
+			$allLanguagesSupported = $this->supportedLanguageExist($languages);
+			echo $allLanguagesSupported;
+			if ($allLanguagesSupported !== TRUE) {
+				return FALSE;
 			}
+		}
+		if ($translation_key == "") {
+			return FALSE;
 		}
 		else {
-			if (count(self::supportedLanguages) < count($data)) {
-				echo "Error";
-				//TODO: throw new exepction
+			$key = iko\language\language_Keys::get($translation_key);
+			if ($key == NULL) {
+				return FALSE;
 			}
 			else {
-				//TODO; rethink
+				//Für jede Spalte wird ein Wert hinzugefügt mit einem SQL Befehl
+				//Langueg muss noch mit DAT verglichen werden
 			}
 		}
-	}
 
+
+	}
 }
 
 
