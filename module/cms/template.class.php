@@ -18,6 +18,7 @@ use iko\PDO;
 use iko\config;
 use iko\module;
 use iko\Exception;
+
 /**
  * Class template
  * @package Iko
@@ -33,7 +34,7 @@ class template
 	 * Initiation of the class
 	 * Only one instance of the template class is allowed
 	 *
-	 * @return \Iko\template|null
+	 * @return \Iko\cms\template|null
 	 */
 	public static function get_instance ()
 	{
@@ -44,6 +45,33 @@ class template
 		return self::$instance;
 	}
 
+	/**
+	 * Function to check if the entered template_id exists
+	 *
+	 * @param $id
+	 *
+	 * @return bool
+	 * @throws \iko\Exception
+	 */
+	public static function template_exists ($id)
+	{
+		try {
+			$statement = Core::$PDO->prepare("SELECT template_id FROM iko_templates WHERE template_id = :template_id");
+			$statement->bindParam(':template_id', $id);
+			$statement->execute();
+			$result = $statement->fetch(PDO::FETCH_ASSOC);
+			$return = $result['template_id'];
+		}
+		catch (\PDOException $exception) {
+			throw new Exception("Error #1234: " . $exception);
+		}
+		if (is_int($return) && $return > 0) {
+			return TRUE;
+		}
+		else {
+			return FALSE;
+		}
+	}
 
 	/**
 	 * @var int
@@ -99,18 +127,16 @@ class template
 				$user = \iko\user\User::get_session();
 				if ($user !== FALSE) {
 					// Get the template of the user
-					$this->template_id = $user->get_template();
-					if ($this->template_id == 0) {
-						$this->set_default_template();
-					}
+					$this->set_template($user->get_template());
 				}
-				else { // if user is not logged in load default template
-					$this->set_default_template();
+				else {
+					// if user is not logged in load default template
+					$this->set_template(0);
 				}
 			}
-			else { // load default template when no user module is activated
-				$config = config::load("pdo", "cms");
-				$this->template_id = $config->site_template;
+			else {
+				// load default template when no user module is activated
+				$this->set_template(0);
 			}
 		}
 		else {
@@ -238,12 +264,18 @@ class template
 	}
 
 	/**
-	 * Sets the current template to the default site template
+	 * Sets the template to the wanted template
+	 * If template does not exist, default template will be loaded
 	 */
-	private function set_default_template ()
+	private function set_template ($id)
 	{
-		$config = config::load("pdo", "cms");
-		$this->template_id = $config->site_template;
+		if (self::template_exists($id) === TRUE) {
+			$this->template_id = $id;
+		}
+		else {
+			$config = config::load("pdo", "cms");
+			$this->template_id = $config->site_template;
+		}
 	}
 
 	/**
