@@ -61,4 +61,5 @@ class languageConfigs
 		}
 
 		//TODO: Wenn irgendetwas aus der Klasse geladen wird, soll dies überprüft werden
+	}
 }
