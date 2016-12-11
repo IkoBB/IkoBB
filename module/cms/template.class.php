@@ -25,6 +25,8 @@ use iko\Exception;
  */
 class template
 {
+	const table = "{prefix}templates";
+
 	/**
 	 * @var null
 	 */
@@ -56,7 +58,7 @@ class template
 	public static function template_exists ($id)
 	{
 		try {
-			$statement = Core::$PDO->prepare("SELECT template_id FROM iko_templates WHERE template_id = :template_id");
+			$statement = Core::$PDO->prepare("SELECT template_id FROM " . self::table . " WHERE template_id = :template_id");
 			$statement->bindParam(':template_id', $id);
 			$statement->execute();
 			$result = $statement->fetch(PDO::FETCH_ASSOC);
@@ -71,6 +73,68 @@ class template
 		else {
 			return FALSE;
 		}
+	}
+
+	/**
+	 * Installs new template
+	 *
+	 * @param $name
+	 * @param $author
+	 * @param $version
+	 * @param $directory
+	 * @param $core_version
+	 * @param $zip_file
+	 *
+	 * @throws \iko\Exception
+	 */
+	public static function install ($name, $author, $version, $directory, $core_version, &$zip_file)
+	{
+		if ($zip_file['error'] == 1) {
+			$extension = substr($zip_file['tmp_name'], -4);
+			if ($extension == '.zip' && ($zip_file['type'] == 'application/zip' || $zip_file['type'] == 'application/octet-stream')) {
+
+				$filename = basename($zip_file['name']);
+				move_uploaded_file($zip_file['tmp_name'], 'templates/' . $directory . '/' . $filename);
+
+				$zip = new \ZipArchive();
+				$resource = $zip->open('templates/' . $directory . '/' . $filename);
+
+				if ($resource === TRUE) {
+					for ($i = 0; $i < $zip->numFiles; $i++) {
+						if (basename($zip->getNameIndex($i)) == 'template.html') {
+							$file_template = TRUE;
+						}
+						elseif (basename($zip->getNameIndex($i)) == 'entities.html') {
+							$file_entity = TRUE;
+						}
+
+						if ($file_entity === TRUE && $file_template === TRUE) {
+							$zip->extractTo('templates/' . $directory . '/');
+							$zip->close();
+							break;
+						}
+					}
+				}
+
+
+				try {
+					$statement = Core::$PDO->prepare("INSERT INTO " . self::table . " (template_name, template_author, template_directory, template_core_version) VALUE (:template_name, :template_author, :template_directory, :template_core_version)");
+					$statement->bindParam(':template_name', $name);
+					$statement->bindParam(':template_author', $author);
+					$statement->bindParam(':template_version', $version);
+					$statement->bindParam(':template_directory', $directory);
+					$statement->bindParam(':template_core_version', $core_version);
+
+					$statement->execute();
+
+				}
+				catch (\PDOException $exception) {
+					throw new Exception("Error #1234: " . $exception);
+				}
+			}
+		}
+
+
 	}
 
 	/**
@@ -154,7 +218,7 @@ class template
 			if (!isset($this->template_directory) || $this->template_directory == '') {
 				// Get all template variables from table
 				try {
-					$statement = Core::$PDO->prepare("SELECT * FROM iko_templates WHERE template_id = :template_id");
+					$statement = Core::$PDO->prepare("SELECT * FROM " . self::table . " WHERE template_id = :template_id");
 					$statement->bindParam(':template_id', $this->template_id);
 					$statement->execute();
 					$result = $statement->fetch(PDO::FETCH_ASSOC);
