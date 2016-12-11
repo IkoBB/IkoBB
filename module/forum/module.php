@@ -10,9 +10,9 @@
  * the LICENSE file.
  *
  */
-namespace Iko;
+namespace iko\forum;
 
-class forum_module_loader extends \Iko\module_loader // TODO: Create Module
+class forum_module_loader extends \iko\module_loader // TODO: Create Module
 {
 	public function __construct ($module)
 	{

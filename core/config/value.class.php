@@ -14,7 +14,7 @@
  * @author Marcel
  *
  */
-namespace Iko;
+namespace iko;
 
 class config_value
 {
@@ -78,7 +78,7 @@ class config_value
 
 	public function __toString ()
 	{
-		return (string)$this->string;
+		return (string)$this->get();
 	}
 
 	/**

@@ -14,7 +14,7 @@
  * @author Marcel
  *
  */
-namespace Iko;
+namespace iko;
 
 class config_loader_pdo extends config_loader
 {

@@ -16,7 +16,7 @@
  * Date: 05.11.2016
  * Time: 21:34
  */
-namespace Iko;
+namespace iko\user;
 
 interface iGroup
 {

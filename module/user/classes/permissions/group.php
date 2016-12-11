@@ -16,12 +16,12 @@
  * Date: 28.09.2016
  * Time: 21:29
  */
-namespace Iko\Permissions;
+namespace iko\user\permissions;
 
-use Iko\PDO as PDO;
-use Iko\Core as Core;
-use Iko\Group as groups;
-use Iko\Permissions;
+use iko\PDO as PDO;
+use iko\Core as Core;
+use iko\user\Group as groups;
+use iko\user\Permissions;
 
 class Group extends Permissions
 {

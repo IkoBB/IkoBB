@@ -10,9 +10,9 @@
  * the LICENSE file.
  *
  */
-namespace Iko;
+namespace iko;
 
-class user_module_loader extends module_loader
+class user_module_loader extends \iko\module_loader
 {
 	protected $final_load = __NAMESPACE__ . "\\User::init";
 	private $files = array (

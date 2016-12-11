@@ -11,8 +11,13 @@
  *
  */
 
-namespace Iko;
+namespace iko\cms;
 
+use iko\Core;
+use iko\PDO;
+use iko\config;
+use iko\module;
+use iko\Exception;
 /**
  * Class template
  * @package Iko
@@ -91,7 +96,7 @@ class template
 			// Check if the user module is loaded
 			if (module::load_status("user")) {
 				// Check if user is logged in
-				$user = User::get_session();
+				$user = \iko\user\User::get_session();
 				if ($user !== FALSE) {
 					// Get the template of the user
 					$this->template_id = $user->get_template();
@@ -120,7 +125,7 @@ class template
 
 
 		if ($this->template_id !== NULL) {
-			if (isset($this->template_directory) && $this->template_directory != '') {
+			if (!isset($this->template_directory) || $this->template_directory == '') {
 				// Get all template variables from table
 				try {
 					$statement = Core::$PDO->prepare("SELECT * FROM iko_templates WHERE template_id = :template_id");
@@ -194,7 +199,7 @@ class template
 		$string = str_replace('@endunless', '<?php endif; ?>', $string);
 
 		ob_start();
-		eval('namespace Iko; ?>' . $string . '');
+		eval('namespace iko; ?>' . $string . '');
 		$string = ob_get_clean();
 		if (ob_get_length()) ob_end_clean();
 

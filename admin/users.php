@@ -1,5 +1,5 @@
 <?php
-namespace Iko;
+namespace iko;
 
 require_once './../core/core.php';
 

@@ -17,7 +17,9 @@
  * Date: 28.09.2016
  * Time: 19:47
  */
-namespace Iko;
+namespace iko\user;
+
+use iko\Core;
 
 class Group extends operators implements iGroup 
 {
@@ -164,6 +166,7 @@ class Group extends operators implements iGroup
 			return FALSE;
 		}
 	}
+
 	private $id;
 	private $name;
 	private $style;

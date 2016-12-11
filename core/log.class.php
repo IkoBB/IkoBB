@@ -16,7 +16,7 @@
  * Date: 12.11.2016
  * Time: 21:36
  */
-namespace Iko;
+namespace iko;
 
 class log
 {

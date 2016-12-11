@@ -16,7 +16,7 @@
  * Date: 30.10.2016
  * Time: 23:03
  */
-namespace Iko;
+namespace iko;
 
 $function = define_post("func", "");
 switch ($function) {

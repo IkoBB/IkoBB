@@ -1,35 +1,29 @@
 <?php
 /**
- *
- * This file is part of IkoBB Forum and belongs to the module <User>.
- *
- * @copyright (c) IkoBB <https://www.ikobb.de>
- * @license       GNU General Public License, version 3 (GPL-3.0)
- *
- * For full copyright and license information, please see
- * the LICENSE file.
- *
- */
-/**
  * Created by PhpStorm.
- * User: Marcel
- * Date: 30.09.2016
- * Time: 22:09
+ * User: Pascal W
+ * Date: 04.12.2016
+ * Time: 14:55
  */
-namespace iko\user\permissions;
 
-use iko\user\Permissions;
-use iko\Core as Core;
-use iko\PDO as PDO;
+namespace iko\language;
 
-class Value
+use iko\Core;
+use iko;
+
+
+class language_Keys
 {
-	const table = Permissions::table;
-	const name = Permissions::name;
+	const table = languageConfigs::tableTranslation;
+	const name = "translation_key";
 
 	private static $cache = array ();
 	private static $cache_exist = array ();
 
+	/*
+	 * For string && int = return class
+	 * For array = return array
+	 */
 	public static function get ($ids = 0, $reload = FALSE)
 	{
 		$class = get_called_class();
@@ -83,7 +77,6 @@ class Value
 					$string .= " " . $equal;
 				}
 			}
-			$i--;
 			$sql .= $string;
 		}
 		$sql .= " " . $suffix;
@@ -160,41 +153,64 @@ class Value
 		}
 	}
 
+	private $translation_key = "";
+	private $default_language = "english";
+	private $set_language = "";
 
-	private $name;
-	private $module;
-	private $comment;
-
-	protected function __construct ($name)
+	public function __construct ($name)
 	{
 		if (is_string($name) && self::exist($name)) {
 			$sql = "SELECT * FROM " . self::table . " WHERE " . self::name . " = '" . $name . "'";
 			$statement = Core::$PDO->query($sql);
-			$fetch = $statement->fetch(PDO::FETCH_ASSOC);
+			$fetch = $statement->fetch(iko\PDO::FETCH_ASSOC);
 			foreach ($fetch as $key => $value) {
-				$temp_key = str_replace("permission_", "", $key);
-				$temp_key = str_replace("_name", "", $temp_key);
-				$this->{$temp_key} = $value;
+				$this->{$key} = $value;
 			}
 		}
 	}
 
-	public function get_name ()
+	/* Aufruf = Tatsächlicher aufruf
+	 * $class->variable = $class->__get("variable");
+	 * $class->german = $class->__get("german");
+	 * $class->english = $class->__get("english");
+	 * $class->unk = $class->__get("unk");
+	 * $class->get("english") oder $class->english = $class->__get("english");
+	 */
+	public function __get ($value)
 	{
-		return $this->name;
+		// TODO: Implement __toString() method.
+		if (isset($this->{$value})) {
+			return $this->{$value};
+		}
+		else {
+			return "";
+		}
+
 	}
 
-	public function get_module () {
-		return $this->module;
+	public function set_lang ($lang)
+	{
+		$this->set_language = $lang;
+		$this->set_counter = 0;
 	}
 
-	public function get_comment ()
-	{
-		return $this->comment;
-	}
+	private $set_counter = 0;
 
 	public function __toString ()
 	{
-		return $this->get_name();
+		if (isset($this->set_language) && $this->set_language != "" && $this->set_counter == 0) {
+			$this->set_counter++;
+
+			return $this->{$this->set_language};
+		}
+		else {
+			return $this->{$this->default_language};
+		}
 	}
+
+	public function get_key ()
+	{
+		return $this->translation_key;
+	}
+	#public function
 }

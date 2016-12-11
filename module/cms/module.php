@@ -10,9 +10,8 @@
  * the LICENSE file.
  *
  */
-namespace Iko;
-
-class template_loader extends \Iko\module_loader
+namespace iko\cms;
+class template_loader extends \iko\module_loader
 {
 	public function __construct($modul)
 	{

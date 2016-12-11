@@ -17,9 +17,9 @@
  * Time: 22:02
  */
 
-namespace Iko\Event;
+namespace iko\Event;
 
-use Iko\module;
+use iko\module;
 
 class Handler
 {

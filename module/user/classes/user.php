@@ -10,8 +10,11 @@
  * the LICENSE file.
  *
  */
-namespace Iko;
+namespace iko\user;
 
+use iko\Core;
+use iko\PDO;
+use iko\Event\Handler;
 class User extends operators implements iUser //TODO: Complete
 {
 	const table = "{prefix}users";
@@ -207,8 +210,8 @@ class User extends operators implements iUser //TODO: Complete
 			if ($pass_hash == $class->get_password()) {
 				set_session("user_id", $class->get_ID());
 				if (intval(read_session("user_id")) == $class->get_ID()) {
-					$class->update_last_login($password);
 					self::$session_user = $class;
+					$class->update_last_login($password);
 					return TRUE;
 				}
 				return FALSE;
@@ -309,7 +312,7 @@ class User extends operators implements iUser //TODO: Complete
 		User::session();
 		$permissions = Permissions\Value::search(array ("permission_name" => array ("LIKE" => "iko.user.change.%")));
 		foreach ($permissions as $item) {
-			Event\Handler::add_event($item->get_name(), get_called_class(), "own_permission", NULL, FALSE, "get");
+			Handler::add_event($item->get_name(), get_called_class(), "own_permission", NULL, FALSE, "get");
 		}
 	}
 
@@ -477,7 +480,7 @@ class User extends operators implements iUser //TODO: Complete
 			if ($s_pass == $this->get_password()) {
 				Core::$PDO->beginTransaction();
 				$new_last_login = time();
-				$statement = Core::$PDO->exec("UPDATE " . self::table . " Set user_last_login = '" . $new_last_login . "' WHERE " . self::id . " = " . $this->get_id());
+				$statement = Core::$PDO->exec("UPDATE " . self::table . " Set user_last_login = " . $new_last_login . " WHERE " . self::id . " = " . $this->get_id());
 				if ($statement > 0) {
 					$this->last_login = $new_last_login;
 					$new_pass = $this->salt($pass);
@@ -512,13 +515,44 @@ class User extends operators implements iUser //TODO: Complete
 		return $this->email;
 	}
 
-	public function change_user_name ($username)
+	public function __get ($value)
 	{
-		if (Event\Handler::event("iko.user.change.user_name", User::get_session(), $this->get_id())) {
-			echo "Ja";
+		$func = 'get_' . $value;
+		if (is_callable(get_called_class(), $func)) {
+			return $this->{$func}();
 		}
 		else {
-			echo "nein";
+			return NULL;
+		}
+	}
+
+	public function __set ($name, $values)
+	{
+		$func = "change_" . $name;
+		if ($name != "password") {
+			if (is_callable(get_called_class(), $func)) {
+				return $this->{$func}($values);
+			}
+		}
+	}
+
+	public function __isset ($name)
+	{
+		// TODO: Implement __isset() method.
+	}
+
+	public function __empty ()
+	{
+
+	}
+
+	public function change_user_name ($username)
+	{
+		if (Handler::event("iko.user.change.user_name", User::get_session(), $this->get_id())) {
+			return "Ja";
+		}
+		else {
+			return "nein";
 		}
 	}
 }

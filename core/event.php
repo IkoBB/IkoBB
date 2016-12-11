@@ -16,7 +16,7 @@
  * Date: 11.11.2016
  * Time: 20:34
  */
-namespace Iko;
+namespace iko;
 $files = array (
 	"handler.class.php");
 foreach ($files as $item) {

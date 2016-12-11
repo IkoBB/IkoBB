@@ -14,7 +14,7 @@
  * @author Marcel
  *
  */
-namespace Iko;
+namespace iko;
 error_reporting(E_ALL);
 
 /**
@@ -193,4 +193,12 @@ require_once Core::$corepath . "sessions.php";
 Core::init(1);
 require_once Core::$corepath . "module.class.php";
 require_once Core::$corepath . "module_loader.class.php";
+function my_autoloader ($class)
+{
+	$name = str_replace("iko\\", "", $class);
+	$explode = explode("\\", $name);
+	module::request($explode[0]);
+}
+
+spl_autoload_register("Iko\\my_autoloader");
 Core::init(2);

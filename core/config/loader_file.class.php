@@ -14,7 +14,7 @@
  * @author Marcel
  *
  */
-namespace Iko;
+namespace iko;
 
 class config_loader_file extends config_loader // TODO: Überarbeiten der Klasse auf Stand von loader_pdo
 {
