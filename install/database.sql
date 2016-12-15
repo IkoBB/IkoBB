@@ -1,8 +1,8 @@
 CREATE TABLE `iko_configs` (
-	`config_name`     VARCHAR(255) NOT NULL,
-	`config_value`    VARCHAR(255) NOT NULL,
-	`config_comment`  TEXT,
-	`module_name` VARCHAR(255) NOT NULL,
+	`config_name`    VARCHAR(255) NOT NULL,
+	`config_value`   VARCHAR(255) NOT NULL,
+	`config_comment` TEXT,
+	`module_name`    VARCHAR(255) NOT NULL,
 	PRIMARY KEY (`config_name`),
 	UNIQUE KEY `config_module_relation` (`config_name`, `module_name`)
 );
@@ -31,11 +31,11 @@ CREATE TABLE `iko_templates` (
 
 
 CREATE TABLE `iko_users` (
-	`user_id`                 INT(11)      NOT NULL AUTO_INCREMENT,
-	`user_name`               VARCHAR(30)  NOT NULL,
-	`user_password`           TEXT         NOT NULL,
-	`user_email`              VARCHAR(255) NOT NULL,
-	`user_avatar_id`          INT(11)               DEFAULT '1',
+	`user_id`          INT(11)      NOT NULL AUTO_INCREMENT,
+	`user_name`        VARCHAR(30)  NOT NULL,
+	`user_password`    TEXT         NOT NULL,
+	`user_email`       VARCHAR(255) NOT NULL,
+	`user_avatar_id`   INT(11)               DEFAULT '1',
 	`user_signature`   VARCHAR(255)          DEFAULT NULL,
 	`user_about_user`  TEXT,
 	`user_location_id` INT(11)               DEFAULT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE `iko_users` (
 	`user_birthday`    DATE                  DEFAULT NULL,
 	`user_timezone_id` INT(11)               DEFAULT '1',
 	`user_last_login`  INT(11),
-	`user_language`    varchar(255) NOT NULL Default 'english',
+	`user_language`    VARCHAR(255) NOT NULL DEFAULT 'english',
 	`user_template`    INT(11)      NOT NULL DEFAULT '0',
 	PRIMARY KEY (`user_id`),
 	UNIQUE KEY `user_name` (`user_name`),
@@ -111,10 +111,10 @@ CREATE TABLE `iko_user_permissions` (
 
 
 CREATE TABLE `iko_translation` (
-  `translation_key`     varchar(255)   NOT NULL  ,
-  `german`              text      NOT NULL,
-  `english`             text      NOT NULL,
-  PRIMARY KEY (`translation_key`)
+	`translation_key` VARCHAR(255) NOT NULL,
+	`german`          TEXT         NOT NULL,
+	`english`         TEXT         NOT NULL,
+	PRIMARY KEY (`translation_key`)
 );
 
 CREATE TABLE `iko_log` (
@@ -139,7 +139,14 @@ CREATE TABLE `iko_cms` (
 	KEY (`user_id`)
 );
 
-
+CREATE TABLE `iko_bbcodes` (
+	`bbcode_id`   INT(11)     NOT NULL AUTO_INCREMENT,
+	`bbcode_tag`  VARCHAR(10) NOT NULL,
+	`pattern`     TEXT        NOT NULL,
+	`replacement` TEXT,
+	PRIMARY KEY (`bbcode_id`),
+	UNIQUE KEY (`bbcode_tag`)
+);
 
 /*Relation between Tables */
 

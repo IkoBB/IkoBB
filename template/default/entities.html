@@ -5,7 +5,8 @@
     </div>
     <form action="index.php" method="post">
         <textarea style="height: 200px; width: 100%" name="text">{{ @$_POST['text'] }}</textarea><br>
-        <b><u>Result:</u></b><br> %% output %%<br><br> %% code_output %%<br>
+        <b><u>Result:</u></b><br> %% output %%<br><div style="border: dashed black 1px;"><h1>Code Output:</h1>
+        %% code_output %%</div>
         <input class="btn btn-block btn-danger" type="submit">
     </form>
 </div>
