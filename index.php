@@ -23,7 +23,7 @@ $parser = new parser();
 $template = cms\template::get_instance();
 
 // Create 4 new parameters called "content", "title", "sub_title" and "username". They can be accessed with blade syntax with %% content %%, %% title %%, %% sub_title %% and %% username %%.
-$template->content = $parser->bbCodes("[b]Welcome to the IkoBB demo and testing page[/b]");
+$template->content = $parser->parse("[b]Welcome to the IkoBB demo and testing page[/b]");
 $template->title = "IkoBB"; // Default title will be included in the template engine later
 $template->sub_title = "Demo & Testing page";
 $template->username = "Administrator"; // later the real value will be included in the user/session class. If the user is logged in $template->username = user::username or something like that
