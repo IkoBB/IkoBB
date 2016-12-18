@@ -77,8 +77,8 @@ class language extends languageConfigs
 
 	public function insertData ($translation_key, $language = array (), $data = array ())
 	{
-		foreach ($language as $languages) {
-			$allLanguagesSupported = $this->supportedLanguageExist($languages);
+		foreach ($language as $lang) {
+			$allLanguagesSupported = $this->supportedLanguageExist($lang);
 			echo $allLanguagesSupported;
 			if ($allLanguagesSupported !== TRUE) {
 				return FALSE;
