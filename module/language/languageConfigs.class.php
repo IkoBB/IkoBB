@@ -8,6 +8,7 @@
 
 namespace iko\language;
 
+use iko;
 use iko\Core;
 
 class languageConfigs
@@ -51,13 +52,14 @@ class languageConfigs
 
 	public function createDataTranslationKey ($translationKey)
 	{
+
 		$sql = "SELECT " . $translationKey . " FROM " . self::tableTranslation . "";
 		$statement = Core::$PDO->query($sql);
 
 		if ($statement === FALSE) {
-			$sql = "INSERT INTO " . self::tableTranslation . " VALUES " . "( " . $translationKey . ")" . "";
-			$statement = Core::$PDO->query($sql);
-
+			$sql1 = "INSERT INTO" . " " . self::tableTranslation . "(translation_key) VALUES " . "('" . $translationKey . "')" . "";
+			$statement1 = Core::$PDO->exec($sql1);
+			
 		}
 
 		//TODO: Wenn irgendetwas aus der Klasse geladen wird, soll dies überprüft werden
