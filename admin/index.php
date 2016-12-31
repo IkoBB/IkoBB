@@ -3,8 +3,7 @@ namespace iko;
 
 require_once './../core/core.php';
 
-module::request("cms");
-module::request("user");
+use iko\cms\template;
 $template = template::get_instance();
 
 $template->version = Core::version;

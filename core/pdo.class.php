@@ -28,28 +28,28 @@ class PDO extends DB
 	 * {@inheritDoc}
 	 * @see PDO::query()
 	 */
-	public function query($statement)
+	public function query ($statement)
 	{
 		$statement = $this->convert($statement);
 
 		return parent::query($statement);
 	}
 
-	public function prepare($statement, $driver_options = array ())
+	public function prepare ($statement, $driver_options = array ())
 	{
 		$statement = $this->convert($statement);
 
 		return parent::prepare($statement, $driver_options);
 	}
 
-	public function exec($statement)
+	public function exec ($statement)
 	{
 		$statement = $this->convert($statement);
 
 		return parent::exec($statement);
 	}
 
-	public function convert($statement)
+	public function convert ($statement)
 	{
 		$config = config::load("file", core::$corepath . "database.conf.php");
 

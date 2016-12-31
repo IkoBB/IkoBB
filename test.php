@@ -1,44 +1,17 @@
 <?php
 namespace iko;
 
-use Iko\user\permissions\User as PUser;
+use iko\user\profile\avatar;
+use iko\user\User;
 
-require_once 'core/core.php';
+$start = microtime(TRUE);
 
-/*$config = config::load("file", Core::$basepath . "meineconfig.php");
-var_dump($config->set("main", array (
-	"Jetzt",
-	"nur",
-	"Arrays","testiii",
-	"Penis"), "Warum nicht!!!!"));
-var_dump($config->add("hans", "lisa", "Im Glueck"));
-print_r($config);*/
-/*
-$test = (new class(user::get_session()->get_id(), "Pascal") extends User {
-	public function __construct ($user_id, $kuerzel)
-	{
-		parent::__construct($user_id);
-		$this->kuerzel = $kuerzel;
-	}
-	public function get_user_name ()
-	{
-		return $this->kuerzel;
-	}
-});
-print_r($test);
-echo $test->get_user_name();
-if($test instanceof User) {
-	echo "erfolg";
-}
-else
-	echo "fehler";
-*/
-try {
-	user\User::get("penis");
-	$user = user\User::get("Marcel");
-	$user->user_name = "Pennis";
-	echo $user->user_name;
-}
-catch (\Exception $ex) {
-	echo NULL;
-}
+require 'core/core.php';
+
+$_SESSION["user_id"] = 2;
+module::request("user");
+//$avatar = new avatar(User::get_session());
+//User::get_session()->change_email("marcel.nowocyn@googlemail.com");
+//echo "<img src='" . $avatar->get() . "' >";
+$end = microtime(TRUE);
+echo "<br>" . ($end - $start) . "<br>" . $start . "<br>" . $end;

@@ -59,7 +59,7 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 	 *
 	 * @return bool|mixed
 	 */
-	public static function exist ($names = "", $reload = FALSE)
+	public static function exist ($names = "", $reload = FALSE): bool
 	{
 		if ($names != "" && $names != NULL) {
 			$statement = Core::$PDO->prepare("SELECT module_name FROM " . self::table . " WHERE module_name = :module_name");
@@ -126,14 +126,14 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 		}
 	}
 
-	public static function status ($name)
+	public static function status ($name): bool
 	{
 		if (self::exist($name)) {
 			return self::get($name)->get_status();
 		}
 	}
 
-	public static function load_status ($name)
+	public static function load_status ($name): bool
 	{
 		if (self::exist($name)) {
 			return self::get($name)->is_load();
@@ -145,7 +145,7 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 		self::pre_check();
 	}
 
-	public static function version ($name)
+	public static function version ($name): string
 	{
 		return self::get($name)->get_version();
 	}
@@ -231,16 +231,17 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 		}
 	}
 
-	private function get_loader_name ()
+	private function get_loader_name (): string
 	{
 		return $this->loader_class_name;
 	}
 
-	private function get_loader ()
+	private function get_loader (): module_loader
 	{
 		return $this->loader;
 	}
-	public function check ()
+
+	public function check (): bool
 	{
 		if ($this->get_loader() instanceof module_loader && $this->get_status()) {
 			$this->get_loader()->check();
@@ -252,7 +253,7 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 		}
 	}
 
-	public function is_Checked ()
+	public function is_Checked (): bool
 	{
 		if ($this->get_loader() instanceof module_loader && $this->get_status()) {
 			return $this->get_loader()->is_Checked();
@@ -262,23 +263,25 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 		}
 	}
 
-	public function load ()
+	public function load (): bool
 	{
 		if ($this->get_loader() instanceof module_loader && $this->get_status() && !$this->is_load()) {
 			if ($this->get_loader()->load()) {
 				$this->is_load = TRUE;
 			}
-
 			return $this->is_load();
+		}
+		else {
+			return FALSE;
 		}
 	}
 
-	public function get_name ()
+	public function get_name (): string
 	{
 		return $this->name;
 	}
 
-	public function get_path ()
+	public function get_path (): string
 	{
 		return Core::$modulepath . $this->get_name() . "/";
 	}
@@ -288,16 +291,17 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 		$this->loader->create_PDO_Tables();
 	}
 
-	public function get_status ()
+	public function get_status (): bool
 	{
 		return $this->status;
 	}
 
-	public function is_load ()
+	public function is_load (): bool
 	{
 		return $this->is_load;
 	}
-	public function load_complete ()
+
+	public function load_complete (): bool
 	{
 		if ($this->get_status()) {
 			if (!$this->is_Checked()) {
@@ -319,12 +323,12 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 		}
 	}
 
-	public function load_ajax ()
+	public function load_ajax (): bool
 	{
 		return $this->get_loader()->load_ajax_file();
 	}
 
-	public function get_version ()
+	public function get_version (): string
 	{
 		return $this->version;
 	}

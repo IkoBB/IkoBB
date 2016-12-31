@@ -33,13 +33,12 @@ class log
 		"alert"   => 2,
 		"warning" => 3);
 
-	public static function add ($module, $type, $code, $msg, $extra = NULL)
+	public static function add ($module, $type, $code, $msg, $extra = NULL): bool
 	{
 		$time = time();
 		if ($module != NULL && (array_search($type, self::$int_to_string) || array_search($type,
 					self::$string_to_int)) && is_numeric($code) && trim($msg) != ""
 		) {
-			echo "ja";
 			if (is_string($type)) {
 				$type = self::$string_to_int[ strtolower($type) ];
 			}

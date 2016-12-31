@@ -10,25 +10,21 @@
  * the LICENSE file.
  *
  */
-namespace iko;
+namespace iko\user;
 
-class user_module_loader extends \iko\module_loader
+class module_loader extends \iko\module_loader
 {
 	protected $final_load = __NAMESPACE__ . "\\User::init";
 	private $files = array (
-		"interfaces" => array (
-			"user.php",
-			"group.php",
-			"permissions" => array (),),
+		"interfaces" => array ("*",),
 		"classes"    => array (
 			"operators.php",
 			"user.php",
 			"group.php",
-		"permissions" => array (
-			"permissions.php",
-			"value.php",
-			"group.php",
-			"user.php")),);
+			"user_profile_fields" => array ("main.php"),
+			"permissions"         => array (
+				"permissions.php",),
+			"*",),);
 	public function __construct ($module)
 	{
 		parent::__construct($module);

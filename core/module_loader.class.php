@@ -31,11 +31,18 @@ abstract class module_loader
 		$this->class_module = $module;
 	}
 
-	public function get_module ()
+	/**
+	 * @return \iko\module
+	 */
+	public function get_module (): module
 	{
 		return $this->class_module;
 	}
-	public function check ()
+
+	/**
+	 * @return bool
+	 */
+	public function check (): bool
 	{
 		if ($this->pre_check_Files() && $this->pre_check_PDO_Tables()) {
 			$this->checked = TRUE;
@@ -50,9 +57,12 @@ abstract class module_loader
 		return ($this->is_Checked() && $result) ? TRUE : FALSE;
 	}
 
-	public function is_Checked ()
+	/**
+	 * @return bool
+	 */
+	public function is_Checked (): bool
 	{
-		return (bool)$this->checked;
+		return $this->checked;
 	}
 
 	abstract protected function pre_check_PDO_Tables ();
@@ -61,7 +71,12 @@ abstract class module_loader
 
 	abstract protected function pre_load ();
 
-	public function check_PDO_Tables ($tables = array ())
+	/**
+	 * @param array $tables
+	 *
+	 * @return bool
+	 */
+	public function check_PDO_Tables (array $tables = array ()): bool
 	{
 		$result = TRUE;
 		if (is_string($tables)) {
@@ -86,7 +101,7 @@ abstract class module_loader
 		return $result;
 	}
 
-	function check_files_exist ($array, $prefix)
+	function check_files_exist (array $array, string $prefix): bool
 	{
 		$result = TRUE;
 		foreach ($array as $key => $value) {
@@ -96,9 +111,19 @@ abstract class module_loader
 				}
 			}
 			else {
-				$filename = $prefix . $value;
-				if (!file_exists($filename)) {
-					$result = FALSE;
+				if ($value == "*") {
+					$dir = scandir($prefix);
+					unset($dir[0], $dir[1]);
+					$result = $this->check_files_exist($dir, $prefix);
+				}
+				else {
+					$filename = $prefix . $value;
+					if (!file_exists($filename) && !is_dir($filename)) {
+						$result = FALSE;
+					}
+					else if (is_dir($filename)) {
+						$result = $this->check_files_exist(array ("*"), $filename . "/");
+					}
 				}
 			}
 		}
@@ -106,9 +131,8 @@ abstract class module_loader
 		return $result;
 	}
 
-	public function check_Files ($files = array ())
+	public function check_Files ($files = array ()): bool
 	{
-
 		$result = TRUE;
 		if (is_string($files)) {
 			$files = array ($files);
@@ -120,28 +144,42 @@ abstract class module_loader
 		return $result;
 	}
 
-	function load_file ($array, $prefix)
+	function load_file (array $array, string $prefix)
 	{
 		foreach ($array as $key => $var) {
+			print_r($var);
+			echo PHP_EOL;
 			if (is_array($var)) {
 				$this->load_file($var, $prefix . $key . "/");
 			}
 			else {
-				$filename = $prefix . $var;
-				if (!file_exists($filename)) {
-					throw new \Exception("Code #1236 " . $filename);
+				if ($var == "*") {
+					$dir = scandir($prefix);
+					unset($dir[0], $dir[1]);
+					$this->load_file($dir, $prefix);
 				}
 				else {
-					$include = include_once($filename);
-					if ($include === FALSE) {
+					$filename = $prefix . $var;
+					if (!file_exists($filename) && !is_dir($filename)) {
 						throw new \Exception("Code #1236 " . $filename);
+					}
+					else if (is_dir($filename)) {
+						$this->load_file(array ("*"), $filename . "/");
+					}
+					else {
+						print_r($filename);
+						echo PHP_EOL;
+						$include = include_once($filename);
+						if ($include === FALSE) {
+							throw new \Exception("Code #1236 " . $filename);
+						}
 					}
 				}
 			}
 		}
 	}
 
-	public function load ($files = array (), $event_handler = FALSE)
+	public function load ($files = array (), bool $event_handler = FALSE)
 	{
 		if (!$this->is_load() && !$event_handler) {
 			$this->is_load = TRUE;
@@ -205,12 +243,12 @@ abstract class module_loader
 		}
 	}
 
-	public function load_ajax_file ()
+	public function load_ajax_file (): bool
 	{
 		return $this->load($this->ajax_file);
 	}
 
-	public function is_load ()
+	public function is_load (): bool
 	{
 		return $this->is_load;
 	}
