@@ -147,8 +147,6 @@ abstract class module_loader
 	function load_file (array $array, string $prefix)
 	{
 		foreach ($array as $key => $var) {
-			print_r($var);
-			echo PHP_EOL;
 			if (is_array($var)) {
 				$this->load_file($var, $prefix . $key . "/");
 			}
@@ -167,8 +165,6 @@ abstract class module_loader
 						$this->load_file(array ("*"), $filename . "/");
 					}
 					else {
-						print_r($filename);
-						echo PHP_EOL;
 						$include = include_once($filename);
 						if ($include === FALSE) {
 							throw new \Exception("Code #1236 " . $filename);
