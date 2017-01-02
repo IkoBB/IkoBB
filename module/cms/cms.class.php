@@ -49,10 +49,10 @@ class cms
 		$template->title = $config_iko->site_name->get();
 
 		// Check if id is set and if it is an integer or not
-		if ($id != NULL && is_int($id)) {
+		if ($id != NULL && is_numeric($id)) {
 			$id = (int)$id;
 		}
-		elseif ($id != NULL && !is_int($id)) {
+		elseif ($id != NULL && !is_numeric($id)) {
 			$id = NULL;
 		}
 
