@@ -141,8 +141,10 @@ class config_loader_file extends config_loader // TODO: Überarbeiten der Klasse
 			'/* -->',
 			'<-- */',
 			'/* ',
-			' */');
+			' */',
+			'//',);
 		$replace = array (
+			"",
 			"",
 			"",
 			"",

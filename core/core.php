@@ -30,6 +30,7 @@ class Core
 	public static $modulepath;
 	public static $currentfile;
 	public static $PDO;
+	public static $templatepath;
 
 	/**
 	 * @param int $phase
@@ -141,6 +142,7 @@ class Core
 		self::$corepath = self::$basepath . "core/";
 		self::$adminpath = self::$basepath . "admin/";
 		self::$modulepath = self::$basepath . "module/";
+		self::$templatepath = self::$basepath . "template/";
 		self::$currentfile = self::get_Path();
 	}
 
@@ -164,7 +166,6 @@ class Core
 	public static function date_format ()
 	{
 		$config = config::load("PDO", "iko");
-
 		return $config->date_format;
 	}
 }
@@ -178,6 +179,7 @@ Core::init(0);
 /**
  *  Load Config Loader
  */
+//require_once Core::$corepath . "permission/module.class.php";
 require_once Core::$corepath . "log.class.php";
 require_once Core::$corepath . "exception.class.php";
 require_once Core::$corepath . "pdo.class.php";
@@ -185,6 +187,8 @@ require_once Core::$corepath . "functions.php";
 require_once Core::$corepath . "event.php";
 require_once Core::$corepath . 'config.php';
 require_once Core::$corepath . "sessions.php";
+
+require_once Core::$corepath . "lib.php";
 
 /**
  *  Load Phase 2
@@ -199,6 +203,5 @@ function my_autoloader ($class)
 	$explode = explode("\\", $name);
 	module::request($explode[0]);
 }
-
 spl_autoload_register("Iko\\my_autoloader");
 Core::init(2);

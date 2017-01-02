@@ -46,7 +46,7 @@ class cms
 		$config_iko = config::load("pdo", "iko");
 		$template = template::get_instance();
 
-		$template->title = $config_iko->site_name->get();
+		$template->title = $config_iko->site_name;
 
 		// Check if id is set and if it is an integer or not
 		if ($id != NULL && is_numeric($id)) {
@@ -60,7 +60,7 @@ class cms
 		if (strcasecmp($page, 'index') == 0) {
 			// load default page
 			$config_cms = config::load("pdo", "cms");
-			$page = $config_cms->default_page->get();
+			$page = $config_cms->default_page;
 		}
 
 		if (strcasecmp($page, 'forum') == 0 && $id === NULL) {

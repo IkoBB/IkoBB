@@ -50,7 +50,7 @@ abstract class config_loader implements config_interface
 	/**
 	 * @return mixed
 	 */
-	public function get_config_class ()
+	public function get_config_class (): config
 	{
 		return $this->config_class;
 	}

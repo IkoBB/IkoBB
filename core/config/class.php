@@ -22,7 +22,7 @@ class config extends config_loader
 
 	/**
 	 * @param string $type
-	 * @param array  $args
+	 * @param mixed  $args
 	 *
 	 * @return NULL|mixed
 	 */
@@ -66,7 +66,7 @@ class config extends config_loader
 
 	/**
 	 * @param string $type
-	 * @param array  $args
+	 * @param mixed  $args
 	 *
 	 * @throws \Exception
 	 */
@@ -203,6 +203,16 @@ class config extends config_loader
 		}
 		else {
 			$this->set($name, $value);
+		}
+	}
+
+	public function __isset ($name)
+	{
+		if (isset($this->config[ $name ])) {
+			return TRUE;
+		}
+		else {
+			return FALSE;
 		}
 	}
 }

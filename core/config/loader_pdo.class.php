@@ -55,9 +55,7 @@ class config_loader_pdo extends config_loader
 		$statement = Core::$PDO->query($query);
 		$fetch = $statement->fetchAll(PDO::FETCH_ASSOC);
 		foreach ($fetch as $item) {
-			$item["class_loader"] = $this;
-			$value = new config_value($item);
-			$config[ $item["config_name"] ] = $value;
+			$config[ $item["config_name"] ] = unserialize($item["config_value"]);
 		}
 
 		return $config;
@@ -65,9 +63,9 @@ class config_loader_pdo extends config_loader
 
 	public function add ($name, $value, $comment)
 	{
-		if (!$this->config_class->get($name) instanceof config_value) {
+		if (!isset($this->get_config_class()->{$name})) {
 			if ($comment != "") {
-				$query = "INSERT INTO " . self::table() . " (config_name, config_value, config_comment, module_name) VALUES ('" . $name . "','" . config_value::get_Convert($value) . "','" . $comment . "','" . $this->module . "')";
+				$query = "INSERT INTO " . self::table() . " (config_name, config_value, config_comment, module_name) VALUES ('" . $name . "','" . serialize($value) . "','" . $comment . "','" . $this->module . "')";
 				$statement = Core::$PDO->query($query);
 				if ($statement->rowCount() == 1) {
 					return TRUE;
@@ -87,7 +85,7 @@ class config_loader_pdo extends config_loader
 
 	public function set ($name, $value, $comment = "")
 	{
-		$query = "UPDATE " . self::table() . " Set config_value = '" . config_value::get_Convert($value) . "'";
+		$query = "UPDATE " . self::table() . " Set config_value = '" . serialize($value) . "'";
 		$query .= "WHERE config_name = '" . $name . "'";
 		$statement = Core::$PDO->query($query);
 		if ($statement->rowCount() == 1) {
