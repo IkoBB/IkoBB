@@ -129,13 +129,13 @@ CREATE TABLE `iko_log` (
 	KEY (`module_name`)
 );
 
-CREATE TABLE `iko_cms` (
-	`cms_id`      INT(11)      NOT NULL        AUTO_INCREMENT,
-	`cms_content` TEXT         NOT NULL,
+CREATE TABLE `iko_pages` (
+	`page_id`      INT(11)      NOT NULL        AUTO_INCREMENT,
+	`page_content` TEXT         NOT NULL,
 	`user_id`     INT(11)      NOT NULL,
-	`cms_time`    TIMESTAMP    NOT NULL,
-	`cms_title`   VARCHAR(255) NOT NULL,
-	PRIMARY KEY (`cms_id`),
+	`page_time`    TIMESTAMP    NOT NULL,
+	`page_title`   VARCHAR(255) NOT NULL,
+	PRIMARY KEY (`page_id`),
 	KEY (`user_id`)
 );
 
@@ -233,8 +233,8 @@ REFERENCES `iko_modules` (`module_name`)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE;
 
-ALTER TABLE iko_cms
-	ADD CONSTRAINT `iko_users_cms_ibfk_1`
+ALTER TABLE iko_pages
+	ADD CONSTRAINT `iko_users_pages_ibfk_1`
 FOREIGN KEY (`user_id`)
 REFERENCES `iko_users` (`user_id`)
 	ON DELETE CASCADE

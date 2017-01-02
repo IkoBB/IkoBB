@@ -28,6 +28,7 @@ class template_loader extends \iko\module_loader
 	protected function pre_check_Files()
 	{
 		$files = array (
+		    "cms.class.php",
 			"template.class.php",
 			"parser.class.php",
 			"lib" => array (
@@ -48,6 +49,7 @@ class template_loader extends \iko\module_loader
 	public function pre_load ()
 	{
 		$files = array (
+            "cms.class.php",
 			"template.class.php",
 			"parser.class.php",
 			"lib/EmojiOne/autoload.php",

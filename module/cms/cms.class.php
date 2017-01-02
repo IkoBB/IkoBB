@@ -13,13 +13,17 @@
 
 namespace iko\cms;
 
+use iko\Core;
+use iko\PDO;
+use iko\config;
+use iko\Exception;
 
 class cms
 {
-	const table = "{prefix}users";
-	const column_id = "cms_id";
+	const table = "{prefix}pages";
+	const column_id = "page_id";
 
-	public static function exists ($site_id)
+	public static function exists ($site_id): bool
 	{
 		if (is_numeric($site_id) && $site_id != 0 && $site_id != NULL) {
 			$statement = Core::$PDO->prepare("SELECT " . self::column_id . " FROM " . self::table . " WHERE " . self::column_id . " = :id");
@@ -37,26 +41,98 @@ class cms
 		}
 	}
 
-	function _construct ($site_id)
+	function __construct ($page = "index", $id = NULL)
 	{
-		if (isset($site_id) && self::exists($site_id) === TRUE) {
-			$this->load_content($site_id);
+		$config_iko = config::load("pdo", "iko");
+		$template = template::get_instance();
+
+		$template->title = $config_iko->site_name->get();
+
+		// Check if id is set and if it is an integer or not
+		if ($id != NULL && is_int($id)) {
+			$id = (int)$id;
+		}
+		elseif ($id != NULL && !is_int($id)) {
+			$id = NULL;
+		}
+
+		// Loads the default page
+		if ($page == 'index') {
+			// load default page
+			$config_cms = config::load("pdo", "cms");
+			$page = $config_cms->default_page->get();
+		}
+
+		if ($page == 'forum' && $id === NULL) {
+			// load forum list
+
+		}
+		elseif ($page == 'forum' && $id != NULL) {
+			// load content for forum
+
+		}
+		elseif ($page == 'thread' && $id != NULL) {
+			// load thread list
+
+		}
+		elseif ($page == 'page' && $id != NULL) {
+			// load content for custom pages
+			if (self::exists($id)) {
+				$this->load_content($id);
+			}
+			else {
+				$this->load_content(0);
+			}
+		}
+		elseif (($page == 'members' || $page == 'member') && $id === NULL) {
+			// load member list
+
+		}
+		elseif (($page == 'members' || $page == 'member') && $id != NULL) {
+			// load member profile
+
+		}
+		elseif ($page == 'imprint') {
+			// Imprint is needed in some countries
+
+		}
+		elseif ($page == 'debug') {
+			// Testing and debug page
+			$parser = new parser();
+			$template->sub_title = "Demo & Testing page";
+			$template->content = $parser->parse("[b]Welcome to the IkoBB demo and testing page[/b]");
+			$template->content .= $template->entity("TEST", array (
+				"output"      => $parser->parse(\iko\define_post("text", "")),
+				"code_output" => $parser->parse('[code]' . \iko\define_post("text", "") . '[/code]')), TRUE);
 		}
 		else {
-			$this->load_content(1);
+			// 404 page
+			$this->load_content(0);
 		}
+
+		echo $template;
+
 	}
 
 	private function load_content ($site_id)
 	{
-		$statement = Core::$PDO->prepare("SELECT * FROM " . self::table . " WHERE " . self::column_id . " = :id");
-		$statement->bindParam(':id', $site_id);
-		$statement->execute();
-		$site = $statement->fetch(PDO::FETCH_ASSOC);
+
+		try {
+			$statement = Core::$PDO->prepare("SELECT * FROM " . self::table . " WHERE " . self::column_id . " = :id");
+			$statement->bindParam(':id', $site_id);
+			$statement->execute();
+			$site = $statement->fetch(PDO::FETCH_ASSOC);
+		}
+		catch (\PDOException $exception) {
+			throw new Exception("Error #1234: " . $exception);
+		}
 
 		$template = template::get_instance();
+		$template->sub_title = $site['page_title'];
+		$template->content = $site["page_content"];
+		/*
 		$template->entity("cms_site", array (
-			"title"   => $site['cms_title'],
-			"content" => parser::bbCodes($site["cms_content"])));
+			"cms_title"   => $site['page_title'],
+			"cms_content" => $site["page_content"]));*/
 	}
 }
