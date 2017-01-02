@@ -57,25 +57,25 @@ class cms
 		}
 
 		// Loads the default page
-		if ($page == 'index') {
+		if (strcasecmp($page, 'index') == 0) {
 			// load default page
 			$config_cms = config::load("pdo", "cms");
 			$page = $config_cms->default_page->get();
 		}
 
-		if ($page == 'forum' && $id === NULL) {
+		if (strcasecmp($page, 'forum') == 0 && $id === NULL) {
 			// load forum list
 
 		}
-		elseif ($page == 'forum' && $id != NULL) {
+		elseif (strcasecmp($page, 'forum') == 0 && $id != NULL) {
 			// load content for forum
 
 		}
-		elseif ($page == 'thread' && $id != NULL) {
+		elseif (strcasecmp($page, 'thread') == 0 && $id != NULL) {
 			// load thread list
 
 		}
-		elseif ($page == 'page' && $id != NULL) {
+		elseif (strcasecmp($page, 'page') == 0 && $id != NULL) {
 			// load content for custom pages
 			if (self::exists($id)) {
 				$this->load_content($id);
@@ -84,19 +84,19 @@ class cms
 				$this->load_content(0);
 			}
 		}
-		elseif (($page == 'members' || $page == 'member') && $id === NULL) {
+		elseif ((strcasecmp($page, 'members') == 0 || strcasecmp($page, 'member') == 0) && $id === NULL) {
 			// load member list
 
 		}
-		elseif (($page == 'members' || $page == 'member') && $id != NULL) {
+		elseif ((strcasecmp($page, 'members') == 0 || strcasecmp($page, 'member') == 0) && $id != NULL) {
 			// load member profile
 
 		}
-		elseif ($page == 'imprint') {
+		elseif (strcasecmp($page, 'imprint') == 0 || strcasecmp($page, 'impressum') == 0) {
 			// Imprint is needed in some countries
 
 		}
-		elseif ($page == 'debug') {
+		elseif (strcasecmp($page, 'debug') == 0) {
 			// Testing and debug page
 			$parser = new parser();
 			$template->sub_title = "Demo & Testing page";
