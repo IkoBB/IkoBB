@@ -20,18 +20,19 @@
 namespace iko\user;
 
 use iko\Core;
+use iko\PDO;
 
-class Group extends operators implements iGroup 
+class Group extends operators implements iGroup //Todo: Complete
 {
 	const table = "{prefix}usergroups";
 	const assignment = Permissions::group_assignment;
 	const id = "usergroup_id";
 	const name = "usergroup_name";
 
-	protected static $cache = array ();
-	protected static $cache_exist = array ();
+	public static $cache = array ();
+	public static $cache_exist = array ();
 
-	public static function get ($ids = 0, $reload = FALSE)
+	/*public static function get ($ids = 0, $reload = FALSE)
 	{
 		$class = get_called_class();
 		if (is_string($ids) && !is_numeric($ids)) {
@@ -107,9 +108,9 @@ class Group extends operators implements iGroup
 			return $user_array;
 		}
 		else {
-			return NULL;
+			return FALSE;
 		}
-	}
+	}*/
 
 	/**
 	 * @param int  $ids
@@ -117,6 +118,7 @@ class Group extends operators implements iGroup
 	 *
 	 * @return bool|mixed
 	 */
+	/*
 	public static function exist ($ids = 0, $reload = FALSE)
 	{
 		$class = get_called_class();
@@ -165,7 +167,7 @@ class Group extends operators implements iGroup
 		else {
 			return FALSE;
 		}
-	}
+	}*/
 
 	private $id;
 	private $name;
@@ -262,6 +264,7 @@ class Group extends operators implements iGroup
 	{
 		return $this->style;
 	}
+
 
 	/*public function get_Displayname ()
 	{

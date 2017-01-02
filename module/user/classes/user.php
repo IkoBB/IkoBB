@@ -13,6 +13,7 @@
 namespace iko\user;
 
 use iko\Core;
+use iko\language\languageConfigs;
 use iko\PDO;
 use iko\Event\Handler;
 use iko\log;
@@ -21,6 +22,7 @@ use function iko\check_mail;
 use function iko\define_session;
 use function iko\get_hash;
 use function iko\read_session;
+use iko\user\profile\Avatar;
 
 class User extends operators implements iUser //TODO: Complete
 {
@@ -28,10 +30,10 @@ class User extends operators implements iUser //TODO: Complete
 	const id = "user_id";
 	const name = "user_name";
 	const mail = "user_email";
-	protected static $cache = array ();
-	protected static $cache_exist = array ();
+	public static $cache = array ();
+	public static $cache_exist = array ();
 
-	public static function get ($ids = 0, $reload = FALSE)
+	/*public static function get ($ids = 0, $reload = FALSE)
 	{
 		$class = get_called_class();
 		if (is_string($ids) && !is_numeric($ids)) {
@@ -111,7 +113,7 @@ class User extends operators implements iUser //TODO: Complete
 		else {
 			return FALSE;
 		}
-	}
+	} */
 
 	/**
 	 * @param int  $ids
@@ -119,7 +121,7 @@ class User extends operators implements iUser //TODO: Complete
 	 *
 	 * @return bool|mixed
 	 */
-	public static function exist ($ids = 0, $reload = FALSE)
+	/*public static function exist ($ids = 0, $reload = FALSE)
 	{
 		$class = get_called_class();
 		if ($ids != 0 && $ids != NULL) {
@@ -167,7 +169,7 @@ class User extends operators implements iUser //TODO: Complete
 		else {
 			return FALSE;
 		}
-	}
+	}*/
 
 	public static function get_all ()
 	{
@@ -175,7 +177,7 @@ class User extends operators implements iUser //TODO: Complete
 		$fetchAll = $statement->fetchAll(PDO::FETCH_ASSOC);
 		$users = array ();
 		foreach ($fetchAll as $item) {
-			array_push($users, self::get($item["user_id"]));
+			array_push($users, self::gets($item["user_id"]));
 		}
 
 		return $users;
@@ -205,7 +207,7 @@ class User extends operators implements iUser //TODO: Complete
 		return self::$session_user;
 	}
 
-	public static function login ($user, $password) //TODO: Salt Generieren und Last_login hinzufuegen
+	public static function login ($user, $password): bool //TODO: Salt Generieren und Last_login hinzufuegen
 	{
 		if (check_mail($user)) {
 			$search = array ("user_email" => $user);
@@ -324,7 +326,8 @@ class User extends operators implements iUser //TODO: Complete
 	public static function init ()
 	{
 		User::session();
-		$permissions = Permissions\Value::search(array ("permission_name" => array ("LIKE" => "iko.user.change.%")));
+		$permissions = Permissions\Value::searches(array ("permission_name" => array ("LIKE" => "iko.user.change.%")));
+		var_dump($permissions);
 		foreach ($permissions as $item) {
 			Handler::add_event($item->get_name(), get_called_class(), "own_permission", NULL, FALSE, "get");
 		}
@@ -335,7 +338,7 @@ class User extends operators implements iUser //TODO: Complete
 	private $name;
 	private $password;
 	private $email;
-	private $avatar_id;
+	private $avatar;
 	private $signature;
 	private $about_user;
 	private $location_id;
@@ -346,7 +349,7 @@ class User extends operators implements iUser //TODO: Complete
 	private $last_login;
 	private $language;
 	private $template;
-
+	private $profile;
 
 	/**
 	 * user constructor.
@@ -372,12 +375,12 @@ class User extends operators implements iUser //TODO: Complete
 		}
 	}
 
-	public function is_own ()
+	public function is_own (): bool
 	{
 		return ($this === self::get_session()) ? TRUE : FALSE;
 	}
 
-	public function get_id ()
+	public function get_id (): int
 	{
 		return intval($this->id);
 	}
@@ -402,7 +405,7 @@ class User extends operators implements iUser //TODO: Complete
 		}
 	}
 
-	private function load_groups_recursive ($group)
+	private function load_groups_recursive ($group): void
 	{
 		$parent_list = $group->get_Parents();
 		foreach ($parent_list as $item) {
@@ -413,7 +416,7 @@ class User extends operators implements iUser //TODO: Complete
 		}
 	}
 
-	public function own_permission ($permission, $args = NULL, $pre = NULL)
+	public function own_permission ($permission, $args = NULL, $pre = NULL): bool
 	{
 		if ($this->is_own()) {
 			return TRUE;
@@ -426,7 +429,7 @@ class User extends operators implements iUser //TODO: Complete
 		}
 	}
 
-	public function get_name ()
+	public function get_name (): string
 	{
 		return $this->name;
 	}
@@ -436,32 +439,37 @@ class User extends operators implements iUser //TODO: Complete
 		return $this->groups;
 	}
 
-	private function get_password ()
+	public function get_all_groups ()
+	{
+		return $this->groups_all;
+	}
+
+	private function get_password (): string
 	{
 		return $this->password;
 	}
 
-	public function get_joined_Date ()
+	public function get_joined_Date (): string
 	{
 		return date(Core::date_format(), $this->get_joined_Time());
 	}
 
-	public function get_joined_Time ()
+	public function get_joined_Time (): int
 	{
 		return $this->date_joined;
 	}
 
-	public function get_last_login_Date ()
+	public function get_last_login_Date (): string
 	{
 		return date(Core::date_format(), $this->get_last_login_Time());
 	}
 
-	public function get_last_login_Time ()
+	public function get_last_login_Time (): int
 	{
 		return $this->last_login;
 	}
 
-	public function salt ($pass)
+	public function salt ($pass): string
 	{
 		$dj = $this->get_joined_Time();
 		$id = $this->get_id();
@@ -475,7 +483,7 @@ class User extends operators implements iUser //TODO: Complete
 		return get_hash($salt);
 	}
 
-	public function change_password ($old, $new, $sec)
+	public function change_password ($old, $new, $sec): bool
 	{
 		$s_old = $this->salt($old);
 		$s_new = $this->salt($new);
@@ -487,7 +495,10 @@ class User extends operators implements iUser //TODO: Complete
 		}
 	}
 
-	public function update_last_login ($pass)
+	/**
+	 * @param $pass
+	 */
+	private function update_last_login ($pass)
 	{
 		if ($this->is_own()) {
 			$s_pass = $this->salt($pass);
@@ -514,32 +525,74 @@ class User extends operators implements iUser //TODO: Complete
 		}
 	}
 
-	public function get_language ()
+	/**
+	 * @return int
+	 */
+	public function get_language (): int
 	{
 		return $this->language;
 	}
 
-	public function get_template ()
+	/**
+	 * @return int
+	 */
+	public function get_template (): int
 	{
 		return $this->template;
 	}
 
-	public function get_email ()
+	/**
+	 * @return string
+	 */
+	public function get_email (): string
 	{
 		return $this->email;
 	}
 
+	/**
+	 * @return \iko\user\User_profile
+	 */
+	public function get_profile (): User_profile
+	{
+		if ($this->profile == NULL) {
+			$this->profile = new User_profile($this);
+		}
+
+		return $this->profile;
+	}
+
+	public function get_avatar (): Avatar
+	{
+		if ($this->avatar == NULL || !$this->avatar instanceof Avatar) {
+			$this->avatar = new Avatar($this, $this->avatar);
+		}
+
+		return $this->avatar;
+	}
+
+	/**
+	 * @param $value
+	 *
+	 * @return mixed
+	 */
 	public function __get ($value)
 	{
 		$func = 'get_' . $value;
 		if (is_callable(get_called_class(), $func)) {
 			return $this->{$func}();
 		}
+		/*else if(isset($this->get_profile()->{$value})){
+			return $this->get_profile()->{$value};
+		}*/
 		else {
 			return NULL;
 		}
 	}
 
+	/**
+	 * @param $name
+	 * @param $values
+	 */
 	public function __set ($name, $values)
 	{
 		$func = "change_" . $name;
@@ -550,12 +603,23 @@ class User extends operators implements iUser //TODO: Complete
 		}
 	}
 
+	/**
+	 * @param $name
+	 *
+	 * @return bool
+	 */
 	public function __isset ($name)
 	{
 		return (isset($this->{$name}) && $this->{$name} !== NULL);
 	}
 
-	private function change ($name, $value)
+	/**
+	 * @param $name
+	 * @param $value
+	 *
+	 * @return bool
+	 */
+	private function set ($name, $value): bool
 	{
 		$handler_name = "iko.user.change." . str_replace("change_", "", $name);
 		$table_name = "user_" . str_replace("change_", "", $name);
@@ -563,15 +627,12 @@ class User extends operators implements iUser //TODO: Complete
 		if (Handler::event($handler_name, User::get_session(), $this->get_id())) {
 			if ($value !== NULL && $value != $this->{$class_name}) {
 				Core::$PDO->beginTransaction();
-				$sql = "UPDATE " . self::table . " Set " . $table_name . " = ";
-				if (is_string($value) || is_string($this->{$class_name})) {
-					$sql .= "'" . $value . "'";
-				}
-				else {
-					$sql .= $value;
-				}
+				$sql = "UPDATE " . self::table . " Set " . $table_name . " = :value";
+
 				$sql .= " WHERE user_id = " . $this->get_id();
-				$statement = Core::$PDO->exec($sql);
+				$statement = Core::$PDO->prepare($sql);
+				$statement->bindParam(":value", $value);
+				$statement->execute();
 				if ($statement > 0) {
 					$old = $this->{$class_name};
 					$this->{$class_name} = $value;
@@ -599,38 +660,99 @@ class User extends operators implements iUser //TODO: Complete
 		}
 	}
 
-	public function change_name ($name)
+	/**
+	 * @param $name
+	 *
+	 * @return bool
+	 *
+	 * @permission iko.user.set.user_name
+	 *             Needed for external changes
+	 *             Own setting don't need Permissions
+	 */
+	public function set_name ($name): bool
 	{
-		return $this->change(__FUNCTION__, $name);
+		return $this->set(__FUNCTION__, $name);
 	}
 
-	public function change_email ($email)
+	/**
+	 * @param $email
+	 *
+	 * @return bool
+	 *
+	 * @permission iko.user.set.user_email
+	 *             Needed for external changes
+	 *             Own setting don't need Permissions
+	 */
+	public function set_email ($email): bool
 	{
 		if (check_mail($email) && self::search(array ("user_email" => $email)) === FALSE) {
-			return $this->change(__FUNCTION__, $email);
+			return $this->set(__FUNCTION__, $email);
 		}
 		else {
 			return FALSE;
 		}
 	}
 
-	public function change_template ($value)
+	/**
+	 * @param $value
+	 *
+	 * @return bool
+	 *
+	 * @permission iko.user.set.user_template
+	 *             Needed for external changes
+	 *             Own setting don't need Permissions
+	 */
+	public function set_template ($value): bool
 	{
-		if (\iko\cms\template::exist($value)) {
-			return $this->change(__FUNCTION__, $value);
+		if (\iko\cms\template::template_exists($value)) {
+			return $this->set(__FUNCTION__, $value);
 		}
 		else {
 			return FALSE;
 		}
 	}
 
-	public function change_language ($value)
+	/**
+	 * @param $value
+	 *
+	 * @return bool
+	 *
+	 * @permission iko.user.set.user_language
+	 *             Needed for external changes
+	 *             Own setting don't need Permissions
+	 */
+	public function set_language ($value): bool
 	{
-		if (\iko\language\language::exist($value)) {
-			return $this->change(__FUNCTION__, $value);
+		$language = new languageConfigs();
+		if ($language->supportedLanguageExist($value)) {
+			return $this->set(__FUNCTION__, $value);
 		}
 		else {
 			return FALSE;
 		}
+	}
+
+	public function add_group ($group): bool
+	{
+		if (User::get_session()->has_permission("iko.user.group.add")) {
+			if (is_int($group)) {
+				$group = Group::get($group);
+			}
+			else if ($group instanceof permissions\Group) {
+				$group = $group->get_class();
+			}
+
+			if ($group instanceof Group && array_search($group, $this->get_groups(), TRUE) === FALSE) {
+
+			}
+		}
+		else {
+			return FALSE;
+		}
+	}
+
+	public function remove_group ($group)
+	{
+
 	}
 }

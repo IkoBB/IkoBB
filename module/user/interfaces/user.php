@@ -23,17 +23,17 @@ interface iUser
 	/**
 	 * @return boolean
 	 */
-	public function is_own ();
+	public function is_own (): bool;
 
 	/**
 	 * @return integer
 	 */
-	public function get_id ();
+	public function get_id (): int;
 
 	/**
 	 * @return string
 	 */
-	public function get_name ();
+	public function get_name (): string;
 
 	/**
 	 * @return array|Group
@@ -43,22 +43,22 @@ interface iUser
 	/**
 	 * @return string as Date Format
 	 */
-	public function get_joined_Date ();
+	public function get_joined_Date (): string;
 
 	/**
 	 * @return integer
 	 */
-	public function get_joined_Time ();
+	public function get_joined_Time (): int;
 
 	/**
 	 * @return string as Date Format
 	 */
-	public function get_last_login_Date ();
+	public function get_last_login_Date (): string;
 
 	/**
 	 * @return integer
 	 */
-	public function get_last_login_Time ();
+	public function get_last_login_Time (): int;
 
 	/**
 	 * @param $pass
@@ -67,40 +67,65 @@ interface iUser
 	 *
 	 * The salt is for more security
 	 */
-	public function salt ($pass);
+	public function salt ($pass): string;
 
 	/**
 	 * @param string $old
 	 * @param string $new
 	 * @param string $sec
 	 *
-	 * @return mixed
+	 * @return bool
 	 */
-	public function change_password ($old, $new, $sec);
-
-	/**
-	 * @param $pass
-	 *
-	 * @return void
-	 */
-	public function update_last_login ($pass);
-
-	/**
-	 * @return string
-	 */
-	public function get_language ();
+	public function change_password ($old, $new, $sec): bool;
 
 	/**
 	 * @return integer
 	 */
-	public function get_template ();
+	public function get_language (): int;
 
-	public function change_name ($name);
+	/**
+	 * @return integer
+	 */
+	public function get_template (): int;
 
-	public function change_email ($mail);
+	/**
+	 * @param $name
+	 *
+	 * @return bool
+	 * @permission iko.user.set.user_name
+	 *             Needed for external changes
+	 *             Own setting don't need Permissions
+	 */
+	public function set_name ($name): bool;
 
-	public function change_template ($template);
+	/**
+	 * @param $mail
+	 *
+	 * @return bool
+	 * @permission iko.user.set.user_email
+	 *             Needed for external changes
+	 *             Own setting don't need Permissions
+	 */
+	public function set_email ($mail): bool;
 
-	public function change_language ($language);
+	/**
+	 * @param $template
+	 *
+	 * @return bool
+	 * @permission iko.user.set.user_template
+	 *             Needed for external changes
+	 *             Own setting don't need Permissions
+	 */
+	public function set_template ($template): bool;
+
+	/**
+	 * @param $language
+	 *
+	 * @return bool
+	 * @permission iko.user.set.user_language
+	 *             Needed for external changes
+	 *             Own setting don't need Permissions
+	 */
+	public function set_language ($language): bool;
 
 }

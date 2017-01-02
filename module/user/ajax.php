@@ -18,6 +18,9 @@
  */
 namespace iko;
 
+use iko\user\User;
+use function iko\define_post;
+
 $function = define_post("func", "");
 switch ($function) {
 	case "login":
@@ -50,17 +53,14 @@ switch ($function) {
 				echo "TRUE";
 			}
 			else {
-				echo "2FALSE";
+				echo "FALSE";
 			}
 		}
 		else {
-			echo $user . PHP_EOL;
-			echo $pass . PHP_EOL;
-			echo $mail . PHP_EOL;
-			echo "1FALSE";
+			echo "FALSE";
 		}
 	break;
 	case "test":
-		print_r(Log::get_last_log());
+		print_r(log::get_last_log());
 	break;
 }

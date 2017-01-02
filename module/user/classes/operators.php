@@ -7,7 +7,9 @@
  */
 namespace iko\user;
 
-abstract class operators
+use iko\lib\multiton\cache_int;
+
+abstract class operators extends cache_int
 {
 	protected $permission_class = NULL;
 

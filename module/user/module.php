@@ -21,7 +21,6 @@ class module_loader extends \iko\module_loader
 			"operators.php",
 			"user.php",
 			"group.php",
-			"user_profile_fields" => array ("main.php"),
 			"permissions"         => array (
 				"permissions.php",),
 			"*",),);
