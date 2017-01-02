@@ -19,13 +19,74 @@
 namespace iko\lib\multiton;
 
 use iko\Core;
+use iko\Exception;
 
 class cache
 {
-	public static function search ($args = array (), $or = FALSE, $suffix = "") // TODO: Complete Function for Searching after single and Mutliple user
+	public static function search ($args = array (), $or = FALSE, $suffix = "")
 	{
 		$class = get_called_class();
-		$table_id = $class::id ?? $class::name ?? "";
+		$reflection = new \ReflectionClass($class);
+		if ($reflection->getConstant("id") != FALSE) {
+			$table_id = $reflection->getConstant("id");
+		}
+		else if ($reflection->getConstant("name") != FALSE) {
+			$table_id = $reflection->getConstant("name");
+		}
+		else {
+			throw new Exception("#0002 Class needs const id or name");
+		}
+		$sql = "SELECT " . $table_id . " FROM " . $class::table . "";
+		$equal = ($or) ? "OR" : "AND";
+		if (count($args) > 0) {
+			$i = count($args);
+			$string = " WHERE";
+			foreach ($args as $key => $var) {
+				if (is_array($var)) {
+					foreach ($var as $operator => $value) {
+						$string .= ' ' . $key . " " . $operator . " '" . $value . "'";
+					}
+				}
+				else {
+					$string .= ' ' . $key . " = '" . $var . "'";
+				}
+				if ($i > 1) {
+					$string .= " " . $equal;
+				}
+				$i--;
+			}
+			$sql .= $string;
+		}
+		$sql .= " " . $suffix;
+		$statement = Core::$PDO->query($sql);
+		if ($statement !== FALSE) {
+			$fetch = $statement->fetch();
+			$value = $class::get($fetch[ $table_id ]);
+			if ($value !== NULL) {
+				return $value;
+			}
+			else {
+				return FALSE;
+			}
+		}
+		else {
+			return FALSE;
+		}
+	}
+
+	public static function searches ($args = array (), $or = FALSE, $suffix = "")
+	{
+		$class = get_called_class();
+		$reflection = new \ReflectionClass($class);
+		if ($reflection->getConstant("id") != FALSE) {
+			$table_id = $reflection->getConstant("id");
+		}
+		else if ($reflection->getConstant("name") != FALSE) {
+			$table_id = $reflection->getConstant("name");
+		}
+		else {
+			throw new Exception("#0002 Class needs const id or name");
+		}
 		$sql = "SELECT " . $table_id . " FROM " . $class::table . "";
 		$equal = ($or) ? "OR" : "AND";
 		if (count($args) > 0) {
@@ -53,14 +114,15 @@ class cache
 		if ($statement !== FALSE) {
 			$fetch_all = $statement->fetchAll();
 			foreach ($fetch_all as $fetch) {
-				array_push($ids, intval($fetch[ $class::id ]));
+				array_push($ids, $fetch[ $table_id ]);
 			}
-			$user_array = $class::get($ids);
-			if (count($user_array) == 0) {
+			$array = $class::gets($ids);
+
+			if (count($array) == 0) {
 				return FALSE;
 			}
 
-			return $user_array;
+			return $array;
 		}
 		else {
 			return FALSE;
@@ -76,9 +138,18 @@ class cache
 	public static function exist ($ids = 0, $reload = FALSE)
 	{
 		$class = get_called_class();
-		$table_id = $class::id ?? $class::name ?? "";
+		$reflection = new \ReflectionClass($class);
+		if ($reflection->getConstant("id") != FALSE) {
+			$table_id = $reflection->getConstant("id");
+		}
+		else if ($reflection->getConstant("name") != FALSE) {
+			$table_id = $reflection->getConstant("name");
+		}
+		else {
+			throw new Exception("#0002 Class needs const id or name");
+		}
 		if (isset($class::$cache_exist)) {
-			if ($ids != 0 && $ids != NULL) {
+			if ($ids !== NULL) {
 				$statement = Core::$PDO->prepare("SELECT " . $table_id . " FROM " . $class::table . " WHERE " . $table_id . " = :ids");
 				if (is_string($ids) || is_int($ids)) {
 					if (!isset($class::$cache_exist[ $ids ]) || $reload) {

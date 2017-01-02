@@ -50,23 +50,23 @@ class cache_string extends cache
 			if (is_string($ids)) {
 				$ids = array ($ids);
 			}
-			$user_array = array ();
+			$array = array ();
 			foreach ($ids as $id) {
 				if (!isset($class::$cache[ $id ]) || $class::$cache[ $id ] == NULL || $reload) {
 					if ($class::exist($id, $reload)) {
 						$class::$cache[ $id ] = new $class($id);
-						array_push($user_array, $class::$cache[ $id ]);
+						array_push($array, $class::$cache[ $id ]);
 					}
 				}
 				else {
-					array_push($user_array, $class::$cache[ $id ]);
+					array_push($array, $class::$cache[ $id ]);
 				}
 			}
-			if (count($user_array) == 0) {
+			if (count($array) == 0) {
 				return FALSE;
 			}
 
-			return $user_array;
+			return $array;
 		}
 
 		return array ();
