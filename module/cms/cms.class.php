@@ -14,6 +14,8 @@
 namespace iko\cms;
 
 use iko\Core;
+use iko\Event\Handler;
+use iko\module;
 use iko\PDO;
 use iko\config;
 use iko\Exception;
@@ -41,75 +43,33 @@ class cms
 		}
 	}
 
-	function __construct ($page = "index", $id = NULL)
+	function __construct ($args = array ())
 	{
 		$config_iko = config::load("pdo", "iko");
 		$template = template::get_instance();
-
 		$template->title = $config_iko->site_name;
 
-		// Check if id is set and if it is an integer or not
-		if ($id != NULL && is_numeric($id)) {
-			$id = (int)$id;
-		}
-		elseif ($id != NULL && !is_numeric($id)) {
-			$id = NULL;
-		}
+		if (array_key_exists('module',$args)) {
+			if (module::exist($args['module'])) {
 
-		// Loads the default page
-		if (strcasecmp($page, 'index') == 0) {
-			// load default page
-			$config_cms = config::load("pdo", "cms");
-			$page = $config_cms->default_page;
-		}
-
-		if (strcasecmp($page, 'forum') == 0 && $id === NULL) {
-			// load forum list
-
-		}
-		elseif (strcasecmp($page, 'forum') == 0 && $id != NULL) {
-			// load content for forum
-
-		}
-		elseif (strcasecmp($page, 'thread') == 0 && $id != NULL) {
-			// load thread list
-
-		}
-		elseif (strcasecmp($page, 'page') == 0 && $id != NULL) {
-			// load content for custom pages
-			if (self::exists($id)) {
-				$this->load_content($id);
+				/**
+				 * Please add to the following function to your module:
+				 * Handler::add_event(YOUR_MODULE_NAME, 'iko.cms.register.module', YOUR_CLASS_NAME, YOUR_OUTPUT_FUNCTION);
+				 *
+				 * Replace all uppercase text to your strings.
+				 *
+				 * You have to include in your class also an output function. In this output function you will have as input the $_GET variable.
+				 * Please check if the input is the correct data type.
+				 */
+				Handler::event_module('iko.cms.register.module', $args['module'], $args);
 			}
 			else {
 				$this->load_content(0);
 			}
 		}
-		elseif ((strcasecmp($page, 'members') == 0 || strcasecmp($page, 'member') == 0) && $id === NULL) {
-			// load member list
-
-		}
-		elseif ((strcasecmp($page, 'members') == 0 || strcasecmp($page, 'member') == 0) && $id != NULL) {
-			// load member profile
-
-		}
-		elseif (strcasecmp($page, 'imprint') == 0 || strcasecmp($page, 'impressum') == 0) {
-			// Imprint is needed in some countries
-
-		}
-		elseif (strcasecmp($page, 'debug') == 0) {
-			// Testing and debug page
-			$parser = new parser();
-			$template->sub_title = "Demo & Testing page";
-			$template->content = $parser->parse("[b]Welcome to the IkoBB demo and testing page[/b]");
-			$template->content .= $template->entity("TEST", array (
-				"output"      => $parser->parse(\iko\define_post("text", "")),
-				"code_output" => $parser->parse('[code]' . \iko\define_post("text", "") . '[/code]')), TRUE);
-		}
 		else {
-			// 404 page
-			$this->load_content(0);
-		}
 
+		}
 		echo $template;
 
 	}

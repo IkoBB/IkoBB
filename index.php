@@ -16,4 +16,4 @@ require_once 'core/core.php';
 
 
 use iko\cms\cms;
-new cms(@$_GET['page'], @$_GET['id']);
+new cms(@$_GET);
