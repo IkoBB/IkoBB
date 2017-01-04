@@ -67,28 +67,34 @@ class page
 	 */
 	private function load_content ($site_id)
 	{
-		try {
-			$statement = Core::$PDO->prepare("SELECT * FROM " . self::table . " WHERE " . self::column_id . " = :id");
-			$statement->bindParam(':id', $site_id);
-			$statement->execute();
-			$site = $statement->fetch(PDO::FETCH_ASSOC);
-		}
-		catch (\PDOException $exception) {
-			throw new Exception("Error #1234: " . $exception);
+		$template = template::get_instance();
+		if($site_id != 0) {
+			try {
+				$statement = Core::$PDO->prepare("SELECT * FROM " . self::table . " WHERE " . self::column_id . " = :id");
+				$statement->bindParam(':id', $site_id);
+				$statement->execute();
+				$site = $statement->fetch(PDO::FETCH_ASSOC);
+			}
+			catch (\PDOException $exception) {
+				throw new Exception("Error #1234: " . $exception);
+			}
+
+			if ($site != FALSE) {
+				$template->sub_title = $site['page_title'];
+				$parser = new parser();
+				$template->content = $template->entity("cms_page", array (
+					"page_content" => $parser->parse($site["page_content"]),
+				), TRUE);
+
+			}
+			else {
+				$this->load_content(0);
+			}
+		} else {
+			$template->sub_title = 'Page not found';
+			$template->content = $template->entity("404_error", array (), TRUE);
 		}
 
-		if ($site != FALSE) {
-			$template = template::get_instance();
-			$template->sub_title = $site['page_title'];
-			$parser = new parser();
-			$template->content = $template->entity("cms_page", array (
-				"page_content" => $parser->parse($site["page_content"]),
-			), TRUE);
-
-		}
-		else {
-			$this->load_content(0);
-		}
 	}
 
 	/**

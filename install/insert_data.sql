@@ -90,5 +90,3 @@ INSERT INTO `iko_bbcodes` (`bbcode_id`, `bbcode_tag`, `pattern`, `replacement`) 
 	(32, '[url=', '/\\[url=([^\\]]*?)\\](.*?)\\[\\/url\\]/uis', NULL),
 	(33, '[media=', '/\\[media=([^\\]]*?)\\](.*?)\\[\\/media\\]/uis', NULL),
 	(34, '[youtube]', '/\\[youtube\\](.*?)\\[\\/youtube\\]/uis', '<iframe width="560" height="315" src="//www.youtube.com/embed/$1?rel=0" frameborder="0" allowfullscreen></iframe>');
-
-INSERT INTO `iko_pages` (`page_id`, `page_content`, `user_id`, `page_time`, `page_title`) VALUES ('0', 'Error 404 - Page not found.', '1', CURRENT_TIMESTAMP, '404 - Page not found');
