@@ -19,7 +19,7 @@ class template_loader extends \iko\module_loader
 	{
 		parent::__construct($modul);
 
-		Handler::add_event('cms', 'iko.cms.register.module', '\iko\cms\cms', 'init_page');
+		Handler::add_event('cms', 'iko.cms.register.module', '\iko\cms\page', 'init_page');
 	}
 
 	protected function pre_check_PDO_Tables()
@@ -32,7 +32,8 @@ class template_loader extends \iko\module_loader
 	protected function pre_check_Files()
 	{
 		$files = array (
-		    "cms.class.php",
+			"cms.class.php",
+			"page.class.php",
 			"template.class.php",
 			"parser.class.php",
 			"lib" => array (
@@ -53,7 +54,8 @@ class template_loader extends \iko\module_loader
 	public function pre_load ()
 	{
 		$files = array (
-            "cms.class.php",
+			"cms.class.php",
+			"page.class.php",
 			"template.class.php",
 			"parser.class.php",
 			"lib/EmojiOne/autoload.php",
