@@ -69,7 +69,7 @@ INSERT INTO `iko_bbcodes` (`bbcode_id`, `bbcode_tag`, `pattern`, `replacement`) 
 	(11, '[left]', '/\\[left\\](.*?)\\[\\/left\\]/uis', '<p align="left">$1</p>'),
 	(12, '[center]', '/\\[center\\](.*?)\\[\\/center\\]/uis', '<p align="center">$1</p>'),
 	(13, '[right]', '/\\[right\\](.*?)\\[\\/right\\]/uis', '<p align="right">$1</p>'),
-	(14, '[size=', '/\\[size=([^\\]]*?)\\\\](.*?)\\[\\/size\\]/uis', '<span style="font-size: $1;">$2</span>'),
+	(14, '[size=', '/\\[size=([^\\]]*?)\\](.*?)\\[\\/size\\]/uis', '<span style="font-size: $1px;">$2</span>'),
 	(15, '[color=', '/\\[color=([^\\]]*?)\\](.*?)\\[\\/color\\]/uis', '<span style="color: $1;">$2</span>'),
 	(16, '[font=', '/\\[font=([^\\]]*?)\\](.*?)\\[\\/font\\]/uis', '<span style="font-family: $1;">$2</span>'),
 	(17, '[quote]', '/\\[quote\\](.*?)\\[\\/quote\\]/uis', '<blockquote>$1</blockquote>'),
