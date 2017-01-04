@@ -17,8 +17,8 @@
  * Time: 20:34
  */
 namespace iko;
-$files = array (
-	"handler.class.php");
+$files = scandir(__DIR__ . "/event/");
+unset($files[0], $files[1]);
 foreach ($files as $item) {
 	require_once(__DIR__ . "/event/" . $item);
 }

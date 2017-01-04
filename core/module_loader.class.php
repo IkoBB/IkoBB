@@ -256,8 +256,15 @@ abstract class module_loader
 	public function final_load ()
 	{
 		if ($this->final_load != NULL) {
-			if (is_callable($this->final_load)) {
-				call_user_func($this->final_load);
+			if (is_string($this->final_load)) {
+				$this->final_load = array ($this->final_load);
+			}
+			if (is_array($this->final_load)) {
+				foreach ($this->final_load as $item) {
+					if (is_callable($item)) {
+						call_user_func($item);
+					}
+				}
 			}
 		}
 	}
@@ -268,10 +275,14 @@ abstract class module_loader
 			foreach ($array as $item) {
 				if (count($item) > 0) {
 					if ($type == 1) {
-						Event\Handler::add_event($item[0], $item[1], $item[2], $item[3], $item[4], $item[5]);
+						//           0         1      2       3       4                  5                       6
+						//add_event ($module, $name, $class, $func, $instance = NULL, $isFuncStatic = FALSE, $canInitialOver = NULL)
+						Event\Handler::add_event($item[0], $item[1], $item[2], $item[3], $item[4] ?? NULL,
+							$item[5] ?? FALSE, $item[6] ?? NULL);
 					}
 					if ($type == 2) {
-						Event\Handler::add_event_final($item[0], $item[1], $item[2], $item[3], $item[4], $item[5]);
+						Event\Handler::add_event_final($item[0], $item[1], $item[2], $item[3], $item[4] ?? NULL,
+							$item[5] ?? FALSE, $item[6] ?? NULL);
 					}
 				}
 			}
