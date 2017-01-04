@@ -80,12 +80,10 @@ class page
 		if ($site != FALSE) {
 			$template = template::get_instance();
 			$template->sub_title = $site['page_title'];
-			//$template->content = $site["page_content"];*/
 			$parser = new parser();
 			$template->content = $template->entity("cms_page", array (
 				"page_content" => $parser->parse($site["page_content"]),
 			), TRUE);
-			$template->entity("sidebar", array ());
 
 		}
 		else {

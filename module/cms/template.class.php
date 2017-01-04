@@ -133,8 +133,11 @@ class template
 				}
 			}
 		}
+	}
 
-
+	public static function add_sidebar() {
+		$template = template::get_instance();
+		$template->entity("sidebar", array ());
 	}
 
 	/**
