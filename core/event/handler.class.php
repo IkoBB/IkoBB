@@ -27,6 +27,7 @@ class Handler
 	private static $event = array ();
 	private static $eventFinal = array ();
 	private static $FinalAll = array ();
+	private static $trigger = array ();
 
 	private function __construct ()
 	{
@@ -58,7 +59,9 @@ class Handler
 
 	private static function trigger ($type, $name, $module_name = NULL, $args = NULL, $init_Args = NULL)
 	{
+
 		//Set the needed static array as $array
+		$trigger_type = $type;
 		switch ($type) {
 			case 'eventFinal':
 				$array = &self::$eventFinal;
@@ -68,80 +71,86 @@ class Handler
 			break;
 			case 'event_module':
 				$array = &self::$event;
+				$trigger_type = "event";
 			break;
 			default:
 				$array = &self::$event;
 			break;
 		}
-		//Default result value
-		$result = FALSE;
-		//$var will get the same like $args. The first Event_registered function will be able to use both
-		$var = $args;
-		//Normal if statement
-		//Is there no registered Event for the triggered Event it will return true
-		if (isset($array[ $name ]) && $array[ $name ] != NULL && is_array($array[ $name ])) {
-			$false_counter = 0;
-			foreach ($array[ $name ] as $value) {
-				//load Complete Module at start and all needed Data from the array
-				if ($type != 'event_module' || ($type == 'event_module' && $module_name == $value["module"])) {
-					$module = module::get($value["module"]);
-					if (!$module->is_load()) {
-						$module->load_complete();
-					}
-					$class = $value["class"];
-					$function = $value["function"];
-					//This statement will be used for registered Events with no static function to use
-					if (!isset($value["is_func_static"]) || $value["is_func_static"] == FALSE) {
-						//Create a ReflectionClass from the original one to get new Instance and to handle it better
-						$reflection = new \ReflectionClass($class);
-						//If there isset an instance and it's equal with the same class it will set it
-						if (isset($value["instance"]) && $value["instance"] != NULL && get_class($value["instance"]) == $reflection->getName()) {
-							$class = $value["instance"];
+		if (!isset(self::$trigger[ $trigger_type ][ $name ]) || self::$trigger[ $trigger_type ][ $name ] == FALSE) {
+			self::$trigger[ $trigger_type ][ $name ] = TRUE;
+			//Default result value
+			$result = FALSE;
+			//$var will get the same like $args. The first Event_registered function will be able to use both
+			$var = $args;
+			//Normal if statement
+			//Is there no registered Event for the triggered Event it will return true
+			if (isset($array[ $name ]) && $array[ $name ] != NULL && is_array($array[ $name ])) {
+				$false_counter = 0;
+				foreach ($array[ $name ] as $value) {
+					//load Complete Module at start and all needed Data from the array
+					if ($type != 'event_module' || ($type == 'event_module' && $module_name == $value["module"])) {
+						$module = module::get($value["module"]);
+						if (!$module->is_load()) {
+							$module->load_complete();
 						}
-						//If the Class can get over a special static function it will use them from the class. It will get as a return value from the function eval
-						elseif (isset($value["can_init_over"]) && $value["can_init_over"] != NULL) {
-							$class = eval("return " . $class . "::" . $value["can_init_over"] . "(" . $init_Args . ");");
+						$class = $value["class"];
+						$function = $value["function"];
+						//This statement will be used for registered Events with no static function to use
+						if (!isset($value["is_func_static"]) || $value["is_func_static"] == FALSE) {
+							//Create a ReflectionClass from the original one to get new Instance and to handle it better
+							$reflection = new \ReflectionClass($class);
+							//If there isset an instance and it's equal with the same class it will set it
+							if (isset($value["instance"]) && $value["instance"] != NULL && get_class($value["instance"]) == $reflection->getName()) {
+								$class = $value["instance"];
+							}
+							//If the Class can get over a special static function it will use them from the class. It will get as a return value from the function eval
+							elseif (isset($value["can_init_over"]) && $value["can_init_over"] != NULL) {
+								$class = eval("return " . $class . "::" . $value["can_init_over"] . "(" . $init_Args . ");");
+							}
+							//The simplest way is to create a new instance like $var = new class($init_args); with the reflectionclass
+							else {
+								$class = $reflection->newInstance($init_Args);
+							}
+							//Will call the function that will be used with the Event_name the original args and the edited or the previous bool statement
+							$var = $class->$function($name, $args, $var);
 						}
-						//The simplest way is to create a new instance like $var = new class($init_args); with the reflectionclass
+						//Will call the function over eval with the same parameter like in a normal class.
 						else {
-							$class = $reflection->newInstance($init_Args);
+							$var = eval("return " . $class . "::" . $function . "(" . var_export($name,
+									TRUE) . "," . var_export($args, TRUE) . ", " . var_export($var, TRUE) . ");");
 						}
-						//Will call the function that will be used with the Event_name the original args and the edited or the previous bool statement
-						$var = $class->$function($name, $args, $var);
-					}
-					//Will call the function over eval with the same parameter like in a normal class.
-					else {
-						$var = eval("return " . $class . "::" . $function . "(" . var_export($name,
-								TRUE) . "," . var_export($args, TRUE) . ", " . var_export($var, TRUE) . ");");
-					}
-					//If the returned $var is a bool statement it will be handled with the $false_counter
-					if ($type == "event" && $var === FALSE) {
-						$false_counter++;
+						//If the returned $var is a bool statement it will be handled with the $false_counter
+						if ($type == "event" && $var === FALSE) {
+							$false_counter++;
+						}
 					}
 				}
-			}
-			//Will set the $result as true if $false_counter is lower than 1 and $false_counter is not the same like the sum of the $array[$name] / Event
-			if (($type == "event" || $type == "event_module") && $false_counter != count($array[ $name ]) && $false_counter < 1) {
-				$result = TRUE;
-			}
-		}
-		else {
-			return TRUE;
-		}
-		//After all Done a normal Event get's a real return value but only if something was set
-		if ($type == "event" || $type == "event_module") {
-			if (count($array[ $name ]) > 0) {
-				if (isset($var) && !is_bool($var)) {
-					return $var;
-				}
-				else {
-					return $result;
+				//Will set the $result as true if $false_counter is lower than 1 and $false_counter is not the same like the sum of the $array[$name] / Event
+				if (($type == "event" || $type == "event_module") && $false_counter != count($array[ $name ]) && $false_counter < 1) {
+					$result = TRUE;
 				}
 			}
 			else {
+				self::$trigger[ $trigger_type ][ $name ] = FALSE;
+
 				return TRUE;
 			}
+			//After all Done a normal Event get's a real return value but only if something was set
+			if ($type == "event" || $type == "event_module") {
+				self::$trigger[ $trigger_type ][ $name ] = FALSE;
+				if (count($array[ $name ]) > 0) {
+					if (isset($var) && !is_bool($var)) {
+						return $var;
+					}
+					else {
+						return $result;
+					}
+				}
+			}
 		}
+
+		return TRUE;
 	}
 
 
