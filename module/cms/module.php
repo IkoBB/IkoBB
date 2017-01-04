@@ -11,11 +11,15 @@
  *
  */
 namespace iko\cms;
+use iko\Event\Handler;
+
 class template_loader extends \iko\module_loader
 {
 	public function __construct($modul)
 	{
 		parent::__construct($modul);
+
+		Handler::add_event('cms', 'iko.cms.register.module', '\iko\cms\cms', 'init_page');
 	}
 
 	protected function pre_check_PDO_Tables()
