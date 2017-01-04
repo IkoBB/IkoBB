@@ -20,7 +20,6 @@ $files = array(
 	"abstract.class.php",
 	"class.php",
 	"loader_file.class.php",
-	"value.class.php",
 	"loader_pdo.class.php"
 );
 foreach ($files as $item) {
