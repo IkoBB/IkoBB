@@ -136,8 +136,14 @@ class template
 	}
 
 	public static function add_sidebar() {
-		$template = template::get_instance();
+		$template = self::get_instance();
 		$template->entity("sidebar", array ());
+		$template->width_content = '9';
+	}
+
+	public static function no_sidebar() {
+		$template = self::get_instance();
+		$template->width_content = '12';
 	}
 
 	/**

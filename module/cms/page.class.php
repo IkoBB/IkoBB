@@ -68,7 +68,7 @@ class page
 	private function load_content ($site_id)
 	{
 		$template = template::get_instance();
-		if($site_id != 0) {
+		if ($site_id != 0) {
 			try {
 				$statement = Core::$PDO->prepare("SELECT * FROM " . self::table . " WHERE " . self::column_id . " = :id");
 				$statement->bindParam(':id', $site_id);
@@ -80,17 +80,17 @@ class page
 			}
 
 			if ($site != FALSE) {
+				$site['page_sidebar'] == "1" ? template::add_sidebar() : template::no_sidebar();
 				$template->sub_title = $site['page_title'];
 				$parser = new parser();
 				$template->content = $template->entity("cms_page", array (
-					"page_content" => $parser->parse($site["page_content"]),
-				), TRUE);
-
+					"page_content" => $parser->parse($site["page_content"]),), TRUE);
 			}
 			else {
 				$this->load_content(0);
 			}
-		} else {
+		}
+		else {
 			$template->sub_title = 'Page not found';
 			$template->content = $template->entity("404_error", array (), TRUE);
 		}

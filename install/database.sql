@@ -135,6 +135,7 @@ CREATE TABLE `iko_pages` (
 	`user_id`     INT(11)      NOT NULL,
 	`page_time`    TIMESTAMP    NOT NULL,
 	`page_title`   VARCHAR(255) NOT NULL,
+	`page_sidebar` TINYINT                DEFAULT 1,
 	PRIMARY KEY (`page_id`),
 	KEY (`user_id`)
 );

@@ -1,30 +1,36 @@
 <!-- start:TEST -->
-<div class="panel panel-danger">
-	<div class="panel-heading">
-		<h3 class="panel-title">%% sub_title %%</h3>
-	</div>
-	<form action="index.php?page=debug" method="post">
-		<textarea style="height: 200px; width: 100%" name="text">{{ @$_POST['text'] }}</textarea><br> <b><u>Result:</u></b><br>
-		%% output %%<br>
-		<div style="border: dashed black 1px;"><h1>Code Output:</h1>
-			%% code_output %%
+<div class="col-md-%% width_content %%" >
+	<div class="panel panel-danger">
+		<div class="panel-heading">
+			<h3 class="panel-title">%% sub_title %%</h3>
 		</div>
-		<input class="btn btn-block btn-danger" type="submit">
-	</form>
+		<form action="index.php?page=debug" method="post">
+			<textarea style="height: 200px; width: 100%" name="text">{{ @$_POST['text'] }}</textarea><br> <b><u>Result:</u></b><br>
+			%% output %%<br>
+			<div style="border: dashed black 1px;"><h1>Code Output:</h1>
+				%% code_output %%
+			</div>
+			<input class="btn btn-block btn-danger" type="submit">
+		</form>
+	</div>
 </div>
+§§ sidebar §§
 <!-- end:TEST -->
 
 <!-- start:cms_page -->
-<div class="panel panel-danger">
-	<div class="panel-heading">
-		<h3 class="panel-title">%% sub_title %%</h3>
-	</div>
-	<div class="content">
-		<div style="margin: 5px 10px;">
-			%% page_content %%
+<div class="col-md-%% width_content %%" >
+	<div class="panel panel-danger">
+		<div class="panel-heading">
+			<h3 class="panel-title">%% sub_title %%</h3>
+		</div>
+		<div class="content">
+			<div style="margin: 5px 10px;">
+				%% page_content %%
+			</div>
 		</div>
 	</div>
 </div>
+§§ sidebar §§
 <!-- end:cms_page -->
 <!-- start:404_error -->
 <div style="text-align: center; padding-top: 50px;">
@@ -34,116 +40,117 @@
 </div>
 <!-- end:404_error -->
 <!-- start:forum-list -->
-<div class="panel panel-danger">
-	<div class="panel-heading">
-		<h3 class="panel-title">Category Name</h3>
+<div class="col-md-%% width_content %%" >
+	<div class="panel panel-danger">
+		<div class="panel-heading">
+			<h3 class="panel-title">Category Name</h3>
+		</div>
+		<table class="table table-hover">
+			<thead>
+			<tr>
+				<th style="width: 1%;"></th>
+				<th class="col-md-6">Forum</th>
+				<th class="col-md-1 text-center">Topics</th>
+				<th class="col-md-1 text-center">Posts</th>
+				<th class="col-md-4">Last Post</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr>
+				<td style="width: 1%;"><i class="material-icons" style="font-size: 30px;">comment</i></td>
+				<td class="col-md-6"><a href="#">Announcements</a> <br />
+					<small>Community announcements.</small>
+				</td>
+				<td class="col-md-1 text-center">3</td>
+				<td class="col-md-1 text-center">11</td>
+				<td class="col-md-4">
+					<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
+					     class="img-thumbnail pull-left hidden-xs" style="width:42px;height:42px;margin-right:5px;"> <a
+						href="#">Test Topic</a><br>
+					<small><a href="#">%% username %%</a>, <span title="9. October 2016">Like, tomorrow !?</span>
+					</small>
+				</td>
+			</tr>
+			<tr>
+				<td><i class="material-icons" style="font-size: 30px;">comment</i></td>
+				<td class="col-md-6"><a href="#">News </a><br />
+					<small>Community news.</small>
+				</td>
+				<td class="col-md-1 text-center">1</td>
+				<td class="col-md-1 text-center">5</td>
+				<td class="col-md-4">
+					<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
+					     class="img-thumbnail pull-left hidden-xs" style="width:42px;height:42px;margin-right:5px;"> <a
+						href="#">Test Topic</a><br>
+					<small><a href="#">%% username %%</a>, <span title="9. October 2016">A moment ago</span></small>
+				</td>
+			</tr>
+			<tr>
+				<td><i class="material-icons" style="font-size: 30px;">comment</i></td>
+				<td class="col-md-6"><a href="http://">Updates</a> <br />
+					<small>Community updates.</small>
+				</td>
+				<td class="col-md-1 text-center">2</td>
+				<td class="col-md-1 text-center">15</td>
+				<td class="col-md-4">
+					<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
+					     class="img-thumbnail pull-left hidden-xs" style="width:42px;height:42px;margin-right:5px;"> <a
+						href="#">Test Topic</a><br>
+					<small><a href="#">%% username %%</a>, <span title="9. October 2016">1 minute ago</span></small>
+				</td>
+			</tr>
+			</tbody>
+		</table>
 	</div>
-
-	<table class="table table-hover">
-		<thead>
-		<tr>
-			<th style="width: 1%;"></th>
-			<th class="col-md-6">Forum</th>
-			<th class="col-md-1 text-center">Topics</th>
-			<th class="col-md-1 text-center">Posts</th>
-			<th class="col-md-4">Last Post</th>
-		</tr>
-		</thead>
-		<tbody>
-		<tr>
-			<td style="width: 1%;"><i class="material-icons" style="font-size: 30px;">comment</i></td>
-			<td class="col-md-6"><a href="#">Announcements</a> <br />
-				<small>Community announcements.</small>
-			</td>
-			<td class="col-md-1 text-center">3</td>
-			<td class="col-md-1 text-center">11</td>
-			<td class="col-md-4">
-				<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
-				     class="img-thumbnail pull-left hidden-xs" style="width:42px;height:42px;margin-right:5px;"> <a
-					href="#">Test Topic</a><br>
-				<small><a href="#">%% username %%</a>, <span title="9. October 2016">Like, tomorrow !?</span>
-				</small>
-
-			</td>
-		</tr>
-		<tr>
-			<td><i class="material-icons" style="font-size: 30px;">comment</i></td>
-			<td class="col-md-6"><a href="#">News </a><br />
-				<small>Community news.</small>
-			</td>
-			<td class="col-md-1 text-center">1</td>
-			<td class="col-md-1 text-center">5</td>
-			<td class="col-md-4">
-				<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
-				     class="img-thumbnail pull-left hidden-xs" style="width:42px;height:42px;margin-right:5px;"> <a
-					href="#">Test Topic</a><br>
-				<small><a href="#">%% username %%</a>, <span title="9. October 2016">A moment ago</span></small>
-
-			</td>
-		</tr>
-		<tr>
-			<td><i class="material-icons" style="font-size: 30px;">comment</i></td>
-			<td class="col-md-6"><a href="http://">Updates</a> <br />
-				<small>Community updates.</small>
-			</td>
-			<td class="col-md-1 text-center">2</td>
-			<td class="col-md-1 text-center">15</td>
-			<td class="col-md-4">
-				<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
-				     class="img-thumbnail pull-left hidden-xs" style="width:42px;height:42px;margin-right:5px;"> <a
-					href="#">Test Topic</a><br>
-				<small><a href="#">%% username %%</a>, <span title="9. October 2016">1 minute ago</span></small>
-
-			</td>
-		</tr>
-		</tbody>
-	</table>
 </div>
+§§ sidebar §§
 <!-- end:forum-list -->
 
 <!-- start:sidebar -->
-<div class="card card-signup" style=" border-top: 20px solid #DB3431; ">
-	<form class="form" method="" action="">
-		<h3 class="text-divider">Sign Up</h3>
-		<div class="content">
+<div class="col-md-3 pull-right">
+	<div class="card card-signup" style=" border-top: 20px solid #DB3431; ">
+		<form class="form" method="" action="">
+			<h3 class="text-divider">Sign Up</h3>
+			<div class="content">
 
-			<div class="input-group">
-                <span class="input-group-addon">
-											<i class="material-icons">face</i>
-										</span>
-				<div class="form-group label-floating">
-					<label class="control-label">First Name...</label> <input type="text" class="form-control"><span
-						class="material-input"></span></div>
-			</div>
+				<div class="input-group">
+	                <span class="input-group-addon">
+												<i class="material-icons">face</i>
+											</span>
+					<div class="form-group label-floating">
+						<label class="control-label">First Name...</label> <input type="text" class="form-control"><span
+							class="material-input"></span></div>
+				</div>
 
-			<div class="input-group">
-                <span class="input-group-addon">
-											<i class="material-icons">email</i>
-										</span>
-				<div class="form-group label-floating">
-					<label class="control-label">E-mail...</label> <input type="text" class="form-control"><span
-						class="material-input"></span></div>
-			</div>
+				<div class="input-group">
+	                <span class="input-group-addon">
+												<i class="material-icons">email</i>
+											</span>
+					<div class="form-group label-floating">
+						<label class="control-label">E-mail...</label> <input type="text" class="form-control"><span
+							class="material-input"></span></div>
+				</div>
 
-			<div class="input-group">
-                <span class="input-group-addon">
-											<i class="material-icons">lock_outline</i>
-										</span>
-				<div class="form-group label-floating">
-					<label class="control-label">Password...</label> <input type="password" class="form-control"><span
-						class="material-input"></span></div>
+				<div class="input-group">
+	                <span class="input-group-addon">
+												<i class="material-icons">lock_outline</i>
+											</span>
+					<div class="form-group label-floating">
+						<label class="control-label">Password...</label> <input type="password" class="form-control"><span
+							class="material-input"></span></div>
+				</div>
 			</div>
-		</div>
-		<p class="text-center">Or use the following</p>
-		<div class="social-line">
-			<a href="#pablo" class="btn btn-simple btn-just-icon"> <i class="fa fa-facebook-square"></i> </a> <a
-				href="#pablo" class="btn btn-simple btn-just-icon"> <i class="fa fa-twitter"></i> </a> <a href="#pablo"
-			                                                                                              class="btn btn-simple btn-just-icon">
-			<i class="fa fa-google-plus"></i> </a>
-		</div>
-		<div class="footer text-center">
-			<a href="#pablo" class="btn btn-simple btn-danger btn-lg">Get Started</a>
-		</div>
-	</form>
+			<p class="text-center">Or use the following</p>
+			<div class="social-line">
+				<a href="#pablo" class="btn btn-simple btn-just-icon"> <i class="fa fa-facebook-square"></i> </a> <a
+					href="#pablo" class="btn btn-simple btn-just-icon"> <i class="fa fa-twitter"></i> </a> <a href="#pablo"
+				                                                                                              class="btn btn-simple btn-just-icon">
+				<i class="fa fa-google-plus"></i> </a>
+			</div>
+			<div class="footer text-center">
+				<a href="#pablo" class="btn btn-simple btn-danger btn-lg">Get Started</a>
+			</div>
+		</form>
+	</div>
 </div>
 <!-- end:sidebar -->
