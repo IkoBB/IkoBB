@@ -63,10 +63,10 @@ class Handler
 		//Set the needed static array as $array
 		$trigger_type = $type;
 		switch ($type) {
-			case 'eventFinal':
+			case 'event_Final':
 				$array = &self::$eventFinal;
 			break;
-			case 'FinalAll':
+			case 'final_all':
 				$array = &self::$FinalAll;
 			break;
 			case 'event_module':
@@ -154,12 +154,12 @@ class Handler
 	}
 
 
-	public static function event_Final ($name, $args = NULL, $init_Args = NULL)
+	public static function event_final ($name, $args = NULL, $init_Args = NULL)
 	{
 		self::trigger(__FUNCTION__, $name, NULL, $args, $init_Args);
 	}
 
-	public static function FinalAll ()
+	public static function final_all ()
 	{
 		$args = NULL;
 		$init_Args = NULL;
@@ -242,6 +242,52 @@ class Handler
 		}
 	}
 
+	public static function isset_event ($name)
+	{
+		return self::isset_trigger(__FUNCTION__, $name);
+	}
+
+	public static function isset_event_module ($name, $module)
+	{
+		if ($module instanceof module) {
+			$module = $module->get_name();
+		}
+
+		return self::isset_trigger(__FUNCTION__, $name, $module);
+	}
+
+	private static function isset_trigger ($type, $name, $module_name = NULL)
+	{
+		switch ($type) {
+			case 'isset_event_final':
+				$array = &self::$eventFinal;
+			break;
+			case 'isset_final_fll':
+				$array = &self::$FinalAll;
+			break;
+			case 'isset_event_module':
+				$array = &self::$event;
+			break;
+			default:
+				$array = &self::$event;
+			break;
+		}
+		if (isset($array[ $name ]) && $array[ $name ] != NULL && is_array($array[ $name ])) {
+			if ($type != "isset_event_module") {
+				return TRUE;
+			}
+			else if ($type == 'isset_event_module') {
+				foreach ($array[ $name ] as $value) {
+					if ($module_name == $value["module"]) {
+						return TRUE;
+						break;
+					}
+				}
+			}
+
+			return FALSE;
+		}
+	}
 	/*
 	 * array(
 	 * "module" => "MODULENAME",        0
@@ -253,10 +299,6 @@ class Handler
 	 * )
 	 */
 
-	public static function init ()
-	{
-
-	}
 }
 
 ?>
