@@ -85,6 +85,7 @@ class page
 				$parser = new parser();
 				$template->content = $template->entity("cms_page", array (
 					"page_content" => $parser->parse($site["page_content"]),), TRUE);
+				template::add_breadcrumb($site['page_title'],"?module=cms&id=".$site_id);
 			}
 			else {
 				$this->load_content(0);
@@ -93,6 +94,7 @@ class page
 		else {
 			$template->sub_title = 'Page not found';
 			$template->content = $template->entity("404_error", array (), TRUE);
+			template::add_breadcrumb("Error 404","#");
 		}
 
 	}

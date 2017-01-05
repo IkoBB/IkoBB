@@ -146,6 +146,14 @@ class template
 		$template->width_content = '12';
 	}
 
+	public static function add_breadcrumb($name, $link) {
+		$template = self::get_instance();
+		$template->breadcrumbs .= $template->entity("breadcrumb", array(
+			"breadcrumb_name" => $name,
+			"breadcrumb_link" => $link
+		), TRUE);
+	}
+
 	/**
 	 * @var int
 	 */
