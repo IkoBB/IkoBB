@@ -43,21 +43,21 @@ class Handler
 		echo "<br>";
 	}
 
-	public static function event ($name, $args = NULL, $init_Args = NULL)
+	public static function event ($name, $args = NULL, $init_Args = NULL, $callback_value = TRUE)
 	{
-		return self::trigger(__FUNCTION__, $name, NULL, $args, $init_Args);
+		return self::trigger(__FUNCTION__, $name, NULL, $args, $init_Args, $callback_value);
 	}
 
-	public static function event_module ($name, $module, $args = NULL, $init_Args = NULL)
+	public static function event_module ($name, $module, $args = NULL, $init_Args = NULL, $callback_value = TRUE)
 	{
 		if ($module instanceof module) {
 			$module = $module->get_name();
 		}
 
-		return self::trigger(__FUNCTION__, $name, $module, $args, $init_Args);
+		return self::trigger(__FUNCTION__, $name, $module, $args, $init_Args, $callback_value);
 	}
 
-	private static function trigger ($type, $name, $module_name = NULL, $args = NULL, $init_Args = NULL)
+	private static function trigger ($type, $name, $module_name = NULL, $args = NULL, $init_Args = NULL, $callback_value = TRUE)
 	{
 
 		//Set the needed static array as $array
@@ -150,7 +150,7 @@ class Handler
 			}
 		}
 
-		return TRUE;
+		return $callback_value;
 	}
 
 
