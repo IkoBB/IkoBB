@@ -65,8 +65,9 @@ class page
 	 *
 	 * @throws \iko\Exception
 	 */
-	private function load_content ($site_id)
+	private function load_content (int $site_id = 0)
 	{
+
 		$template = template::get_instance();
 		if ($site_id != 0) {
 			try {
@@ -88,7 +89,7 @@ class page
 				template::add_breadcrumb($site['page_title'],"?module=cms&id=".$site_id);
 			}
 			else {
-				$this->load_content(0);
+				$this->load_content();
 			}
 		}
 		else {
@@ -116,7 +117,7 @@ class page
 			$this->load_content((int)$args['id']);
 		}
 		else {
-			$this->load_content(0);
+			$this->load_content();
 		}
 		echo $template;
 	}
