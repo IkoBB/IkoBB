@@ -55,7 +55,12 @@ class config_loader_pdo extends config_loader
 		$statement = Core::$PDO->query($query);
 		$fetch = $statement->fetchAll(PDO::FETCH_ASSOC);
 		foreach ($fetch as $item) {
-			$config[ $item["config_name"] ] = unserialize($item["config_value"]);
+			try {
+				$config[ $item["config_name"] ] = unserialize($item["config_value"]);
+			}
+			catch (\Exception $ex) {
+				$config[ $item["config_name"] ] = $item["config_value"];
+			}
 		}
 
 		return $config;
@@ -65,9 +70,10 @@ class config_loader_pdo extends config_loader
 	{
 		if (!isset($this->get_config_class()->{$name})) {
 			if ($comment != "") {
-				$query = "INSERT INTO " . self::table() . " (config_name, config_value, config_comment, module_name) VALUES ('" . $name . "','" . serialize($value) . "','" . $comment . "','" . $this->module . "')";
-				$statement = Core::$PDO->query($query);
-				if ($statement->rowCount() == 1) {
+				$value = serialize($value);
+				$query = "INSERT INTO " . self::table() . " (config_name, config_value, config_comment, module_name) VALUES ('" . $name . "','" . $value . "','" . $comment . "','" . $this->module . "')";
+				$statement = Core::$PDO->exec($query);
+				if ($statement == 1) {
 					return TRUE;
 				}
 				else {
@@ -86,7 +92,10 @@ class config_loader_pdo extends config_loader
 	public function set ($name, $value, $comment = "")
 	{
 		$query = "UPDATE " . self::table() . " Set config_value = '" . serialize($value) . "'";
-		$query .= "WHERE config_name = '" . $name . "'";
+		if ($comment != "") {
+			$query .= ", config_comment = '" . $comment . "'";
+		}
+		$query .= " WHERE config_name = '" . $name . "'";
 		$statement = Core::$PDO->query($query);
 		if ($statement->rowCount() == 1) {
 			return TRUE;
