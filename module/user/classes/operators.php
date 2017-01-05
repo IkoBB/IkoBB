@@ -13,10 +13,10 @@ abstract class operators extends cache_int
 {
 	protected $permission_class = NULL;
 
-	public function get_permission_class ()
+	public function get_permission_class (): Permissions
 	{
 		if ($this->permission_class == NULL) {
-			$this->permission_class = Permissions::get($this)[0];
+			$this->permission_class = Permissions::get($this);
 		}
 		return $this->permission_class;
 	}
@@ -24,5 +24,15 @@ abstract class operators extends cache_int
 	public function has_permission ($permission, $args = NULL, $pre = NULL)
 	{
 		return $this->get_permission_class()->has_permission($permission);
+	}
+
+	public function add_permission ($permission)
+	{
+		return $this->get_permission_class()->add_permission($permission);
+	}
+
+	public function remove_permission ($permission)
+	{
+		return $this->get_permission_class()->remove_permission($permission);
 	}
 }

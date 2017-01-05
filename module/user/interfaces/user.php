@@ -20,10 +20,6 @@ namespace iko\user;
 
 interface iUser
 {
-	/**
-	 * @return boolean
-	 */
-	public function is_own (): bool;
 
 	/**
 	 * @return integer

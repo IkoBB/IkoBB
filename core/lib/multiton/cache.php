@@ -20,6 +20,7 @@ namespace iko\lib\multiton;
 
 use iko\Core;
 use iko\Exception;
+use iko\PDO;
 
 class cache
 {
@@ -94,8 +95,13 @@ class cache
 			$string = " WHERE";
 			foreach ($args as $key => $var) {
 				if (is_array($var)) {
+					$j = count($var);
 					foreach ($var as $operator => $value) {
 						$string .= ' ' . $key . " " . $operator . " '" . $value . "'";
+						if ($j > 1) {
+							$string .= " " . $equal;
+						}
+						$j--;
 					}
 				}
 				else {
@@ -198,5 +204,25 @@ class cache
 		else {
 			return TRUE;
 		}
+	}
+
+	public static function get_all ()
+	{
+		$class = get_called_class();
+		$reflection = new \ReflectionClass($class);
+		if ($reflection->getConstant("id") != FALSE) {
+			$table_id = $reflection->getConstant("id");
+		}
+		else if ($reflection->getConstant("name") != FALSE) {
+			$table_id = $reflection->getConstant("name");
+		}
+		$statement = Core::$PDO->query("SELECT " . $table_id . " FROM " . $class::table);
+		$fetchAll = $statement->fetchAll(PDO::FETCH_ASSOC);
+		$array = array ();
+		foreach ($fetchAll as $item) {
+			array_push($array, $class::get($item[ $table_id ]));
+		}
+
+		return $array;
 	}
 }

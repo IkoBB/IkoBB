@@ -35,7 +35,7 @@ class forum_module_loader extends \iko\module_loader // TODO: Create Module
 
 	public function pre_load ()
 	{
-		$files = array ();
+		$files = array ("*");
 
 		return parent::load($files);
 	}

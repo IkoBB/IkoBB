@@ -53,13 +53,9 @@ class log
 			if ($statement !== FALSE) {
 				return TRUE;
 			}
-			else {
-				return FALSE;
-			}
 		}
-		else {
-			return FALSE;
-		}
+
+		return FALSE;
 	}
 
 	protected static $cache = array ();

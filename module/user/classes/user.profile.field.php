@@ -20,6 +20,7 @@
 namespace iko\user\profile;
 
 use iko\Core;
+use iko\Event\Handler;
 use iko\lib\multiton\cache_int;
 use iko\PDO;
 use iko\user\User;
@@ -33,15 +34,14 @@ class Field extends cache_int
 	public static $cache = array ();
 	public static $cache_exist = array ();
 
-	public static function create ()
+	public static function create (): bool
 	{
-		$user = User::get_session();
-		if ($user->has_permission("iko.user.profile.fields.create")) {
+		if (Handler::event("iko.user.profile.fields.create", NULL, User::get_session()->get_id(), FALSE)) {
+			$user = User::get_session();
 
 		}
-		else {
-			return FALSE;
-		}
+
+		return FALSE;
 	}
 
 	private $id;
@@ -49,7 +49,6 @@ class Field extends cache_int
 	private $options;
 	private $display;
 	private $owner;
-	private $create = FALSE;
 
 
 	protected function __construct (int $id)
@@ -80,6 +79,18 @@ class Field extends cache_int
 		}
 		else {
 			return NULL;
+		}
+	}
+
+	/**
+	 * @param $name
+	 * @param $values
+	 */
+	public function __set ($name, $values)
+	{
+		$func = "set_" . $name;
+		if (is_callable(get_called_class(), $func)) {
+			$this->{$func}($values);
 		}
 	}
 
@@ -135,7 +146,9 @@ class Field extends cache_int
 	public function set_name (string $value): bool
 	{
 		$user = User::get_session();
-		if ($user->has_permission("iko.user.profile.fields.set.name") || $this->get_owner()->get_id() == $user->get_id()) {
+		if (Handler::event("iko.user.profile.fields.set.name", User::get_session(),
+				$this) || $this->get_owner()->get_id() == $user->get_id()
+		) {
 			if ($value != $this->get_name()) {
 				$statement = Core::$PDO->prepare("UPDATE " . self::table . " Set " . self::name . " = :value WHERE " . self::id . " = " . $this->get_id());
 				$statement->bindParam(":value", $value);

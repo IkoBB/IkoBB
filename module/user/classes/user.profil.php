@@ -46,9 +46,29 @@ class User_profile implements iUser_profile
 		return $this->fields[ $name ] ?? NULL;
 	}
 
+	public function __get ($name)
+	{
+		return $this->get($name);
+	}
+
+	public function __set ($name, $value)
+	{
+		$this->set($name, $value);
+	}
+
 	public function set (string $name, $value): bool
 	{
 		return $this->get($name)->set($value);
+	}
+
+	public function __isset ($name)
+	{
+		if (isset($this->fields[ $name ]) && $this->fields[ $name ] !== NULL) {
+			return TRUE;
+		}
+		else {
+			return FALSE;
+		}
 	}
 
 	public function create (Content $item): bool

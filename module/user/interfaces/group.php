@@ -22,11 +22,11 @@ interface iGroup
 {
 	public function get_id ();
 
-	public function get_Rang ();
+	public function get_rang ();
 
-	public function set_Rang ($group_rang);
+	public function set_rang ($group_rang);
 
-	public function get_Parents ();
+	public function get_parents ();
 
-	public function get_Style ();
+	public function get_style ();
 }

@@ -25,6 +25,7 @@ use iko\user\Permissions;
 
 class Group extends Permissions
 {
+	const id = groups::id;
 	const permissions = Permissions::group_permissions;
 	const assignment = Permissions::group_assignment;
 
@@ -42,8 +43,7 @@ class Group extends Permissions
 			$id = intval($class);
 		}
 		if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
-			$class = str_replace(__NAMESPACE__ . "/", "", __CLASS__);
-			self::$cache[ $id ] = new $class($id);
+			self::$cache[ $id ] = new Group($id);
 			return self::$cache[ $id ];
 		}
 		else {
@@ -75,17 +75,17 @@ class Group extends Permissions
 
 	protected function load_permission ()
 	{
-		$sql = "SELECT * FROM " . self::permissions . " WHERE usergroup_id = " . $this->get_class()->get_Id();
+		$sql = "SELECT * FROM " . self::permissions . " WHERE " . groups::id . " = " . $this->get_class()->get_Id();
 		$statement = Core::$PDO->query($sql);
 		if ($statement !== FALSE) {
 			foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $fetch) {
 				$this->add_permission_value($fetch["permission_name"]);
 			}
 		}
-		$parents = $this->get_class()->get_Parents();
+		$parents = $this->get_class()->get_parents_all();
 		foreach ($parents as $item) {
 			$perm = self::get($item);
-			$permissions = $perm->get_Permissions();
+			$permissions = $perm->get_permissions();
 			foreach ($permissions as $value) {
 				if ($this->add_permission_value($value)) {
 					if (array_search($value, $this->group_parent_perm, TRUE) === FALSE) {
@@ -96,13 +96,8 @@ class Group extends Permissions
 		}
 	}
 
-	public function get_class ()
+	public function get_class (): groups
 	{
 		return $this->group_class;
-	}
-
-	public function add_permission ($permission)
-	{
-		// TODO: Implement add_permission() method.
 	}
 }

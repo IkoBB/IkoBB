@@ -18,6 +18,9 @@
  */
 namespace iko\user;
 
+use iko\Core;
+use iko\Event\Handler;
+use iko\log;
 use Iko\user\permissions\User as users;
 use Iko\user\permissions\Group as groups;
 use Iko\user\permissions\Value as Value;
@@ -35,6 +38,23 @@ abstract class Permissions
 
 	public static function get ($class)
 	{
+		if ($class instanceof User) {
+			return self::get_user($class);
+		}
+		else {
+			if ($class instanceof Group) {
+				return self::get_group($class);
+			}
+			else {
+				if (is_int($class)) {
+					throw new Exception("Wieso Null");
+				}
+			}
+		}
+	}
+
+	public static function gets ($class)
+	{
 		$array = array ();
 		if (!is_array($class)) {
 
@@ -42,26 +62,16 @@ abstract class Permissions
 		}
 		if (is_array($class)) {
 			foreach ($class as $value) {
-				if ($value instanceof User) {
-					array_push($array, self::get_user($value));
-				}
-				else {
-					if ($value instanceof Group) {
-						array_push($array, self::get_group($value));
-					}
-					else {
-						if (is_int($class)) {
-							throw new Exception("Wieso Null");
-						}
-					}
-				}
+				array_push($array, self::get($value));
 			}
 		}
 		if (count($array)) {
 			return $array;
 		}
+
 		return array ();
 	}
+
 
 	public static function get_user ($class)
 	{
@@ -71,6 +81,7 @@ abstract class Permissions
 	public static function get_group ($class)
 	{
 		$group = groups::get($class);
+
 		return $group;
 	}
 
@@ -96,7 +107,7 @@ abstract class Permissions
 	protected $permissions = array ();
 
 	/**
-	 * @param \Iko\Permissions\Value $value
+	 * @param mixed
 	 *
 	 * @return bool
 	 */
@@ -110,6 +121,27 @@ abstract class Permissions
 				array_push($this->permissions, $value);
 
 				return TRUE;
+			}
+			else {
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
+
+	protected function remove_permission_value ($value)
+	{
+		if (!$value instanceof Value && is_string($value)) {
+			$value = Value::get($value);
+		}
+		if ($value instanceof Value) {
+			if (array_search($value, $this->permissions, TRUE) !== FALSE) {
+				$key = array_search($value, $this->permissions, TRUE);
+				unset($this->permissions[ $key ]);
+				if (!isset($this->permissions[ $key ])) {
+					return TRUE;
+				}
 			}
 			else {
 				return TRUE;
@@ -169,6 +201,7 @@ abstract class Permissions
 			*
 
 		 */
+
 		return $result;
 	}
 
@@ -180,12 +213,97 @@ abstract class Permissions
 	/**
 	 * @return array //Contains Class Value.
 	 */
-	public function get_Permissions ()
+	public function get_permissions ()
 	{
 		return (array)$this->permissions;
 	}
 
-	abstract public function add_permission ($permission);
+	/**
+	 * @param $permission
+	 * @param $func
+	 *
+	 * @return bool
+	 *
+	 * @permission iko.user.permissions.add
+	 * @permission iko.user.permissions.remove
+	 *              User need $permission itself to remove or add it to someone/some group
+	 */
+	private function change_permission ($permission, $func)
+	{
+		$func = str_replace("_permission", "", $func);
+		if ($this instanceof users) {
+			$handler_value = "iko.user.permissions.user.";
+		}
+		else if ($this instanceof groups) {
+			$handler_value = "iko.user.permissions.group.";
+		}
+		$handler_value .= $func;
+		if (Handler::event($handler_value, $this->get_class()->get_id(),
+				User::get_session()->get_id()) || Handler::event("iko.user.permissions." . $func,
+				$this->get_class()->get_id(), users::get_session()->get_id())
+		) {
+			if (!$permission instanceof Value) {
+				$permission = Value::get($permission);
+			}
+			if ($permission instanceof Value) {
+				if (Handler::event($permission->get_name(), $this->get_class()->get_id(),
+					User::get_session()->get_id())
+				) {
+
+					if (($func == "add" && !$this->get_class()->has_permission($permission)) || ($func == "remove" && $this->get_class()->has_permission($permission))) {
+						$class = get_called_class();
+						if ($func == "add") {
+							$sql = "INSERT INTO " . $class::permissions . " (" . $class::id . "," . Permissions::name . ") VALUE('" . $this->get_class()->get_id() . "', '" . $permission->get_name() . "')";
+						}
+						else if ($func == "remove") {
+							$sql = "DELETE FROM " . $class::permissions . " WHERE " . $class::id . " = " . $this->get_class()->get_id() . " AND " . Permissions::name . " = '" . $permission->get_name() . "'";
+						}
+						$statement = Core::$PDO->exec($sql);
+						if ($statement > 0) {
+							if ($this->{$func . "_permission_value"}($permission)) {
+								Log::add("user", "info", "200",
+									"User(" . User::get_session()->get_id() . ") " . $func . " Permission \"" . $permission->get_name() . "\" to " . get_class($this->get_class()) . "(" . $this->get_class()->get_id() . ")",
+									array (
+										"permission_name"             => $permission->get_name(),
+										get_class($this->get_class()) => $this->get_class()->get_id(),
+										"Session User"                => User::get_session()->get_id()));
+
+								return TRUE;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return FALSE;
+	}
+
+	/**
+	 * @param $permission
+	 *
+	 * @return bool
+	 *
+	 * @see \iko\user\Permissions::change_permission();
+	 * @see \iko\user\Permissions::change_permission();
+	 */
+	public function add_permission ($permission)
+	{
+		return $this->change_permission($permission, __FUNCTION__);
+	}
+
+	/**
+	 * @param $permission
+	 *
+	 * @return bool
+	 *
+	 * @see \iko\user\Permissions::change_permission();
+	 * @see \iko\user\Permissions::change_permission();
+	 */
+	public function remove_permission ($permission)
+	{
+		return $this->change_permission($permission, __FUNCTION__);
+	}
 
 	abstract public function get_class ();
 

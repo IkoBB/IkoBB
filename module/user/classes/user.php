@@ -14,6 +14,7 @@ namespace iko\user;
 
 use iko\Core;
 use iko\language\languageConfigs;
+use iko\module;
 use iko\PDO;
 use iko\Event\Handler;
 use iko\log;
@@ -23,6 +24,7 @@ use function iko\define_session;
 use function iko\get_hash;
 use function iko\read_session;
 use iko\user\profile\Avatar;
+use iko\user\profile\Field;
 
 class User extends operators implements iUser //TODO: Complete
 {
@@ -32,156 +34,6 @@ class User extends operators implements iUser //TODO: Complete
 	const mail = "user_email";
 	public static $cache = array ();
 	public static $cache_exist = array ();
-
-	/*public static function get ($ids = 0, $reload = FALSE)
-	{
-		$class = get_called_class();
-		if (is_string($ids) && !is_numeric($ids)) {
-			return self::search(array (self::name => $ids));
-		}
-		if (is_numeric($ids)) {
-			$ids = intval($ids);
-		}
-		if (is_array($ids) || is_int($ids)) {
-			if (is_array($ids)) {
-				self::exist($ids);
-			}
-			if (is_int($ids)) {
-				$ids = array ($ids);
-			}
-			$user_array = array ();
-			foreach ($ids as $id) {
-				if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
-					if (self::exist($id, $reload)) {
-						self::$cache[ $id ] = new $class($id);
-						array_push($user_array, self::$cache[ $id ]);
-					}
-				}
-				else {
-					array_push($user_array, self::$cache[ $id ]);
-				}
-			}
-			if (count($user_array) == 0) {
-				return FALSE;
-			}
-
-			return $user_array;
-		}
-
-		return NULL;
-	}
-
-	public static function search ($args = array (), $or = FALSE, $suffix = "") // TODO: Complete Function for Searching after single and Mutliple user
-	{
-		$class = get_called_class();
-		$sql = "SELECT " . self::id . " FROM " . $class::table . "";
-		$equal = ($or) ? "OR" : "AND";
-		if (count($args) > 0) {
-			$i = count($args);
-			$string = " WHERE";
-			foreach ($args as $key => $var) {
-				if (is_array($var)) {
-					foreach ($var as $operator => $value) {
-						$string .= ' ' . $key . " " . $operator . " '" . $value . "'";
-					}
-				}
-				else {
-					$string .= ' ' . $key . " = '" . $var . "'";
-				}
-				if ($i > 1) {
-					$string .= " " . $equal;
-				}
-				$i--;
-			}
-			$sql .= $string;
-		}
-		$sql .= " " . $suffix;
-		$ids = array ();
-		$statement = Core::$PDO->query($sql);
-		if ($statement !== FALSE) {
-			$fetch_all = $statement->fetchAll();
-			foreach ($fetch_all as $fetch) {
-				array_push($ids, intval($fetch[ self::id ]));
-			}
-			$user_array = self::get($ids);
-			if (count($user_array) == 0) {
-				return FALSE;
-			}
-
-			return $user_array;
-		}
-		else {
-			return FALSE;
-		}
-	} */
-
-	/**
-	 * @param int  $ids
-	 * @param bool $reload
-	 *
-	 * @return bool|mixed
-	 */
-	/*public static function exist ($ids = 0, $reload = FALSE)
-	{
-		$class = get_called_class();
-		if ($ids != 0 && $ids != NULL) {
-			$statement = Core::$PDO->prepare("SELECT " . $class::id . " FROM " . $class::table . " WHERE " . $class::id . " = :ids");
-			if (is_string($ids) || is_int($ids)) {
-				if (!isset(self::$cache_exist[ $ids ]) || $reload) {
-					$statement->bindParam(':ids', $ids);
-					$statement->execute();
-					if ($statement->rowCount() > 0) {
-						self::$cache_exist[ $ids ] = TRUE;
-
-						return TRUE;
-					}
-					else {
-						self::$cache_exist[ $ids ] = FALSE;
-
-						return FALSE;
-					}
-				}
-
-				return self::$cache_exist[ $ids ];
-			}
-			else {
-				if (is_array($ids)) {
-					foreach ($ids as $id) {
-						if (!isset(self::$cache_exist[ $id ]) || $reload) {
-							$statement->bindParam(':ids', $id);
-							$statement->execute();
-							if ($statement->rowCount() > 0) {
-								self::$cache_exist[ $id ] = TRUE;
-							}
-							else {
-								self::$cache_exist[ $id ] = FALSE;
-							}
-						}
-					}
-
-					return TRUE;
-				}
-				else {
-					return FALSE;
-				}
-			}
-		}
-		else {
-			return FALSE;
-		}
-	}*/
-
-	public static function get_all ()
-	{
-		$statement = Core::$PDO->query("SELECT " . self::id . " FROM " . self::table);
-		$fetchAll = $statement->fetchAll(PDO::FETCH_ASSOC);
-		$users = array ();
-		foreach ($fetchAll as $item) {
-			array_push($users, self::gets($item["user_id"]));
-		}
-
-		return $users;
-	}
 
 	/**
 	 *
@@ -227,16 +79,10 @@ class User extends operators implements iUser //TODO: Complete
 
 					return TRUE;
 				}
+			}
+		}
 
-				return FALSE;
-			}
-			else {
-				return FALSE;
-			}
-		}
-		else {
-			return FALSE;
-		}
+		return FALSE;
 	}
 
 	public static function create ($user_name, $mail, $password, $other = NULL)
@@ -276,8 +122,6 @@ class User extends operators implements iUser //TODO: Complete
 						}
 						else {
 							Core::$PDO->rollBack();
-
-							return FALSE;
 						}
 					}
 					else {
@@ -286,18 +130,11 @@ class User extends operators implements iUser //TODO: Complete
 				}
 				else {
 					Core::$PDO->rollBack();
-
-					return FALSE;
 				}
 			}
-			else {
-				return FALSE;
-			}
-		}
-		else {
-			return FALSE;
 		}
 
+		return FALSE;
 	}
 
 	public static function test ()
@@ -326,10 +163,18 @@ class User extends operators implements iUser //TODO: Complete
 	public static function init ()
 	{
 		User::session();
-		$permissions = Permissions\Value::searches(array ("permission_name" => array ("LIKE" => "iko.user.change.%")));
-		var_dump($permissions);
+		$permissions = Permissions\Value::searches(array ("permission_name" => array ("LIKE" => "iko.user.set.%")));
 		foreach ($permissions as $item) {
-			Handler::add_event($item->get_name(), get_called_class(), "own_permission", NULL, FALSE, "get");
+			Handler::add_event(module::get("user"), $item->get_name(), get_called_class(), "own_permission", NULL,
+				FALSE, "get");
+		}
+		$permissions = Permissions\Value::searches(array (
+			"permission_name" => array (
+				"LIKE"     => "iko.user.%",
+				"NOT LIKE" => "iko.user.set.%")));
+		foreach ($permissions as $item) {
+			Handler::add_event(module::get("user"), $item->get_name(), get_called_class(), "has_permission", NULL,
+				FALSE, "get");
 		}
 	}
 
@@ -368,28 +213,25 @@ class User extends operators implements iUser //TODO: Complete
 				$temp_key = str_replace("user_", "", $key);
 				$this->{$temp_key} = $value;
 			}
-			$this->load_groups();
 		}
 		else {
 			throw new Exception("User does not exist: User_ID = " . $user_id . "");
 		}
 	}
 
-	public function is_own (): bool
-	{
-		return ($this === self::get_session()) ? TRUE : FALSE;
-	}
 
 	public function get_id (): int
 	{
 		return intval($this->id);
 	}
 
-	private $groups = array ();
-	private $groups_all = array ();
+	private $groups = NULL;
+	private $groups_all = NULL;
 
 	private function load_groups ()
 	{
+		$this->groups_all = array ();
+		$this->groups = array ();
 		$sql = "SELECT * FROM " . Permissions::user_assignment . " WHERE " . self::id . " = " . $this->get_id();
 		$statement = Core::$PDO->query($sql);
 		$fetch_all = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -400,33 +242,30 @@ class User extends operators implements iUser //TODO: Complete
 			}
 			if (array_search($group, $this->groups_all, TRUE) === FALSE) {
 				array_push($this->groups_all, $group);
-				$this->load_groups_recursive($group);
+			}
+			foreach ($group->get_parents_all() as $item) {
+				if (array_search($item, $this->groups_all, TRUE) === FALSE) {
+					array_push($this->groups_all, $item);
+				}
 			}
 		}
 	}
 
-	private function load_groups_recursive ($group): void
+	public function reload_groups ()
 	{
-		$parent_list = $group->get_Parents();
-		foreach ($parent_list as $item) {
-			if (array_search($item, $this->groups_all, TRUE) === FALSE) {
-				array_push($this->groups_all, $item);
-				$this->load_groups_recursive($item);
-			}
-		}
+		$this->load_groups();
 	}
 
 	public function own_permission ($permission, $args = NULL, $pre = NULL): bool
 	{
-		if ($this->is_own()) {
+		if ($this->get_id() == $args) {
 			return TRUE;
 		}
 		else if (self::get_session() !== FALSE) {
 			return User::get_session()->has_permission($permission, $args, $pre);
 		}
-		else {
-			return FALSE;
-		}
+
+		return FALSE;
 	}
 
 	public function get_name (): string
@@ -436,11 +275,19 @@ class User extends operators implements iUser //TODO: Complete
 
 	public function get_groups ()
 	{
+		if ($this->groups_all == NULL && $this->groups == NULL) {
+			$this->load_groups();
+		}
+
 		return $this->groups;
 	}
 
 	public function get_all_groups ()
 	{
+		if ($this->groups_all == NULL && $this->groups == NULL) {
+			$this->load_groups();
+		}
+
 		return $this->groups_all;
 	}
 
@@ -550,9 +397,11 @@ class User extends operators implements iUser //TODO: Complete
 	}
 
 	/**
+	 * @param string $value
+	 *
 	 * @return \iko\user\User_profile
 	 */
-	public function get_profile (): User_profile
+	public function get_profile (string $value = ""): User_profile
 	{
 		if ($this->profile == NULL) {
 			$this->profile = new User_profile($this);
@@ -561,12 +410,21 @@ class User extends operators implements iUser //TODO: Complete
 		return $this->profile;
 	}
 
+	/**
+	 * @param string $value
+	 *
+	 * @return \iko\user\profile\Field
+	 */
+	public function get_profile_field (string $value): Content
+	{
+		return $this->get_profile()->{$value};
+	}
+
 	public function get_avatar (): Avatar
 	{
 		if ($this->avatar == NULL || !$this->avatar instanceof Avatar) {
 			$this->avatar = new Avatar($this, $this->avatar);
 		}
-
 		return $this->avatar;
 	}
 
@@ -581,9 +439,6 @@ class User extends operators implements iUser //TODO: Complete
 		if (is_callable(get_called_class(), $func)) {
 			return $this->{$func}();
 		}
-		/*else if(isset($this->get_profile()->{$value})){
-			return $this->get_profile()->{$value};
-		}*/
 		else {
 			return NULL;
 		}
@@ -595,7 +450,7 @@ class User extends operators implements iUser //TODO: Complete
 	 */
 	public function __set ($name, $values)
 	{
-		$func = "change_" . $name;
+		$func = "set_" . $name;
 		if ($name != "password") {
 			if (is_callable(get_called_class(), $func)) {
 				$this->{$func}($values);
@@ -624,7 +479,7 @@ class User extends operators implements iUser //TODO: Complete
 		$handler_name = "iko.user.change." . str_replace("change_", "", $name);
 		$table_name = "user_" . str_replace("change_", "", $name);
 		$class_name = str_replace("user_", "", $table_name);
-		if (Handler::event($handler_name, User::get_session(), $this->get_id())) {
+		if (Handler::event($handler_name, $this->get_id(), User::get_session()->get_id())) {
 			if ($value !== NULL && $value != $this->{$class_name}) {
 				Core::$PDO->beginTransaction();
 				$sql = "UPDATE " . self::table . " Set " . $table_name . " = :value";
@@ -647,17 +502,11 @@ class User extends operators implements iUser //TODO: Complete
 				}
 				else {
 					Core::$PDO->rollBack();
-
-					return FALSE;
 				}
 			}
-			else {
-				return FALSE;
-			}
 		}
-		else {
-			return FALSE;
-		}
+
+		return FALSE;
 	}
 
 	/**
@@ -688,9 +537,8 @@ class User extends operators implements iUser //TODO: Complete
 		if (check_mail($email) && self::search(array ("user_email" => $email)) === FALSE) {
 			return $this->set(__FUNCTION__, $email);
 		}
-		else {
-			return FALSE;
-		}
+
+		return FALSE;
 	}
 
 	/**
@@ -707,9 +555,8 @@ class User extends operators implements iUser //TODO: Complete
 		if (\iko\cms\template::template_exists($value)) {
 			return $this->set(__FUNCTION__, $value);
 		}
-		else {
-			return FALSE;
-		}
+
+		return FALSE;
 	}
 
 	/**
@@ -732,27 +579,107 @@ class User extends operators implements iUser //TODO: Complete
 		}
 	}
 
-	public function add_group ($group): bool
+	/**
+	 * @param      $type
+	 * @param null $value
+	 *
+	 * @return bool
+	 *
+	 * @permission iko.user.set.user_avatar
+	 *             Needed for external changes
+	 *             Own setting don't need Permissions
+	 */
+	public function set_avatar ($type, $value = NULL)
 	{
-		if (User::get_session()->has_permission("iko.user.group.add")) {
+		if (!is_array($type)) {
+			$type = $this->get_avatar()->convert($type, $value);
+		}
+		if (is_array($type)) {
+			return $this->set(__FUNCTION__, unserialize($type));
+		}
+
+		return FALSE;
+	}
+
+
+	/**
+	 * @param $group
+	 *
+	 * @return bool
+	 *
+	 * @permission iko.user.groups.add
+	 * @permission iko.user.groups.remove
+	 * @permission iko.user.group.ID.add
+	 * @permission iko.user.group.ID.remove
+	 *             Allows User to add/remove Groups to User.
+	 *             Allows User to add User to Groups.
+	 */
+	private function change_group ($group, $func): bool
+	{
+		$func = str_replace("_group", "", $func);
+		if (Handler::event("iko.user.groups." . $func, $this->get_id(), User::get_session()->get_id())) {
 			if (is_int($group)) {
 				$group = Group::get($group);
 			}
 			else if ($group instanceof permissions\Group) {
 				$group = $group->get_class();
 			}
-
-			if ($group instanceof Group && array_search($group, $this->get_groups(), TRUE) === FALSE) {
-
+			if ($group instanceof Group && (($func == "add" && array_search($group, $this->get_groups(),
+							TRUE) === FALSE) || ($func == "remove" && array_search($group, $this->get_groups(),
+							TRUE) !== FALSE))
+			) {
+				if (Handler::event("iko.user.group." . $group->get_id() . "." . $func, $this->get_id(),
+					User::get_session()->get_id())
+				) {
+					if ($func == "add") {
+						$sql = "INSERT INTO " . Permissions::user_assignment . " (" . self::id . "," . Group::id . ") VALUE('" . $this->get_id() . "', '" . $group->get_id() . "')";
+					}
+					else if ($func == "remove") {
+						$sql = "DELETE FROM " . Permissions::user_assignment . " WHERE " . self::id . " = " . $this->get_id() . " AND " . Group::id . " = " . $group->get_id();
+					}
+					$statement = Core::$PDO->exec($sql);
+					if ($statement == 1) {
+						$this->load_groups();
+						$group->reload_members();
+						if (($func == "add" && array_search($group, $this->get_groups(),
+									TRUE) !== FALSE) || ($func == "remove" && array_search($group, $this->get_groups(),
+									TRUE) === FALSE)
+						) {
+							return TRUE;
+						}
+					}
+				}
 			}
 		}
-		else {
-			return FALSE;
-		}
+
+		return FALSE;
 	}
 
-	public function remove_group ($group)
+	/**
+	 * @param $group
+	 *
+	 * @return bool
+	 *
+	 * @permission iko.user.groups.add
+	 *             Allows User to add Groups to User.
+	 *             Allows User to add User to Groups.
+	 */
+	public function add_group ($group): bool
 	{
+		return $this->change_group($group, __FUNCTION__);
+	}
 
+	/**
+	 * @param $group
+	 *
+	 * @return bool
+	 *
+	 * @permission iko.user.groups.remove
+	 *             Allows User to remove Groups to User.
+	 *             Allows User to remove User to Groups.
+	 */
+	public function remove_group ($group): bool
+	{
+		return $this->change_group($group, __FUNCTION__);
 	}
 }

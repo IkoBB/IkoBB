@@ -23,6 +23,12 @@ use iko\user\User;
 
 class Avatar // ToDo: Create a concept for User Avatar and how to save the needed data over the user class
 {
+	private static $types = array (
+		"file",
+		"gravatar",
+		"identicon",
+		"mm",
+		"wavatar");
 	private $data;
 
 	public function __construct (User $user, string $data)
@@ -44,6 +50,7 @@ class Avatar // ToDo: Create a concept for User Avatar and how to save the neede
 	public function get ()
 	{
 		if ($this->data["type"] != NULL) {
+			$name = $this->data["value"] ?? $this->user->get_name();
 			switch ($this->data["type"]) {
 				case "gravatar":
 					$string = $this->get_gravatar($this->user->get_email());
@@ -109,4 +116,33 @@ class Avatar // ToDo: Create a concept for User Avatar and how to save the neede
 
 		return $url;
 	}
+
+	/**
+	 * @param $type
+	 * @param $values
+	 *
+	 * @return bool
+	 *
+	 * @permissions iko.user.set.user_avatar
+	 *              Own setting don't need Permissions
+	 */
+	public function set ($type, $values): bool
+	{
+		return $this->user->set_avatar($this->convert($type, $values));
+	}
+
+	public function convert ($type, $values): bool
+	{
+		if (array_search($type, self::$types) !== FALSE) {
+			$data = array ("type" => $type);
+			if ($type != "file" && $type != "gravatar") {
+				$data["value"] = $values;
+			}
+
+			return $data;
+		}
+
+		return FALSE;
+	}
+
 }

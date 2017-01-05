@@ -20,12 +20,13 @@ namespace iko\user\permissions;
 
 use iko;
 use iko\user\Permissions;
-use iko\User as users;
+use iko\user\User as users;
 use iko\Core as Core;
 
 
 class User extends Permissions
 {
+	const id = users::id;
 	const permissions = Permissions::user_permissions;
 	const assignment = Permissions::user_assignment;
 
@@ -43,8 +44,7 @@ class User extends Permissions
 			$id = intval($class);
 		}
 		if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
-			$class = str_replace(__NAMESPACE__ . "/", "", __CLASS__);
-			self::$cache[ $id ] = new $class($id);
+			self::$cache[ $id ] = new User($id);
 			return self::$cache[ $id ];
 		}
 		else {
@@ -79,24 +79,13 @@ class User extends Permissions
 	private function load_groups ()
 	{
 		$this->user_groups = $this->user_class->get_groups();
-		$groups = Permissions::get($this->user_groups);
+		$groups = Permissions::gets($this->user_groups);
 		foreach ($groups as $group) {
-			$perm_array = $group->get_Permissions();
+			$perm_array = $group->get_permissions();
 			foreach ($perm_array as $value) {
 				$this->add_permission_value($value);
 			}
 		}
-	}
-
-	public function add_permission ($permission)
-	{
-		if (!$permission instanceof Value) {
-			$permission = Value::get($permission);
-		}
-		if ($permission instanceof Value) {
-
-		}
-		return TRUE;
 	}
 
 	protected function load_permission ()
@@ -110,8 +99,9 @@ class User extends Permissions
 		}
 	}
 
-	public function get_class ()
+	public function get_class (): users
 	{
-		// TODO: Implement get_class() method.
+		return $this->user_class;
 	}
+
 }

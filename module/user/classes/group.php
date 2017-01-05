@@ -32,148 +32,16 @@ class Group extends operators implements iGroup //Todo: Complete
 	public static $cache = array ();
 	public static $cache_exist = array ();
 
-	/*public static function get ($ids = 0, $reload = FALSE)
-	{
-		$class = get_called_class();
-		if (is_string($ids) && !is_numeric($ids)) {
-			return self::search(array (self::name => $ids));
-		}
-		if (is_numeric($ids)) {
-			$ids = intval($ids);
-		}
-		if (is_array($ids) || is_int($ids)) {
-			if (is_array($ids)) {
-				self::exist($ids);
-			}
-			if (is_int($ids)) {
-				$ids = array ($ids);
-			}
-			$user_array = array ();
-			foreach ($ids as $id) {
-				if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
-					if (self::exist($id, $reload)) {
-						self::$cache[ $id ] = new $class($id);
-						array_push($user_array, self::$cache[ $id ]);
-					}
-				}
-				else {
-					array_push($user_array, self::$cache[ $id ]);
-				}
-			}
-			if (count($user_array) == 1) {
-				return $user_array[0];
-			}
-			else {
-				return $user_array;
-			}
-		}
-
-		return NULL;
-	}
-
-	public static function search ($args = array (), $or = FALSE, $suffix = "") // TODO: Complete Function for Searching after single and Mutliple user
-	{
-		$class = get_called_class();
-		$sql = "SELECT " . self::id . " FROM " . $class::table . "";
-		$equal = ($or) ? "OR" : "AND";
-		if (count($args) > 0) {
-			$i = count($args);
-			$string = " WHERE";
-			foreach ($args as $key => $var) {
-				if (is_array($var)) {
-					foreach ($var as $operator => $value) {
-						$string .= ' ' . $key . " " . $operator . " '" . $value . "'";
-					}
-				}
-				else {
-					$string .= ' ' . $key . " = '" . $var . "'";
-				}
-				if ($i > 1) {
-					$string .= " " . $equal;
-				}
-				$i--;
-			}
-			$sql .= $string;
-		}
-		$sql .= " " . $suffix;
-		$ids = array ();
-		$statement = Core::$PDO->query($sql);
-		if ($statement !== FALSE) {
-			$fetch_all = $statement->fetchAll();
-			foreach ($fetch_all as $fetch) {
-				array_push($ids, intval($fetch[ self::id ]));
-			}
-			$user_array = self::get($ids);
-
-			return $user_array;
-		}
-		else {
-			return FALSE;
-		}
-	}*/
-
-	/**
-	 * @param int  $ids
-	 * @param bool $reload
-	 *
-	 * @return bool|mixed
-	 */
-	/*
-	public static function exist ($ids = 0, $reload = FALSE)
-	{
-		$class = get_called_class();
-		if ($ids != 0 && $ids != NULL) {
-			$statement = Core::$PDO->prepare("SELECT " . $class::id . " FROM " . $class::table . " WHERE " . $class::id . " = :ids");
-			if (is_string($ids) || is_int($ids)) {
-				if (!isset(self::$cache_exist[ $ids ]) || $reload) {
-					$statement->bindParam(':ids', $ids);
-					$statement->execute();
-					if ($statement->rowCount() > 0) {
-						self::$cache_exist[ $ids ] = TRUE;
-
-						return TRUE;
-					}
-					else {
-						self::$cache_exist[ $ids ] = FALSE;
-
-						return FALSE;
-					}
-				}
-
-				return self::$cache_exist[ $ids ];
-			}
-			else {
-				if (is_array($ids)) {
-					foreach ($ids as $id) {
-						if (!isset(self::$cache_exist[ $id ]) || $reload) {
-							$statement->bindParam(':ids', $id);
-							$statement->execute();
-							if ($statement->rowCount() > 0) {
-								self::$cache_exist[ $id ] = TRUE;
-							}
-							else {
-								self::$cache_exist[ $id ] = FALSE;
-							}
-						}
-					}
-
-					return TRUE;
-				}
-				else {
-					return FALSE;
-				}
-			}
-		}
-		else {
-			return FALSE;
-		}
-	}*/
-
 	private $id;
 	private $name;
 	private $style;
 	private $group_rang;
-	private $group_parents = array ();
+	private $parents = NULL;
+	private $parents_all = NULL;
+	private $childes = NULL;
+	private $childes_all = NULL;
+	private $members = NULL;
+	private $members_all = NULL;
 
 	/**
 	 * group constructor.
@@ -189,8 +57,7 @@ class Group extends operators implements iGroup //Todo: Complete
 				$temp_key = str_replace("usergroup_", "", $key);
 				$this->{$temp_key} = $value;
 			}
-			$this->load_parents();
-
+			$this->id = intval($fetch["usergroup_id"]);
 		}
 	}
 
@@ -199,30 +66,106 @@ class Group extends operators implements iGroup //Todo: Complete
 	 */
 	private function load_parents ()
 	{
-		$this->group_parents = array ();
+		$this->parents = array ();
+		$this->parents_all = array ();
 		$sql = "SELECT * FROM " . self::assignment . " WHERE child_group_id = " . $this->get_id();
 		$statement = Core::$PDO->query($sql);
 		if ($statement !== FALSE) {
 			foreach ($statement->fetchAll() as $row) {
 				$parent = self::get($row["parent_group_id"]);
-				if (array_search($parent, $this->group_parents, TRUE) === FALSE) {
-					array_push($this->group_parents, $parent);
+				if (array_search($parent, $this->parents, TRUE) === FALSE) {
+					array_push($this->parents, $parent);
 				}
-				$this->load_parents_recursive($parent);
+				if (array_search($parent, $this->parents_all, TRUE) === FALSE) {
+					array_push($this->parents_all, $parent);
+				}
+				foreach ($parent->get_parents_all() as $item) {
+					if (array_search($item, $this->parents_all, TRUE) === FALSE) {
+						array_push($this->parents_all, $item);
+					}
+				}
 			}
 		}
 	}
 
-	private function load_parents_recursive ($group)
+	private function load_childes ()
 	{
-		$parent_list = $group->get_Parents();
-		foreach ($parent_list as $item) {
-			if (array_search($item, $this->group_parents) === FALSE) {
-				array_push($this->group_parents, $item);
-				$this->load_parents_recursive($item);
+		$this->childes = array ();
+		$this->childes_all = array ();
+		$sql = "SELECT * FROM " . self::assignment . " WHERE parent_group_id = " . $this->get_id();
+		$statement = Core::$PDO->query($sql);
+		if ($statement !== FALSE) {
+			foreach ($statement->fetchAll() as $row) {
+				$child = self::get($row["child_group_id"]);
+				if (array_search($child, $this->childes, TRUE) === FALSE) {
+					array_push($this->childes, $child);
+				}
+				if (array_search($child, $this->childes_all, TRUE) === FALSE) {
+					array_push($this->childes_all, $child);
+				}
+				foreach ($child->get_childes_all() as $item) {
+					if (array_search($item, $this->childes_all, TRUE) === FALSE) {
+						array_push($this->childes_all, $item);
+					}
+				}
 			}
 		}
 	}
+
+	private function load_members ()
+	{
+		$this->members = array ();
+		$this->members_all = array ();
+		$statement = Core::$PDO->query("SELECT " . User::id . " FROM " . Permissions::user_assignment . " WHERE " . self::id . " = " . $this->get_id() . "");
+		$fetch_all = $statement->fetchAll();
+		if ($statement !== FALSE) {
+			foreach ($fetch_all as $item) {
+				$user = User::get($item[ User::id ]);
+				if (array_search($user, $this->members, TRUE) === FALSE) {
+					array_push($this->members, $user);
+				}
+				if (array_search($user, $this->members_all, TRUE) === FALSE) {
+					array_push($this->members_all, $user);
+				}
+			}
+		}
+		foreach ($this->get_childes_all() as $item) {
+			foreach ($item->get_members_all() as $value) {
+				if (array_search($value, $this->members_all, TRUE) === FALSE) {
+					array_push($this->members_all, $value);
+				}
+			}
+		}
+	}
+
+	public function reload_members ()
+	{
+		$this->load_members();
+	}
+
+	public function reload_childes ()
+	{
+		$this->load_childes();
+	}
+
+	public function reload_parents ()
+	{
+		$this->load_parents();
+	}
+
+	public function reload ()
+	{
+		if ($this->members !== NULL && $this->members_all !== NULL) {
+			$this->reload_members();
+		}
+		if ($this->parents !== NULL && $this->parents_all !== NULL) {
+			$this->reload_parents();
+		}
+		if ($this->childes !== NULL && $this->childes_all !== NULL) {
+			$this->reload_childes();
+		}
+	}
+
 	/*
 	 * Parent | Child
 	 * Gast   | Member
@@ -234,15 +177,20 @@ class Group extends operators implements iGroup //Todo: Complete
 	/**
 	 * @return mixed
 	 */
-	public function get_id ()
+	public function get_id (): int
 	{
 		return intval($this->id);
+	}
+
+	public function get_name (): string
+	{
+		return $this->name;
 	}
 
 	/**
 	 * @return mixed
 	 */
-	public function get_Rang ()
+	public function get_rang ()
 	{
 		return $this->rang;
 	}
@@ -250,21 +198,129 @@ class Group extends operators implements iGroup //Todo: Complete
 	/**
 	 * @param mixed $group_rang
 	 */
-	public function set_Rang ($group_rang)
+	public function set_rang ($group_rang)
 	{
 		$this->group_rang = $group_rang;
 	}
 
-	public function get_Parents ()
+	public function get_parents ()
 	{
-		return $this->group_parents;
+		if ($this->parents === NULL && $this->parents_all === NULL) {
+			$this->load_parents();
+		}
+
+		return $this->parents;
 	}
 
-	public function get_Style ()
+	public function get_parents_all ()
+	{
+		if ($this->parents === NULL && $this->parents_all === NULL) {
+			$this->load_parents();
+		}
+
+		return $this->parents;
+	}
+
+	public function get_childes ()
+	{
+		if ($this->childes === NULL && $this->childes_all === NULL) {
+			$this->load_childes();
+		}
+
+		return $this->childes;
+	}
+
+	public function get_childes_all ()
+	{
+		if ($this->childes === NULL && $this->childes_all === NULL) {
+			$this->load_childes();
+		}
+
+		return $this->childes_all;
+	}
+
+	public function get_style ()
 	{
 		return $this->style;
 	}
 
+	public function get_members ()
+	{
+		if ($this->members === NULL && $this->members_all === NULL) {
+			$this->load_members();
+		}
+
+		return $this->members;
+	}
+
+	public function get_members_all ()
+	{
+		if ($this->members === NULL && $this->members_all === NULL) {
+			$this->load_members();
+		}
+
+		return $this->members_all;
+	}
+
+	/**
+	 * @param $value
+	 *
+	 * @return mixed
+	 */
+	public function __get ($value)
+	{
+		$func = 'get_' . $value;
+		if (is_callable(get_called_class(), $func)) {
+			return $this->{$func}();
+		}
+		else {
+			return NULL;
+		}
+	}
+
+	/**
+	 * @param $name
+	 * @param $values
+	 */
+	public function __set ($name, $values)
+	{
+		$func = "set_" . $name;
+		if (is_callable(get_called_class(), $func)) {
+			$this->{$func}($values);
+		}
+	}
+
+	/**
+	 * @param $user
+	 *
+	 * @return bool
+	 *
+	 * @see \iko\user\User::add_group();
+	 */
+	public function add_member ($user)
+	{
+		if (!$user instanceof User) {
+			$user = User::get($user);
+		}
+
+		return $user->add_group($this);
+	}
+
+	/**
+	 * @param $user
+	 *
+	 * @return bool
+	 *
+	 * @see \iko\user\User::remove_group();
+	 */
+	public function remove_member ($user)
+	{
+		if (!$user instanceof User) {
+			$user = User::get($user);
+		}
+
+		return $user->remove_group($this);
+	}
 
 	/*public function get_Displayname ()
 	{
