@@ -38,7 +38,7 @@ class cms
 		if (array_key_exists('module', $args) && $args['module'] != 'debug') {
 			if (module::exist($args['module'])) {
 				/**
-				 * Please add to the following function to your module:
+				 * Please add to the following function to your module if your module shall have an output:
 				 * Handler::add_event(YOUR_MODULE_NAME, 'iko.cms.register.module', YOUR_CLASS_NAME, YOUR_OUTPUT_FUNCTION);
 				 *
 				 * Replace all uppercase text to your strings.
@@ -47,7 +47,14 @@ class cms
 				 * You have to include in your class also an output function. In this output function you will have as input the $_GET variable.
 				 * Please check if the input is the correct data type.
 				 */
-				Handler::event_module('iko.cms.register.module', $args['module'], $args);
+				if(Handler::isset_event_module ('iko.cms.register.module', $args['module'])) {
+					Handler::event_module('iko.cms.register.module', $args['module'], $args);
+				}
+				else {
+					$page = new page();
+					$page->init_page(NULL, array ('id' => 0));
+				}
+
 			}
 			else {
 				$page = new page();
