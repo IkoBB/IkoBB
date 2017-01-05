@@ -143,6 +143,9 @@ class Handler
 					if (isset($var) && !is_bool($var)) {
 						return $var;
 					}
+					else if (isset($var) && $var === NULL) {
+						return $callback_value;
+					}
 					else {
 						return $result;
 					}

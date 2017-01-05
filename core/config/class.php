@@ -16,7 +16,7 @@
  */
 namespace iko;
 
-class config extends config_loader
+class config extends config_loader implements \Iterator
 {
 	private static $configs = array ();
 
@@ -214,5 +214,34 @@ class config extends config_loader
 		else {
 			return FALSE;
 		}
+	}
+
+	/*
+	 * Iteratoren Functions
+	 */
+
+	public function current ()
+	{
+		return current($this->config);
+	}
+
+	public function key ()
+	{
+		return key($this->config);
+	}
+
+	public function next ()
+	{
+		return next($this->config);
+	}
+
+	public function rewind ()
+	{
+		return reset($this->config);
+	}
+
+	public function valid ()
+	{
+		return key($this->config) !== NULL;
 	}
 }

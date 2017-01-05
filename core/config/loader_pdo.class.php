@@ -66,6 +66,13 @@ class config_loader_pdo extends config_loader
 		return $config;
 	}
 
+	/**
+	 * @param string $name
+	 * @param mixed  $value
+	 * @param string $comment
+	 *
+	 * @return bool
+	 */
 	public function add ($name, $value, $comment)
 	{
 		if (!isset($this->get_config_class()->{$name})) {
