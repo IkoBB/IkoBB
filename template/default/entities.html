@@ -1,31 +1,27 @@
 <!-- start:TEST -->
-<div class="col-md-%% width_content %%" >
-	<div class="panel panel-danger">
-		<div class="panel-heading">
-			<h3 class="panel-title">%% sub_title %%</h3>
-		</div>
-		<form action="index.php?page=debug" method="post">
-			<textarea style="height: 200px; width: 100%" name="text">{{ @$_POST['text'] }}</textarea><br> <b><u>Result:</u></b><br>
-			%% output %%<br>
-			<div style="border: dashed black 1px;"><h1>Code Output:</h1>
-				%% code_output %%
-			</div>
-			<input class="btn btn-block btn-danger" type="submit">
-		</form>
+<div class="panel panel-danger">
+	<div class="panel-heading">
+		<h3 class="panel-title">%% sub_title %%</h3>
 	</div>
+	<form action="index.php?page=debug" method="post">
+		<textarea style="height: 200px; width: 100%" name="text">{{ @$_POST['text'] }}</textarea><br> <b><u>Result:</u></b><br>
+		%% output %%<br>
+		<div style="border: dashed black 1px;"><h1>Code Output:</h1>
+			%% code_output %%
+		</div>
+		<input class="btn btn-block btn-danger" type="submit">
+	</form>
 </div>
 <!-- end:TEST -->
 
 <!-- start:cms_page -->
-<div class="col-md-%% width_content %%" >
-	<div class="panel panel-danger">
-		<div class="panel-heading">
-			<h3 class="panel-title">%% sub_title %%</h3>
-		</div>
-		<div class="content">
-			<div style="margin: 5px 10px;">
-				%% page_content %%
-			</div>
+<div class="panel panel-danger">
+	<div class="panel-heading">
+		<h3 class="panel-title">%% sub_title %%</h3>
+	</div>
+	<div class="content">
+		<div style="margin: 5px 10px;">
+			%% page_content %%
 		</div>
 	</div>
 </div>
@@ -39,70 +35,43 @@
 </div>
 <!-- end:404_error -->
 <!-- start:forum-list -->
-<div class="col-md-%% width_content %%" >
-	<div class="panel panel-danger">
-		<div class="panel-heading">
-			<h3 class="panel-title">Category Name</h3>
-		</div>
-		<table class="table table-hover">
-			<thead>
-			<tr>
-				<th style="width: 1%;"></th>
-				<th class="col-md-6">Forum</th>
-				<th class="col-md-1 text-center">Topics</th>
-				<th class="col-md-1 text-center">Posts</th>
-				<th class="col-md-4">Last Post</th>
-			</tr>
-			</thead>
-			<tbody>
-			<tr>
-				<td style="width: 1%;"><i class="material-icons" style="font-size: 30px;">comment</i></td>
-				<td class="col-md-6"><a href="#">Announcements</a> <br />
-					<small>Community announcements.</small>
-				</td>
-				<td class="col-md-1 text-center">3</td>
-				<td class="col-md-1 text-center">11</td>
-				<td class="col-md-4">
-					<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
-					     class="img-thumbnail pull-left hidden-xs" style="width:42px;height:42px;margin-right:5px;"> <a
-						href="#">Test Topic</a><br>
-					<small><a href="#">%% username %%</a>, <span title="9. October 2016">Like, tomorrow !?</span>
-					</small>
-				</td>
-			</tr>
-			<tr>
-				<td><i class="material-icons" style="font-size: 30px;">comment</i></td>
-				<td class="col-md-6"><a href="#">News </a><br />
-					<small>Community news.</small>
-				</td>
-				<td class="col-md-1 text-center">1</td>
-				<td class="col-md-1 text-center">5</td>
-				<td class="col-md-4">
-					<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
-					     class="img-thumbnail pull-left hidden-xs" style="width:42px;height:42px;margin-right:5px;"> <a
-						href="#">Test Topic</a><br>
-					<small><a href="#">%% username %%</a>, <span title="9. October 2016">A moment ago</span></small>
-				</td>
-			</tr>
-			<tr>
-				<td><i class="material-icons" style="font-size: 30px;">comment</i></td>
-				<td class="col-md-6"><a href="http://">Updates</a> <br />
-					<small>Community updates.</small>
-				</td>
-				<td class="col-md-1 text-center">2</td>
-				<td class="col-md-1 text-center">15</td>
-				<td class="col-md-4">
-					<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
-					     class="img-thumbnail pull-left hidden-xs" style="width:42px;height:42px;margin-right:5px;"> <a
-						href="#">Test Topic</a><br>
-					<small><a href="#">%% username %%</a>, <span title="9. October 2016">1 minute ago</span></small>
-				</td>
-			</tr>
-			</tbody>
-		</table>
+<div class="panel panel-danger">
+	<div class="panel-heading">
+		<h3 class="panel-title">%% forum_category_name %%</h3>
 	</div>
+	<table class="table table-hover">
+		<thead>
+		<tr>
+			<th style="width: 1%;"></th>
+			<th class="col-md-6">Forum</th>
+			<th class="col-md-1 text-center">Topics</th>
+			<th class="col-md-1 text-center">Posts</th>
+			<th class="col-md-4">Last Post</th>
+		</tr>
+		</thead>
+		<tbody>
+		%% forum-entries %%
+		</tbody>
+	</table>
 </div>
 <!-- end:forum-list -->
+<!-- start:forum-entries -->
+<tr>
+	<td style="width: 1%;"><i class="material-icons" style="font-size: 30px;">comment</i></td>
+	<td class="col-md-6"><a href="#">%% forum_name %%</a> <br />
+		<small>%% forum_description %%</small>
+	</td>
+	<td class="col-md-1 text-center">3</td>
+	<td class="col-md-1 text-center">11</td>
+	<td class="col-md-4">
+		<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
+		     class="img-thumbnail pull-left hidden-xs" style="width:42px;height:42px;margin-right:5px;"> <a
+			href="#">Test Topic</a><br>
+		<small><a href="#">%% username %%</a>, <span title="9. October 2016">Like, tomorrow !?</span>
+		</small>
+	</td>
+</tr>
+<!-- end:forum-entries -->
 
 <!-- start:sidebar -->
 <div class="col-md-3 pull-right">

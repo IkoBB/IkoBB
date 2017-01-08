@@ -12,11 +12,14 @@
  */
 namespace iko\forum;
 
+use iko\Event\Handler;
+
 class forum_module_loader extends \iko\module_loader // TODO: Create Module
 {
 	public function __construct ($module)
 	{
 		parent::__construct($module);
+		Handler::add_event('forum', 'iko.cms.register.module', '\iko\forum\forum', 'init_page');
 	}
 
 	protected function pre_check_PDO_Tables ()
@@ -28,14 +31,16 @@ class forum_module_loader extends \iko\module_loader // TODO: Create Module
 
 	protected function pre_check_Files ()
 	{
-		$files = array ();
+		$files = array (
+			"forum.class.php"
+		);
 
 		return $this->check_Files($files);
 	}
 
 	public function pre_load ()
 	{
-		$files = array ("*");
+		$files = array ("forum.class.php");
 
 		return parent::load($files);
 	}
