@@ -3,10 +3,17 @@
 	<div class="panel-heading">
 		<h3 class="panel-title">%% sub_title %%</h3>
 	</div>
-	<form action="index.php?page=debug" method="post">
-		<textarea style="height: 200px; width: 100%" name="text">{{ @$_POST['text'] }}</textarea><br> <b><u>Result:</u></b><br>
-		%% output %%<br>
-		<div style="border: dashed black 1px;"><h1>Code Output:</h1>
+	<b>Welcome to the IkoBB debug page</b><br>
+	You can try smileys and BBCodes in the textbox below.<br>
+	<form action="index.php?module=debug" method="post">
+		<textarea style="height: 200px; width: 100%" name="text">{{ @$_POST['text'] }}</textarea><br><br>
+		<div style="border: 1px black solid;">
+			<h4>Result:</h4>
+			%% output %%
+		</div>
+		<br>
+		<div style="border: dashed black 1px;">
+			<h4>Code Output:</h4>
 			%% code_output %%
 		</div>
 		<input class="btn btn-block btn-danger" type="submit">
@@ -61,14 +68,14 @@
 	<td class="col-md-6"><a href="#">%% forum_name %%</a> <br />
 		<small>%% forum_description %%</small>
 	</td>
-	<td class="col-md-1 text-center">3</td>
-	<td class="col-md-1 text-center">11</td>
+	<td class="col-md-1 text-center">0</td>
+	<td class="col-md-1 text-center">0</td>
 	<td class="col-md-4">
-		<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
+		<!--<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
 		     class="img-thumbnail pull-left hidden-xs" style="width:42px;height:42px;margin-right:5px;"> <a
 			href="#">Test Topic</a><br>
 		<small><a href="#">%% username %%</a>, <span title="9. October 2016">Like, tomorrow !?</span>
-		</small>
+		</small>--> None
 	</td>
 </tr>
 <!-- end:forum-entries -->

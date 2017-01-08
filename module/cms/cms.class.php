@@ -34,6 +34,7 @@ class cms
 		$config_iko = config::load("pdo", "iko");
 		$template = template::get_instance();
 		$template->title = $config_iko->site_name;
+		$page = new page();
 
 		if (array_key_exists('module', $args) && $args['module'] != 'debug') {
 			if (module::exist($args['module'])) {
@@ -47,24 +48,22 @@ class cms
 				 * You have to include in your class also an output function. In this output function you will have as input the $_GET variable.
 				 * Please check if the input is the correct data type.
 				 */
-				if(Handler::isset_event_module ('iko.cms.register.module', $args['module'])) {
+				if (Handler::isset_event_module('iko.cms.register.module', $args['module'])) {
 					Handler::event_module('iko.cms.register.module', $args['module'], $args);
 				}
 				else {
-					$page = new page();
 					$page->init_page(NULL, array ('id' => 0));
 				}
 
 			}
 			else {
-				$page = new page();
 				$page->init_page(NULL, array ('id' => 0));
 			}
 		}
 		elseif ($args['module'] == 'debug') {
 			$parser = new parser();
-			$template->sub_title = "Demo & Testing page";
-			$template->content = $parser->parse("[b]Welcome to the IkoBB demo and testing page[/b]");
+			template::no_sidebar();
+			$template->sub_title = "Debug page";
 			$template->content .= $template->entity("TEST", array (
 				"output"      => $parser->parse(\iko\define_post("text", "")),
 				"code_output" => $parser->parse('[code]' . \iko\define_post("text", "") . '[/code]')), TRUE);
@@ -73,9 +72,10 @@ class cms
 		else {
 			// Default page when no module is defined
 			// ToDo: Define how the default page is set and how it will be handled
-			$template->sub_title = 'Default page';
-			$template->content = 'Default page';
-			echo $template;
+			$page->init_page(NULL, array ('id' => 1));
+			//$template->sub_title = 'Default page';
+			//$template->content = 'Default page';
+			//echo $template;
 		}
 	}
 }

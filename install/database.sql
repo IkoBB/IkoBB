@@ -132,10 +132,10 @@ CREATE TABLE `iko_log` (
 CREATE TABLE `iko_pages` (
 	`page_id`      INT(11)      NOT NULL        AUTO_INCREMENT,
 	`page_content` TEXT         NOT NULL,
-	`user_id`     INT(11)      NOT NULL,
+	`user_id`      INT(11)      NOT NULL,
 	`page_time`    TIMESTAMP    NOT NULL,
 	`page_title`   VARCHAR(255) NOT NULL,
-	`page_sidebar` TINYINT                DEFAULT 1,
+	`page_sidebar` TINYINT                      DEFAULT 1,
 	PRIMARY KEY (`page_id`),
 	KEY (`user_id`)
 );
@@ -147,6 +147,22 @@ CREATE TABLE `iko_bbcodes` (
 	`replacement` TEXT,
 	PRIMARY KEY (`bbcode_id`),
 	UNIQUE KEY (`bbcode_tag`)
+);
+
+CREATE TABLE `iko_forum_categories` (
+	`forum_category_id`          INT           NOT NULL AUTO_INCREMENT,
+	`forum_category_name`        VARCHAR(200)  NOT NULL,
+	`forum_category_description` VARCHAR(2000) NOT NULL,
+	`forum_category_order`       INT           NOT NULL,
+	PRIMARY KEY (`forum_category_id`)
+);
+CREATE TABLE `iko_forum_node` (
+	`forum_id`          INT           NOT NULL AUTO_INCREMENT,
+	`forum_category_id` INT           NOT NULL,
+	`forum_name`        VARCHAR(200)  NOT NULL,
+	`forum_description` VARCHAR(2000) NOT NULL,
+	`forum_order`       INT           NULL,
+	PRIMARY KEY (`forum_id`)
 );
 
 /*Relation between Tables */
