@@ -35,9 +35,8 @@ class loader extends \iko\module_loader
 
     protected function pre_check_Files()
     {
-        $files = array(// TODO: Add Files
-                       "language.class.php",
-                       "languageConfigs.class.php",
+	    $files = array (
+
         );
 
         return $this->check_Files($files);
@@ -45,10 +44,9 @@ class loader extends \iko\module_loader
 
 	public function pre_load ()
     {
-        $files = array(//TODO: Add files to load
-                       "language_keys.php",
-                       "languageConfigs.class.php",
-                       "language.class.php",
+	    $files = array (
+		    "interfaces" => array ("*"),
+		    "classes"    => array ("*"),
         );
         return parent::load($files);
     }

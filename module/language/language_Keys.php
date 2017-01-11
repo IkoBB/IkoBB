@@ -10,23 +10,23 @@ namespace iko\language;
 
 use iko\Core;
 use iko;
+use iko\Event\Handler;
+use iko\user\User;
 
 
-class language_Keys extends iko\lib\multiton\cache_string
+class old_language_Keys extends iko\lib\multiton\cache_string
 {
 	const table = languageConfigs::tableTranslation;
 	const name = "translation_key";
-
+	const default = "english";
 	public static $cache = array ();
 	public static $cache_exist = array ();
 
 
-
 	private $translation_key = "";
-	private $default_language = "english";
 	private $set_language = "";
 
-	public function __construct ($name)
+	protected function __construct ($name)
 	{
 		if (is_string($name) && self::exist($name)) {
 			$sql = "SELECT * FROM " . self::table . " WHERE " . self::name . " = '" . $name . "'";
@@ -37,43 +37,38 @@ class language_Keys extends iko\lib\multiton\cache_string
 			}
 		}
 	}
-
-	/* Aufruf = Tatsächlicher aufruf
-	 * $class->variable = $class->__get("variable");
-	 * $class->german = $class->__get("german");
-	 * $class->english = $class->__get("english");
-	 * $class->unk = $class->__get("unk");
-	 * $class->get("english") oder $class->english = $class->__get("english");
-	 */
 	public function __get ($value)
 	{
-		// TODO: Implement __toString() method.
-		if (isset($this->{$value})) {
-			return $this->{$value};
-		}
-		else {
-			return "";
-		}
-
+		return $this->get_lang($value);
 	}
 
-	public function set_lang ($lang)
+	public function get_lang (string $lang)
 	{
-		$this->set_language = $lang;
-		$this->set_counter = 0;
+		if (isset($this->{$lang})) {
+			return $this->{$lang};
+		}
+
+		return "";
 	}
 
-	private $set_counter = 0;
+	public function load_lang ($lang)
+	{
+		$this->load_language = $lang;
+		$this->load_counter = 0;
+	}
+
+	private $load_language = "";
+	private $load_counter = 0;
 
 	public function __toString ()
 	{
-		if (isset($this->set_language) && $this->set_language != "" && $this->set_counter == 0) {
-			$this->set_counter++;
+		if (isset($this->load_language) && $this->set_language != "" && $this->load_counter == 0) {
+			$this->load_counter++;
 
 			return $this->{$this->set_language};
 		}
 		else {
-			return $this->{$this->default_language};
+			return $this->{self::default};
 		}
 	}
 
@@ -81,5 +76,20 @@ class language_Keys extends iko\lib\multiton\cache_string
 	{
 		return $this->translation_key;
 	}
-	#public function
+
+	/**
+	 * @param $name
+	 *
+	 * @return bool
+	 */
+	public function set_key (string $name): bool
+	{
+		if ($name != "" && $name != $this->get_key()) {
+			if (Handler::event("iko.language.keys.set.name", $this->get_key(), User::get_session())) {
+
+			}
+		}
+
+		return FALSE;
+	}
 }

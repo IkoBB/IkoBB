@@ -12,7 +12,7 @@ namespace iko\language;
 use iko\Core;
 use iko;
 
-class language extends languageConfigs
+class old_language extends languageConfigs
 {
 	public function getLanguage ($language)
 	{
