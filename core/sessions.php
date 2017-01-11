@@ -87,4 +87,14 @@ class session
 		echo '<script>window.location.reload();</script>';
 		exit;
 	}
+
+	public static function is_logged_in ()
+	{
+		if (self::$user_id != 0) {
+			return TRUE;
+		}
+		else {
+			return FALSE;
+		}
+	}
 }

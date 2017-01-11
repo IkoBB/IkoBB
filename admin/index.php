@@ -4,10 +4,13 @@ namespace iko;
 require_once './../core/core.php';
 
 use iko\cms\template;
+use iko\user\User;
+
 $template = template::get_instance();
 
 $template->version = Core::version;
-$template->displayname = "John Wick";
+$template->displayname = User::get_session()->get_name();
+$template->user_image = User::get_session()->get_avatar();
 $template->group_displayname = "Administrator";
 $template->title = "IkoBB Admin Panel";
 $template->sub_title = "Dashboard";

@@ -51,6 +51,8 @@ abstract class Permissions
 				}
 			}
 		}
+
+		return NULL;
 	}
 
 	public static function gets ($class)
@@ -305,6 +307,6 @@ abstract class Permissions
 		return $this->change_permission($permission, __FUNCTION__);
 	}
 
-	abstract public function get_class ();
+	abstract public function get_class (): operators;
 
 }

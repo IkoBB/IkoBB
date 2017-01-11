@@ -12,6 +12,7 @@
  */
 namespace iko\user;
 
+use iko\cms\template;
 use iko\Core;
 use iko\language\languageConfigs;
 use iko\module;
@@ -115,8 +116,7 @@ class User extends operators implements iUser //TODO: Complete
 							Core::$PDO->commit();
 							$array["user_id"] = $user->get_id();
 							Handler::event_Final("iko.user.registration", $array);
-							log::add("user", 0, 0,
-								"Iko.User.Registration: User_name = '" . $user->get_user_name() . "'", $array);
+							log::add("user", 0, 0, "Iko.User.Registration: User_name = '" . $user->get_user_name() . "'", $array);
 
 							return TRUE;
 						}
@@ -165,25 +165,22 @@ class User extends operators implements iUser //TODO: Complete
 		User::session();
 		$permissions = Permissions\Value::searches(array ("permission_name" => array ("LIKE" => "iko.user.set.%")));
 		foreach ($permissions as $item) {
-			Handler::add_event(module::get("user"), $item->get_name(), get_called_class(), "own_permission", NULL,
-				FALSE, "get");
+			Handler::add_event(module::get("user"), $item->get_name(), get_called_class(), "own_permission", NULL, FALSE, "get");
 		}
 		$permissions = Permissions\Value::searches(array (
 			"permission_name" => array (
 				"LIKE"     => "iko.user.%",
 				"NOT LIKE" => "iko.user.set.%")));
 		foreach ($permissions as $item) {
-			Handler::add_event(module::get("user"), $item->get_name(), get_called_class(), "has_permission", NULL,
-				FALSE, "get");
+			Handler::add_event(module::get("user"), $item->get_name(), get_called_class(), "has_permission", NULL, FALSE, "get");
 		}
 	}
 
 
-	private $id;
 	private $name;
 	private $password;
 	private $email;
-	private $avatar;
+	private $avatar = "";
 	private $signature;
 	private $about_user;
 	private $location_id;
@@ -340,6 +337,8 @@ class User extends operators implements iUser //TODO: Complete
 
 			}
 		}
+
+		return FALSE;
 	}
 
 	/**
@@ -375,7 +374,7 @@ class User extends operators implements iUser //TODO: Complete
 	/**
 	 * @return int
 	 */
-	public function get_language (): int
+	public function get_language (): string
 	{
 		return $this->language;
 	}
@@ -413,7 +412,7 @@ class User extends operators implements iUser //TODO: Complete
 	/**
 	 * @param string $value
 	 *
-	 * @return \iko\user\profile\Field
+	 * @return \iko\user\profile\Content
 	 */
 	public function get_profile_field (string $value): Content
 	{
@@ -423,8 +422,9 @@ class User extends operators implements iUser //TODO: Complete
 	public function get_avatar (): Avatar
 	{
 		if ($this->avatar == NULL || !$this->avatar instanceof Avatar) {
-			$this->avatar = new Avatar($this, $this->avatar);
+			$this->avatar = new Avatar($this, strval($this->avatar));
 		}
+
 		return $this->avatar;
 	}
 
@@ -476,8 +476,8 @@ class User extends operators implements iUser //TODO: Complete
 	 */
 	private function set ($name, $value): bool
 	{
-		$handler_name = "iko.user.change." . str_replace("change_", "", $name);
-		$table_name = "user_" . str_replace("change_", "", $name);
+		$handler_name = "iko.user.set." . str_replace("set_", "", $name);
+		$table_name = "user_" . str_replace("set_", "", $name);
 		$class_name = str_replace("user_", "", $table_name);
 		if (Handler::event($handler_name, $this->get_id(), User::get_session()->get_id())) {
 			if ($value !== NULL && $value != $this->{$class_name}) {
@@ -492,8 +492,7 @@ class User extends operators implements iUser //TODO: Complete
 					$old = $this->{$class_name};
 					$this->{$class_name} = $value;
 					Core::$PDO->commit();
-					log::add("user", "info", 2, "Changed " . $class_name . " from " . $old . " to " . $value . "",
-						array (
+					log::add("user", "info", 2, "Changed " . $class_name . " from " . $old . " to " . $value . "", array (
 							"old" => $old,
 							"new" => $value,
 							"id"  => $this->get_id()));
@@ -552,7 +551,7 @@ class User extends operators implements iUser //TODO: Complete
 	 */
 	public function set_template ($value): bool
 	{
-		if (\iko\cms\template::template_exists($value)) {
+		if (template::template_exists($value)) {
 			return $this->set(__FUNCTION__, $value);
 		}
 
@@ -604,6 +603,7 @@ class User extends operators implements iUser //TODO: Complete
 
 	/**
 	 * @param $group
+	 * @param $func
 	 *
 	 * @return bool
 	 *
@@ -624,8 +624,7 @@ class User extends operators implements iUser //TODO: Complete
 			else if ($group instanceof permissions\Group) {
 				$group = $group->get_class();
 			}
-			if ($group instanceof Group && (($func == "add" && array_search($group, $this->get_groups(),
-							TRUE) === FALSE) || ($func == "remove" && array_search($group, $this->get_groups(),
+			if ($group instanceof Group && (($func == "add" && array_search($group, $this->get_groups(), TRUE) === FALSE) || ($func == "remove" && array_search($group, $this->get_groups(),
 							TRUE) !== FALSE))
 			) {
 				if (Handler::event("iko.user.group." . $group->get_id() . "." . $func, $this->get_id(),
@@ -641,8 +640,7 @@ class User extends operators implements iUser //TODO: Complete
 					if ($statement == 1) {
 						$this->load_groups();
 						$group->reload_members();
-						if (($func == "add" && array_search($group, $this->get_groups(),
-									TRUE) !== FALSE) || ($func == "remove" && array_search($group, $this->get_groups(),
+						if (($func == "add" && array_search($group, $this->get_groups(), TRUE) !== FALSE) || ($func == "remove" && array_search($group, $this->get_groups(),
 									TRUE) === FALSE)
 						) {
 							return TRUE;

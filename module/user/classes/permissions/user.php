@@ -19,6 +19,7 @@
 namespace iko\user\permissions;
 
 use iko;
+use iko\user\operators;
 use iko\user\Permissions;
 use iko\user\User as users;
 use iko\Core as Core;
@@ -99,7 +100,7 @@ class User extends Permissions
 		}
 	}
 
-	public function get_class (): users
+	public function get_class (): operators
 	{
 		return $this->user_class;
 	}

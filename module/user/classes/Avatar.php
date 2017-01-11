@@ -131,7 +131,7 @@ class Avatar // ToDo: Create a concept for User Avatar and how to save the neede
 		return $this->user->set_avatar($this->convert($type, $values));
 	}
 
-	public function convert ($type, $values): bool
+	public function convert ($type, $values)
 	{
 		if (array_search($type, self::$types) !== FALSE) {
 			$data = array ("type" => $type);
@@ -143,6 +143,11 @@ class Avatar // ToDo: Create a concept for User Avatar and how to save the neede
 		}
 
 		return FALSE;
+	}
+
+	public function __toString ()
+	{
+		return $this->get();
 	}
 
 }

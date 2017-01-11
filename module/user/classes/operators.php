@@ -11,6 +11,12 @@ use iko\lib\multiton\cache_int;
 
 abstract class operators extends cache_int
 {
+	protected $id;
+
+	public function get_id (): int
+	{
+		return $this->id;
+	}
 	protected $permission_class = NULL;
 
 	public function get_permission_class (): Permissions

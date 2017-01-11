@@ -38,7 +38,7 @@ class User_profile implements iUser_profile
 	public function __construct (User $user)
 	{
 		$this->user = $user;
-		$this->user_id = $user->id;
+		$this->user_id = $user->get_id();
 	}
 
 	public function get (string $name): Content
@@ -58,7 +58,7 @@ class User_profile implements iUser_profile
 
 	public function set (string $name, $value): bool
 	{
-		return $this->get($name)->set($value);
+		return $this->get($name)->set_value($value);
 	}
 
 	public function __isset ($name)
@@ -73,6 +73,6 @@ class User_profile implements iUser_profile
 
 	public function create (Content $item): bool
 	{
-
+		return FALSE;
 	}
 }

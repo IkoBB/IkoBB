@@ -77,7 +77,7 @@ interface iUser
 	/**
 	 * @return integer
 	 */
-	public function get_language (): int;
+	public function get_language (): string;
 
 	/**
 	 * @return integer

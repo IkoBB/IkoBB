@@ -21,6 +21,7 @@ namespace iko\user\permissions;
 use iko\PDO as PDO;
 use iko\Core as Core;
 use iko\user\Group as groups;
+use iko\user\operators;
 use iko\user\Permissions;
 
 class Group extends Permissions
@@ -96,7 +97,7 @@ class Group extends Permissions
 		}
 	}
 
-	public function get_class (): groups
+	public function get_class (): operators
 	{
 		return $this->group_class;
 	}

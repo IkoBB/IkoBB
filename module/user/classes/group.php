@@ -32,7 +32,6 @@ class Group extends operators implements iGroup //Todo: Complete
 	public static $cache = array ();
 	public static $cache_exist = array ();
 
-	private $id;
 	private $name;
 	private $style;
 	private $group_rang;
