@@ -24,3 +24,8 @@ unset($files[0], $files[1]);
 foreach ($files as $item) {
 	require_once(__DIR__ . "/lib/multiton/" . $item);
 }
+$files = scandir(__DIR__ . "/lib/singleton/");
+unset($files[0], $files[1]);
+foreach ($files as $item) {
+	require_once(__DIR__ . "/lib/singleton/" . $item);
+}

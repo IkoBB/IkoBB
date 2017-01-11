@@ -48,6 +48,7 @@ class config_loader_pdo extends config_loader
 
 	protected function load_Config ()
 	{
+		$config = array ();
 		$query = "SELECT * FROM " . $this->table();
 		if ($this->module != "") {
 			$query .= " WHERE module_name = '" . $this->module . "'";
@@ -62,7 +63,6 @@ class config_loader_pdo extends config_loader
 				$config[ $item["config_name"] ] = $item["config_value"];
 			}
 		}
-
 		return $config;
 	}
 
