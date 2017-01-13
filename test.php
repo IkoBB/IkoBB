@@ -12,7 +12,6 @@ $start = microtime(TRUE);
 
 require 'core/core.php';
 
-User::login("Marcel", "3125matze");
 /*$user = User::get_session();
 // 1 2 3 46 47
 $user_1 = User::get(1);
