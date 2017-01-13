@@ -20,5 +20,5 @@ namespace iko;
 $files = scandir(__DIR__ . "/event/");
 unset($files[0], $files[1]);
 foreach ($files as $item) {
-	require_once(__DIR__ . "/event/" . $item);
+	Core::file_req(__DIR__ . "/event/" . $item);
 }

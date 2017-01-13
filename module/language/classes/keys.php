@@ -19,7 +19,9 @@
 namespace iko\language;
 
 use iko\Core;
+use iko\Event\Handler;
 use iko\lib\multiton\cache_string;
+use iko\user\User;
 use PDO;
 
 class key extends cache_string implements iKey
@@ -104,6 +106,63 @@ class key extends cache_string implements iKey
 		}
 	}
 
+	public function __get ($name)
+	{
+		return $this->get_lang($name);
+	}
+
+	public function __set ($name, $value)
+	{
+		$this->set_lang($name, $value);
+	}
+
+	/**
+	 * @param $lang
+	 * @param $value
+	 *
+	 * @return bool
+	 * @permission iko.language.keys.set.lang
+	 *
+	 */
+	public function set_lang ($lang, $value)
+	{
+		if (language::get_instance()->is_supported_language($lang)) {
+			if ($value != "" && $value != $this->get_lang($lang)) {
+				if (User::get_session()->has_permission("iko.language.keys.set.lang")) {
+					if (Handler::event("iko.language.keys.set.lang", $this, NULL, TRUE)) {
+						$sql_value = Core::$PDO->quote($value);
+						$statement = Core::$PDO->exec("UPDATE " . self::table . " Set " . $lang . " = " . $sql_value . " WHERE " . self::name . " = '" . self::get_key() . "' ");
+						if ($statement == 1) {
+							$this->langs[ $lang ] = $value;
+
+							return TRUE;
+						}
+					}
+				}
+			}
+		}
+
+		return FALSE;
+	}
+
+	public function set_key ($name)
+	{
+		if ($name != "" && $name != $this->get_key()) {
+			if (User::get_session()->has_permission("iko.language.keys.set.name")) {
+				if (Handler::event("iko.language.keys.set.name", $name)) {
+					$sql_name = Core::$PDO->quote($name);
+					$statement = Core::$PDO->exec("UPDATE " . self::table . " Set " . self::table . " = " . $sql_name . " WHERE " . self::name . " = '" . self::get_key() . "' ");
+					if ($statement == 1) {
+						$this->langs[ $lang ] = $value;
+
+						return TRUE;
+					}
+				}
+			}
+		}
+
+		return FALSE;
+	}
 	public function __toString ()
 	{
 		return $this->get_lang();

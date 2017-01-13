@@ -19,6 +19,7 @@ use iko\module;
 use iko\PDO;
 use iko\Event\Handler;
 use iko\log;
+use iko\session;
 use function iko\set_session;
 use function iko\check_mail;
 use function iko\define_session;
@@ -45,7 +46,12 @@ class User extends operators implements iUser //TODO: Complete
 		$user_id = intval(define_session("user_id", "0"));
 		if ($user_id != 0) {
 			if (self::exist($user_id)) {
-				self::$session_user = self::get($user_id);
+				if (session::compare_salt()) {
+					self::$session_user = self::get($user_id);
+				}
+				else {
+					session::renew();
+				}
 			}
 		}
 	}
@@ -70,13 +76,14 @@ class User extends operators implements iUser //TODO: Complete
 		}
 		$class = self::search($search);
 		if ($class !== FALSE) {
-			$class = $class[0];
+			$class = $class;
 			$pass_hash = $class->salt($password);
 			if ($pass_hash == $class->get_password()) {
 				set_session("user_id", $class->get_ID());
 				if (intval(read_session("user_id")) == $class->get_ID()) {
-					self::$session_user = $class;
+					session::renew_salt($password);
 					$class->update_last_login($password);
+					self::$session_user = $class;
 
 					return TRUE;
 				}
@@ -116,7 +123,8 @@ class User extends operators implements iUser //TODO: Complete
 							Core::$PDO->commit();
 							$array["user_id"] = $user->get_id();
 							Handler::event_Final("iko.user.registration", $array);
-							log::add("user", 0, 0, "Iko.User.Registration: User_name = '" . $user->get_user_name() . "'", $array);
+							log::add("user", 0, 0,
+								"Iko.User.Registration: User_name = '" . $user->get_user_name() . "'", $array);
 
 							return TRUE;
 						}
@@ -164,15 +172,21 @@ class User extends operators implements iUser //TODO: Complete
 	{
 		User::session();
 		$permissions = Permissions\Value::searches(array ("permission_name" => array ("LIKE" => "iko.user.set.%")));
-		foreach ($permissions as $item) {
-			Handler::add_event(module::get("user"), $item->get_name(), get_called_class(), "own_permission", NULL, FALSE, "get");
+		if ($permissions !== FALSE) {
+			foreach ($permissions as $item) {
+				Handler::add_event(module::get("user"), $item->get_name(), get_called_class(), "own_permission", NULL,
+					FALSE, "get");
+			}
 		}
 		$permissions = Permissions\Value::searches(array (
 			"permission_name" => array (
 				"LIKE"     => "iko.user.%",
 				"NOT LIKE" => "iko.user.set.%")));
-		foreach ($permissions as $item) {
-			Handler::add_event(module::get("user"), $item->get_name(), get_called_class(), "has_permission", NULL, FALSE, "get");
+		if ($permissions !== FALSE) {
+			foreach ($permissions as $item) {
+				Handler::add_event(module::get("user"), $item->get_name(), get_called_class(), "session_has_permission",
+					NULL, TRUE);
+			}
 		}
 	}
 
@@ -253,6 +267,15 @@ class User extends operators implements iUser //TODO: Complete
 		$this->load_groups();
 	}
 
+	private function is_own ()
+	{
+		if (self::get_session() !== FALSE && $this->get_id() == self::get_session()->get_id()) {
+			return TRUE;
+		}
+		else {
+			return FALSE;
+		}
+	}
 	public function own_permission ($permission, $args = NULL, $pre = NULL): bool
 	{
 		if ($this->get_id() == $args) {
@@ -300,7 +323,7 @@ class User extends operators implements iUser //TODO: Complete
 
 	public function get_joined_Time (): int
 	{
-		return $this->date_joined;
+		return intval($this->date_joined);
 	}
 
 	public function get_last_login_Date (): string
@@ -310,7 +333,7 @@ class User extends operators implements iUser //TODO: Complete
 
 	public function get_last_login_Time (): int
 	{
-		return $this->last_login;
+		return intval($this->last_login);
 	}
 
 	public function salt ($pass): string
@@ -369,6 +392,15 @@ class User extends operators implements iUser //TODO: Complete
 				}
 			}
 		}
+	}
+
+	public function compare_password ($pass)
+	{
+		if ($this->salt($pass) == $this->get_password()) {
+			return TRUE;
+		}
+
+		return FALSE;
 	}
 
 	/**
@@ -492,7 +524,8 @@ class User extends operators implements iUser //TODO: Complete
 					$old = $this->{$class_name};
 					$this->{$class_name} = $value;
 					Core::$PDO->commit();
-					log::add("user", "info", 2, "Changed " . $class_name . " from " . $old . " to " . $value . "", array (
+					log::add("user", "info", 2, "Changed " . $class_name . " from " . $old . " to " . $value . "",
+						array (
 							"old" => $old,
 							"new" => $value,
 							"id"  => $this->get_id()));
@@ -624,7 +657,8 @@ class User extends operators implements iUser //TODO: Complete
 			else if ($group instanceof permissions\Group) {
 				$group = $group->get_class();
 			}
-			if ($group instanceof Group && (($func == "add" && array_search($group, $this->get_groups(), TRUE) === FALSE) || ($func == "remove" && array_search($group, $this->get_groups(),
+			if ($group instanceof Group && (($func == "add" && array_search($group, $this->get_groups(),
+							TRUE) === FALSE) || ($func == "remove" && array_search($group, $this->get_groups(),
 							TRUE) !== FALSE))
 			) {
 				if (Handler::event("iko.user.group." . $group->get_id() . "." . $func, $this->get_id(),
@@ -640,7 +674,8 @@ class User extends operators implements iUser //TODO: Complete
 					if ($statement == 1) {
 						$this->load_groups();
 						$group->reload_members();
-						if (($func == "add" && array_search($group, $this->get_groups(), TRUE) !== FALSE) || ($func == "remove" && array_search($group, $this->get_groups(),
+						if (($func == "add" && array_search($group, $this->get_groups(),
+									TRUE) !== FALSE) || ($func == "remove" && array_search($group, $this->get_groups(),
 									TRUE) === FALSE)
 						) {
 							return TRUE;

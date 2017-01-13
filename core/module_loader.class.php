@@ -165,7 +165,7 @@ abstract class module_loader
 						$this->load_file(array ("*"), $filename . "/");
 					}
 					else {
-						$include = include_once($filename);
+						$include = Core::file_incl($filename);
 						if ($include === FALSE) {
 							throw new \Exception("Code #1236 " . $filename);
 						}

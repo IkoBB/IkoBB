@@ -85,7 +85,7 @@ class old_language_Keys extends iko\lib\multiton\cache_string
 	public function set_key (string $name): bool
 	{
 		if ($name != "" && $name != $this->get_key()) {
-			if (Handler::event("iko.language.keys.set.name", $this->get_key(), User::get_session())) {
+			if (User::get_session()->has_permission("iko.language.keys.set.name")) {
 
 			}
 		}

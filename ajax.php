@@ -17,7 +17,7 @@
  * Time: 23:07
  */
 namespace iko;
-require_once './core/core.php';
+require './core/core.php';
 $module = define_post("module", "");
 if ($module != "" && module::exist($module)) {
 	if (module::request($module, TRUE)->load_ajax() === FALSE) {

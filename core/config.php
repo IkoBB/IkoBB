@@ -23,6 +23,6 @@ $files = array(
 	"loader_pdo.class.php"
 );
 foreach ($files as $item) {
-	require_once(__DIR__ . "/config/" . $item);
+	Core::file_req(__DIR__ . "/config/" . $item);
 }
 

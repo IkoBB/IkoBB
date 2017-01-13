@@ -22,10 +22,10 @@ namespace iko;
 $files = scandir(__DIR__ . "/lib/multiton/");
 unset($files[0], $files[1]);
 foreach ($files as $item) {
-	require_once(__DIR__ . "/lib/multiton/" . $item);
+	Core::file_req(__DIR__ . "/lib/multiton/" . $item);
 }
 $files = scandir(__DIR__ . "/lib/singleton/");
 unset($files[0], $files[1]);
 foreach ($files as $item) {
-	require_once(__DIR__ . "/lib/singleton/" . $item);
+	Core::file_req(__DIR__ . "/lib/singleton/" . $item);
 }

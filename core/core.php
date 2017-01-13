@@ -166,7 +166,26 @@ class Core
 	public static function date_format ()
 	{
 		$config = config::load("PDO", "iko");
+
 		return $config->date_format;
+	}
+
+	public static function file_req ($file)
+	{
+		if (!defined($file)) {
+			define($file, 1);
+
+			return require($file);
+		}
+	}
+
+	public static function file_incl ($file)
+	{
+		if (!defined($file)) {
+			define($file, 1);
+
+			return include($file);
+		}
 	}
 }
 
@@ -180,28 +199,29 @@ Core::init(0);
  *  Load Config Loader
  */
 //require_once Core::$corepath . "permission/module.class.php";
-require_once Core::$corepath . "log.class.php";
-require_once Core::$corepath . "exception.class.php";
-require_once Core::$corepath . "pdo.class.php";
-require_once Core::$corepath . "functions.php";
-require_once Core::$corepath . "event.php";
-require_once Core::$corepath . 'config.php';
-require_once Core::$corepath . "sessions.php";
+Core::file_req(Core::$corepath . "log.class.php");
+Core::file_req(Core::$corepath . "exception.class.php");
+Core::file_req(Core::$corepath . "pdo.class.php");
+Core::file_req(Core::$corepath . "functions.php");
+Core::file_req(Core::$corepath . "event.php");
+Core::file_req(Core::$corepath . 'config.php');
+Core::file_req(Core::$corepath . "sessions.php");
 
-require_once Core::$corepath . "lib.php";
+Core::file_req(Core::$corepath . "lib.php");
 
 /**
  *  Load Phase 2
  */
 
 Core::init(1);
-require_once Core::$corepath . "module.class.php";
-require_once Core::$corepath . "module_loader.class.php";
+Core::file_req(Core::$corepath . "module.class.php");
+Core::file_req(Core::$corepath . "module_loader.class.php");
 function my_autoloader ($class)
 {
 	$name = str_replace("iko\\", "", $class);
 	$explode = explode("\\", $name);
 	module::request($explode[0]);
 }
+
 spl_autoload_register("Iko\\my_autoloader");
 Core::init(2);

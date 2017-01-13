@@ -26,6 +26,7 @@ class session
 	private static $user_ip;
 	private static $session_id;
 	private static $user_id;
+	private static $user_salt;
 
 	/**
 	 *
@@ -62,6 +63,7 @@ class session
 		self::$user_agent = define_session("user_agent", "");
 		self::$user_id = define_session("user_id", "");
 		self::$user_ip = define_session("user_ip", "");
+		self::$user_salt = define_session("user_salt", "");
 		$ipadress = $_SERVER['REMOTE_ADDR'];
 		if (self::$user_agent == "" && self::$user_id == "" && self::$user_ip == "") {
 			self::$user_agent = $_SERVER['HTTP_USER_AGENT'];
@@ -70,9 +72,11 @@ class session
 			set_session("user_id", self::$user_id);
 			self::$user_ip = $ipadress;
 			set_session("user_ip", self::$user_ip);
+			self::$user_salt = self::get_salt();
+			set_session("user_salt", self::$user_salt);
 		}
 		else {
-			if (self::$user_ip != $ipadress) {
+			if (self::$user_ip != $ipadress || self::$user_salt != self::get_salt()) {
 				set_session("user_ip", "0");
 				set_session("user_id", "0");
 				self::renew();
@@ -96,5 +100,47 @@ class session
 		else {
 			return FALSE;
 		}
+	}
+
+	private static function get_salt ()
+	{
+		$string = "";
+		$string .= $_SESSION["user_id"] . $_SESSION["user_ip"] . session_id();
+
+		return get_hash($string);
+	}
+
+	public static function renew_salt ($pass = "")
+	{
+		if ($pass == "") {
+			self::renew();
+		}
+		else {
+			$current_user_id = intval(read_session("user_id"));
+			if ($current_user_id == 0) {
+				self::renew();
+			}
+			else {
+				$current_user = user\User::get($current_user_id);
+				if ($current_user->compare_password($pass)) {
+					self::$user_id = $current_user->get_id();
+					self::$user_salt = self::get_salt();
+					set_session("user_id", self::$user_id);
+					set_session("user_salt", self::$user_salt);
+				}
+				else {
+					self::renew();
+				}
+			}
+		}
+	}
+
+	public static function compare_salt ()
+	{
+		if (self::get_salt() == self::$user_salt) {
+			return TRUE;
+		}
+
+		return FALSE;
 	}
 }

@@ -2,6 +2,7 @@
 namespace iko;
 
 use iko\Event\Handler;
+use iko\language\key;
 use iko\user\Group;
 use iko\user\profile\Field;
 use iko\user\profile\Content;
@@ -11,8 +12,8 @@ $start = microtime(TRUE);
 
 require 'core/core.php';
 
-$_SESSION["user_id"] = 2;
-$user = User::get_session();
+User::login("Marcel", "3125matze");
+/*$user = User::get_session();
 // 1 2 3 46 47
 $user_1 = User::get(1);
 $user_2 = User::get(2);
@@ -29,7 +30,14 @@ $user_3->add_group($mod);
 $user_1->add_group($admin);
 Handler::test();
 var_dump(Handler::isset_event("iko.cms.register.module"));
-var_dump(Handler::isset_event_module("iko.cms.register.module", "cms"));
+var_dump(Handler::isset_event_module("iko.cms.register.module", "cms"));*/
+$user = User::get_session();
+var_dump(User::get_session()->has_permission("iko.language.keys.set.lang"));
+print_r($user->get_permission_class()->get_permissions());
+$key = key::get("user_name");
+var_dump($key->set_lang("english", "usermituser"));
+$key->get_lang("english");
+print_r($key);
 
 /*$all_user = User::get_all();
 foreach($all_user as $item) {

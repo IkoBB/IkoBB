@@ -215,7 +215,7 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 			}
 		}
 		fclose($handle);
-		$include = include_once($filename);
+		$include = Core::file_incl($filename);
 		if ($include === FALSE) {
 			throw new \Exception("Need File module.php to implement the Module " . $this->name . " does not exist.");
 		}

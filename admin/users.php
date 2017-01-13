@@ -1,7 +1,7 @@
 <?php
 namespace iko;
 
-require_once './../core/core.php';
+require './../core/core.php';
 
 module::request("cms");
 module::request("user");
