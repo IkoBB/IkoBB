@@ -49,7 +49,7 @@ class cms
 	function std ()
 	{
 		$template = template::get_instance();
-
+		$this->user_list();
 	}
 
 	function user ()
@@ -68,9 +68,21 @@ class cms
 			$this->user_list();
 		}
 	}
+	function registration() {
 
+	}
 	function init_page ($event_name, $args, $var = NULL)
 	{
+		$template = template::get_instance();
+		if(User::get_session() !== FALSE) {
+			$user = User::get_session();
+			$template->current_user_avatar = $user->get_avatar();
+			$template->current_user_name = $user->get_name();
+		}
+		else {
+			$template->current_user_name = "Gast";
+			$template->current_user_avatar = User::get(1)->get_avatar();
+		}
 		template::add_breadcrumb("User", "?module=user");
 		if (isset($args["page"])) {
 			$func = $args["page"];

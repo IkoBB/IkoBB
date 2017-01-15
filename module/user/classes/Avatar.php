@@ -56,16 +56,16 @@ class Avatar implements iAvatar// ToDo: Create a concept for User Avatar and how
 					$string = $this->get_gravatar($this->user->get_email());
 				break;
 				case "identicon":
-					$string = $this->get_gravatar($this->user->get_name(), 80, "identicon");
+					$string = $this->get_gravatar($name, 80, "identicon");
 				break;
 				case "mm":
-					$string = $this->get_gravatar($this->user->get_name(), 80, "mm");
+					$string = $this->get_gravatar($name, 80, "mm");
 				break;
 				case "monsterid":
-					$string = $this->get_gravatar($this->user->get_name(), 80, "monsterid");
+					$string = $this->get_gravatar($name, 80, "monsterid");
 				break;
 				case "wavatar":
-					$string = $this->get_gravatar($this->user->get_name(), 80, "wavatar");
+					$string = $this->get_gravatar($name, 80, "wavatar");
 				break;
 				case "file":
 					$filename = module::get("user")->get_path() . "user_images/" . $this->user->get_id() . ".png";

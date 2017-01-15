@@ -22,7 +22,7 @@ use iko\Core;
 use iko\Exception;
 use iko\PDO;
 
-class cache
+abstract class cache
 {
 	public static function search ($args = array (), $or = FALSE, $suffix = "")
 	{
@@ -206,7 +206,7 @@ class cache
 		}
 	}
 
-	public static function get_all ()
+	public static function get_all ():array
 	{
 		$class = get_called_class();
 		$reflection = new \ReflectionClass($class);
@@ -225,4 +225,6 @@ class cache
 
 		return $array;
 	}
+	abstract static function get($id, $reload = false);
+	abstract static function gets($id, $reload = false);
 }

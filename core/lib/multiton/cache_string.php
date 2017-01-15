@@ -40,7 +40,7 @@ class cache_string extends cache
 		return NULL;
 	}
 
-	public static function gets ($ids = 0, $reload = FALSE)
+	public static function gets ($ids = 0, $reload = FALSE):array
 	{
 		$class = get_called_class();
 		if (is_array($ids) || is_string($ids)) {
@@ -63,7 +63,7 @@ class cache_string extends cache
 				}
 			}
 			if (count($array) == 0) {
-				return FALSE;
+				return $array;
 			}
 
 			return $array;

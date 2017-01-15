@@ -27,6 +27,8 @@ use function iko\get_hash;
 use function iko\read_session;
 use iko\user\profile\Avatar;
 use iko\user\profile\Field;
+use iko\user\profile\iAvatar;
+use iko\user\profile\iContent;
 
 class User extends operators implements iUser //TODO: Complete
 {
@@ -414,14 +416,14 @@ class User extends operators implements iUser //TODO: Complete
 	 *
 	 * @return \iko\user\profile\Content
 	 */
-	public function get_profile_field (string $value): Content
+	public function get_profile_field (string $value): iContent
 	{
 		return $this->get_profile()->{$value};
 	}
 
 	public function get_avatar (): Avatar
 	{
-		if ($this->avatar == NULL || !$this->avatar instanceof Avatar) {
+		if ($this->avatar == NULL || !$this->avatar instanceof iAvatar) {
 			$this->avatar = new Avatar($this, strval($this->avatar));
 		}
 
