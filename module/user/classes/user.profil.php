@@ -18,14 +18,10 @@
  */
 namespace iko\user;
 
-use iko\user\profile\Content;
+use iko\user\profile\iContent;
 
 class User_profile implements iUser_profile
 {
-	const profiles = "{prefix}user_profiles";
-	const fields = "{prefix}user_fields";
-
-
 	private $user;
 	private $user_id;
 	private $fields = array ();
@@ -41,7 +37,7 @@ class User_profile implements iUser_profile
 		$this->user_id = $user->get_id();
 	}
 
-	public function get (string $name): Content
+	public function get (string $name): iContent
 	{
 		return $this->fields[ $name ] ?? NULL;
 	}
@@ -71,7 +67,7 @@ class User_profile implements iUser_profile
 		}
 	}
 
-	public function create (Content $item): bool
+	public function create (iContent $item): bool
 	{
 		return FALSE;
 	}

@@ -21,7 +21,7 @@ namespace iko\user\profile;
 use iko\module;
 use iko\user\User;
 
-class Avatar // ToDo: Create a concept for User Avatar and how to save the needed data over the user class
+class Avatar implements iAvatar// ToDo: Create a concept for User Avatar and how to save the needed data over the user class
 {
 	private static $types = array (
 		"file",
@@ -47,7 +47,7 @@ class Avatar // ToDo: Create a concept for User Avatar and how to save the neede
 		}
 	}
 
-	public function get ()
+	public function get (): string
 	{
 		if ($this->data["type"] != NULL) {
 			$name = $this->data["value"] ?? $this->user->get_name();

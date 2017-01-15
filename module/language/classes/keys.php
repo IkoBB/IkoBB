@@ -153,7 +153,7 @@ class key extends cache_string implements iKey
 					$sql_name = Core::$PDO->quote($name);
 					$statement = Core::$PDO->exec("UPDATE " . self::table . " Set " . self::table . " = " . $sql_name . " WHERE " . self::name . " = '" . self::get_key() . "' ");
 					if ($statement == 1) {
-						$this->langs[ $lang ] = $value;
+						$this->key = $name;
 
 						return TRUE;
 					}
@@ -163,6 +163,7 @@ class key extends cache_string implements iKey
 
 		return FALSE;
 	}
+
 	public function __toString ()
 	{
 		return $this->get_lang();

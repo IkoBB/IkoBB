@@ -25,17 +25,8 @@ use Iko\user\permissions\User as users;
 use Iko\user\permissions\Group as groups;
 use Iko\user\permissions\Value as Value;
 
-abstract class Permissions
+abstract class Permissions implements iPermissions
 {
-	const table = "{prefix}permissions";
-	const name = "permission_name";
-
-	const group_assignment = "{prefix}group_assignment";
-	const group_permissions = "{prefix}group_permissions";
-
-	const user_assignment = "{prefix}user_assignment";
-	const user_permissions = "{prefix}user_permissions";
-
 	public static function get ($class)
 	{
 		if ($class instanceof User) {
@@ -158,7 +149,7 @@ abstract class Permissions
 	 *
 	 * @return bool
 	 */
-	public function has_permission ($permission)
+	public function has_permission ($permission): bool
 	{
 		$result = FALSE;
 		if (!$permission instanceof Value) {
@@ -215,7 +206,7 @@ abstract class Permissions
 	/**
 	 * @return array //Contains Class Value.
 	 */
-	public function get_permissions ()
+	public function get_permissions (): array
 	{
 		return (array)$this->permissions;
 	}
@@ -289,7 +280,7 @@ abstract class Permissions
 	 * @see \iko\user\Permissions::change_permission();
 	 * @see \iko\user\Permissions::change_permission();
 	 */
-	public function add_permission ($permission)
+	public function add_permission ($permission): bool
 	{
 		return $this->change_permission($permission, __FUNCTION__);
 	}
@@ -302,7 +293,7 @@ abstract class Permissions
 	 * @see \iko\user\Permissions::change_permission();
 	 * @see \iko\user\Permissions::change_permission();
 	 */
-	public function remove_permission ($permission)
+	public function remove_permission ($permission): bool
 	{
 		return $this->change_permission($permission, __FUNCTION__);
 	}

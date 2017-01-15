@@ -27,9 +27,10 @@ $user_46->add_group($sup_member);
 $user_47->add_group($member);
 $user_3->add_group($mod);
 $user_1->add_group($admin);
-Handler::test();
+
 var_dump(Handler::isset_event("iko.cms.register.module"));
 var_dump(Handler::isset_event_module("iko.cms.register.module", "cms"));*/
+Handler::test();
 $user = User::get_session();
 var_dump(User::get_session()->has_permission("iko.language.keys.set.lang"));
 print_r($user->get_permission_class()->get_permissions());

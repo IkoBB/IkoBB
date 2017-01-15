@@ -13,22 +13,16 @@
 /**
  * Created by PhpStorm.
  * User: Marcel
- * Date: 16.12.2016
- * Time: 21:48
+ * Date: 15.01.2017
+ * Time: 00:54
  */
-namespace iko\user;
+namespace iko\user\profile;
 
-
-use iko\user\profile\iContent;
-
-interface iUser_profile
+interface iAvatar
 {
-	const profiles = "{prefix}user_profiles";
-	const fields = "{prefix}user_fields";
+	public function get (): string;
 
-	public function get (string $name): iContent;
+	public function set ($type, $values): bool;
 
-	public function set (string $name, $value): bool;
-
-	public function create (iContent $item): bool;
+	public function convert ($type, $values);
 }

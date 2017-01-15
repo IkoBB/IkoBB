@@ -24,15 +24,9 @@ use iko\PDO;
 
 class Group extends operators implements iGroup //Todo: Complete
 {
-	const table = "{prefix}usergroups";
-	const assignment = Permissions::group_assignment;
-	const id = "usergroup_id";
-	const name = "usergroup_name";
+	protected static $cache = array ();
+	protected static $cache_exist = array ();
 
-	public static $cache = array ();
-	public static $cache_exist = array ();
-
-	private $name;
 	private $style;
 	private $group_rang;
 	private $parents = NULL;
@@ -189,20 +183,22 @@ class Group extends operators implements iGroup //Todo: Complete
 	/**
 	 * @return mixed
 	 */
-	public function get_rang ()
+	public function get_rang (): int
 	{
-		return $this->rang;
+		return intval($this->rang);
 	}
 
 	/**
 	 * @param mixed $group_rang
 	 */
-	public function set_rang ($group_rang)
+	public function set_rang ($group_rang): bool
 	{
 		$this->group_rang = $group_rang;
+
+		return FALSE;
 	}
 
-	public function get_parents ()
+	public function get_parents (): array
 	{
 		if ($this->parents === NULL && $this->parents_all === NULL) {
 			$this->load_parents();
@@ -211,7 +207,7 @@ class Group extends operators implements iGroup //Todo: Complete
 		return $this->parents;
 	}
 
-	public function get_parents_all ()
+	public function get_parents_all (): array
 	{
 		if ($this->parents === NULL && $this->parents_all === NULL) {
 			$this->load_parents();
@@ -220,7 +216,7 @@ class Group extends operators implements iGroup //Todo: Complete
 		return $this->parents;
 	}
 
-	public function get_childes ()
+	public function get_childes (): array
 	{
 		if ($this->childes === NULL && $this->childes_all === NULL) {
 			$this->load_childes();
@@ -229,7 +225,7 @@ class Group extends operators implements iGroup //Todo: Complete
 		return $this->childes;
 	}
 
-	public function get_childes_all ()
+	public function get_childes_all (): array
 	{
 		if ($this->childes === NULL && $this->childes_all === NULL) {
 			$this->load_childes();
@@ -243,7 +239,7 @@ class Group extends operators implements iGroup //Todo: Complete
 		return $this->style;
 	}
 
-	public function get_members ()
+	public function get_members (): array
 	{
 		if ($this->members === NULL && $this->members_all === NULL) {
 			$this->load_members();
@@ -252,7 +248,7 @@ class Group extends operators implements iGroup //Todo: Complete
 		return $this->members;
 	}
 
-	public function get_members_all ()
+	public function get_members_all (): array
 	{
 		if ($this->members === NULL && $this->members_all === NULL) {
 			$this->load_members();
@@ -296,7 +292,7 @@ class Group extends operators implements iGroup //Todo: Complete
 	 *
 	 * @see \iko\user\User::add_group();
 	 */
-	public function add_member ($user)
+	public function add_member ($user): bool
 	{
 		if (!$user instanceof User) {
 			$user = User::get($user);
@@ -312,7 +308,7 @@ class Group extends operators implements iGroup //Todo: Complete
 	 *
 	 * @see \iko\user\User::remove_group();
 	 */
-	public function remove_member ($user)
+	public function remove_member ($user): bool
 	{
 		if (!$user instanceof User) {
 			$user = User::get($user);

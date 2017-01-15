@@ -13,22 +13,22 @@
 /**
  * Created by PhpStorm.
  * User: Marcel
- * Date: 16.12.2016
- * Time: 21:48
+ * Date: 15.01.2017
+ * Time: 00:00
  */
 namespace iko\user;
 
-
-use iko\user\profile\iContent;
-
-interface iUser_profile
+interface iOperators
 {
-	const profiles = "{prefix}user_profiles";
-	const fields = "{prefix}user_fields";
+	public function get_id (): int;
 
-	public function get (string $name): iContent;
+	public function get_permission_class (): Permissions;
 
-	public function set (string $name, $value): bool;
+	public function has_permission ($permission, $args, $pre);
 
-	public function create (iContent $item): bool;
+	public function add_permission ($permission): bool;
+
+	public function remove_permission ($permission): bool;
+
+	public function get_name (): string;
 }

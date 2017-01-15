@@ -71,7 +71,7 @@ class language extends instance implements iLanguage
 		}
 	}
 
-	public function get_languages ()
+	public function get_languages (): array
 	{
 		return $this->languages;
 	}

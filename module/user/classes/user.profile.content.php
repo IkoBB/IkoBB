@@ -22,17 +22,12 @@ namespace iko\user\profile;
 use iko\{
 	Core, Event\Handler, PDO
 };
-use iko\user\User;
-use iko\user\User_profile;
+use iko\user\{
+	User, iUser
+};
 
-class Content
+class Content implements iContent
 {
-
-	const table = User_profile::profiles;
-	const id = User::id;
-	const value = "user_profile_value";
-	const property = "user_profile_property";
-
 	protected $value = "";
 	protected $property = 0;
 	protected $user_class;
@@ -77,14 +72,14 @@ class Content
 	}
 
 	/**
-	 * @return \iko\user\profile\Field
+	 * @return \iko\user\profile\iField
 	 */
-	public function get_field (): Field
+	public function get_field (): iField
 	{
 		return $this->field;
 	}
 
-	public function get_user (): User
+	public function get_user (): iUser
 	{
 		return $this->user_class;
 	}

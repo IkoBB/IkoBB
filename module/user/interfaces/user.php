@@ -18,18 +18,16 @@
  */
 namespace iko\user;
 
-interface iUser
+interface iUser extends iOperators
 {
-
+	const table = "{prefix}users";
+	const id = "user_id";
+	const name = "user_name";
+	const mail = "user_email";
 	/**
 	 * @return integer
 	 */
 	public function get_id (): int;
-
-	/**
-	 * @return string
-	 */
-	public function get_name (): string;
 
 	/**
 	 * @return array|Group

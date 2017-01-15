@@ -36,9 +36,9 @@ class template
 	 * Initiation of the class
 	 * Only one instance of the template class is allowed
 	 *
-	 * @return \Iko\cms\template|null
+	 * @return \Iko\cms\template
 	 */
-	public static function get_instance ()
+	public static function get_instance (): template
 	{
 		if (self::$instance == NULL) {
 			self::$instance = new template();

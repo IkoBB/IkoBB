@@ -19,20 +19,18 @@
 
 namespace iko\user\profile;
 
-use iko\Core;
-use iko\Event\Handler;
+use iko\{
+	Core, PDO, Event\Handler
+};
 use iko\lib\multiton\cache_int;
-use iko\PDO;
-use iko\user\User;
-use iko\user\User_profile;
+use iko\user\{
+	iUser, User, User_profile
+};
 
-class Field extends cache_int
+class Field extends cache_int implements iField
 {
-	const table = User_profile::fields;
-	const id = "user_field_id";
-	const name = "user_field_name";
-	public static $cache = array ();
-	public static $cache_exist = array ();
+	protected static $cache = array ();
+	protected static $cache_exist = array ();
 
 	public static function create (): bool
 	{
@@ -105,7 +103,7 @@ class Field extends cache_int
 	/**
 	 * @return \iko\user\User
 	 */
-	public function get_owner (): User
+	public function get_owner (): iUser
 	{
 		return $this->owner;
 	}

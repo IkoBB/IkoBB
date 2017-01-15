@@ -22,4 +22,6 @@ interface iLanguage
 	public function is_supported_language (string $lang): bool;
 
 	public function get_current (): string;
+
+	public function get_languages (): array;
 }

@@ -30,12 +30,9 @@ use iko\user\profile\Field;
 
 class User extends operators implements iUser //TODO: Complete
 {
-	const table = "{prefix}users";
-	const id = "user_id";
-	const name = "user_name";
-	const mail = "user_email";
-	public static $cache = array ();
-	public static $cache_exist = array ();
+
+	protected static $cache = array ();
+	protected static $cache_exist = array ();
 
 	/**
 	 *
@@ -66,7 +63,7 @@ class User extends operators implements iUser //TODO: Complete
 		return self::$session_user;
 	}
 
-	public static function login ($user, $password): bool //TODO: Salt Generieren und Last_login hinzufuegen
+	public static function login ($user, $password): bool
 	{
 		if (check_mail($user)) {
 			$search = array ("user_email" => $user);
@@ -145,29 +142,6 @@ class User extends operators implements iUser //TODO: Complete
 		return FALSE;
 	}
 
-	public static function test ()
-	{
-		echo "Ich bins";
-	}
-
-	public static function chat ($name, $text, $pre)
-	{
-		return str_replace("Penis", "", $text);
-	}
-
-	/*
-	 * Event\Handler Test Functions
-	 */
-	public static function chat2 ($name, $text, $pre)
-	{
-		if ($text != $pre) {
-			return str_replace("Jeder", "Penner", $pre);
-		}
-		else {
-			return str_replace("Jeder", "Suesser", $pre);
-		}
-	} // Only for Testing
-
 	public static function init ()
 	{
 		User::session();
@@ -191,7 +165,6 @@ class User extends operators implements iUser //TODO: Complete
 	}
 
 
-	private $name;
 	private $password;
 	private $email;
 	private $avatar = "";
@@ -286,11 +259,6 @@ class User extends operators implements iUser //TODO: Complete
 		}
 
 		return FALSE;
-	}
-
-	public function get_name (): string
-	{
-		return $this->name;
 	}
 
 	public function get_groups ()

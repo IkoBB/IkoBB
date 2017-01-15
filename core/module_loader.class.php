@@ -271,6 +271,9 @@ abstract class module_loader
 
 	private function add_event_handler_array ($array, $type)
 	{
+		if (isset($array[0]) && !is_array($array[0])) {
+			$array = array ($array);
+		}
 		if (is_array($array)) {
 			foreach ($array as $item) {
 				if (count($item) > 0) {
@@ -295,10 +298,10 @@ abstract class module_loader
 			$this->load($this->handler_file, TRUE);
 		}
 		if (isset($this->handler) && is_array($this->handler)) {
-			$this->add_event_handler_array(array ($this->handler), 1);
+			$this->add_event_handler_array($this->handler, 1);
 		}
 		if (isset($this->handler) && is_array($this->handler)) {
-			$this->add_event_handler_array(array ($this->handler_final), 2);
+			$this->add_event_handler_array($this->handler_final, 2);
 		}
 	}
 }

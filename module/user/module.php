@@ -15,8 +15,16 @@ namespace iko\user;
 class module_loader extends \iko\module_loader
 {
 	protected $final_load = __NAMESPACE__ . "\\User::init";
+	protected $handler = array (
+		array (
+			"user",
+			'iko.cms.register.module',
+			__NAMESPACE__ . "\\cms",
+			'init_page'));
 	private $files = array (
-		"interfaces" => array ("*",),
+		"interfaces" => array (
+			"operators.php",
+			"*",),
 		"classes"    => array (
 			"operators.php",
 			"user.php",

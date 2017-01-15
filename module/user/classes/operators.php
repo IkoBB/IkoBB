@@ -9,13 +9,19 @@ namespace iko\user;
 
 use iko\lib\multiton\cache_int;
 
-abstract class operators extends cache_int
+abstract class operators extends cache_int implements iOperators
 {
 	protected $id;
+	protected $name;
 
 	public function get_id (): int
 	{
 		return $this->id;
+	}
+
+	public function get_name (): string
+	{
+		return $this->name;
 	}
 	protected $permission_class = NULL;
 
@@ -32,12 +38,12 @@ abstract class operators extends cache_int
 		return $this->get_permission_class()->has_permission($permission);
 	}
 
-	public function add_permission ($permission)
+	public function add_permission ($permission): bool
 	{
 		return $this->get_permission_class()->add_permission($permission);
 	}
 
-	public function remove_permission ($permission)
+	public function remove_permission ($permission): bool
 	{
 		return $this->get_permission_class()->remove_permission($permission);
 	}
