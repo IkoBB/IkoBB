@@ -35,7 +35,7 @@ CREATE TABLE `iko_users` (
 	`user_name`        VARCHAR(30)  NOT NULL,
 	`user_password`    TEXT         NOT NULL,
 	`user_email`       VARCHAR(255) NOT NULL,
-	`user_avatar_id`   INT(11)               DEFAULT '1',
+	`user_avatar`   TEXT               DEFAULT '',
 	`user_signature`   VARCHAR(255)          DEFAULT NULL,
 	`user_about_user`  TEXT,
 	`user_location_id` INT(11)               DEFAULT NULL,
@@ -49,7 +49,6 @@ CREATE TABLE `iko_users` (
 	PRIMARY KEY (`user_id`),
 	UNIQUE KEY `user_name` (`user_name`),
 	UNIQUE KEY `user_email` (`user_email`),
-	KEY `user_avatar_id` (`user_avatar_id`),
 	KEY `user_location_id` (`user_location_id`),
 	KEY `user_timezone_id` (`user_timezone_id`),
 	KEY `user_template` (`user_template`)
@@ -164,6 +163,22 @@ CREATE TABLE `iko_forum_node` (
 	`forum_order`       INT           NULL,
 	PRIMARY KEY (`forum_id`)
 );
+CREATE TABLE `iko_user_fields` (
+  `user_field_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_field_name` varchar(255) DEFAULT NULL,
+  `user_field_options` text,
+  `user_field_display` text NOT NULL,
+  `user_field_owner` int(11) DEFAULT NULL,
+  PRIMARY KEY(`user_field_id`)
+);
+
+
+CREATE TABLE `iko_user_profiles` (
+  `user_id` int(11) NOT NULL,
+  `user_field_id` int(11) NOT NULL,
+  `user_profile_property` text,
+  `user_profile_value` text
+);
 
 /*Relation between Tables */
 
@@ -256,3 +271,18 @@ FOREIGN KEY (`user_id`)
 REFERENCES `iko_users` (`user_id`)
 	ON DELETE CASCADE
 	ON UPDATE CASCADE;
+
+ALTER TABLE `iko_user_fields`
+  ADD KEY `iko_user_fields_ibfk_1_idx` (`user_field_owner`);
+
+ALTER TABLE `iko_user_profiles`
+  ADD PRIMARY KEY (`user_id`,`user_field_id`),
+  ADD KEY `iko_user_profile_field_id` (`user_field_id`),
+  ADD KEY `iko_user_profile_user_id` (`user_id`);
+
+ALTER TABLE `iko_user_fields`
+  ADD CONSTRAINT `iko_user_fields_ibfk_1` FOREIGN KEY (`user_field_owner`) REFERENCES `iko_users` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE `iko_user_profiles`
+  ADD CONSTRAINT `iko_user_profile_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `iko_users` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `iko_user_profile_ibfk_2` FOREIGN KEY (`user_field_id`) REFERENCES `iko_user_fields` (`user_field_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;

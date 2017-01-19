@@ -9,16 +9,16 @@ INSERT INTO `iko_configs` VALUES ('site_name', 's:10:"Test Value";', 'The name o
 	('site_template', "i:1;", 'Insert the ID of the template which should be the default template.', 'cms'),
 	('site_email', 's:13:"test@test.com";', 'The contact email of the forum. Also used for sending emails.', 'iko'),
 	('site_maintenance', "i:0;", 'Indicates if the site is maintenance. 1 - Maintenance Mode on; 2 - Maintenance Mode off','iko'),
-	('date_format', 's9:"d-m-Y H:i";', 'Default date format', 'iko');;
+	('date_format', 's9:"d-m-Y H:i";', 'Default date format', 'iko');
 
 
 
 INSERT INTO `iko_templates` (`template_name`, `template_author`, `template_version`, `template_directory`, `template_required_core_version`)
 VALUES ('Default Template', 'IkoBB', '0.0.1', 'default', '1.0.0a');
 
-INSERT INTO `iko_users` (`user_id`, `user_name`, `user_password`, `user_email`, `user_avatar_id`, `user_signature`, `user_about_user`, `user_location_id`, `user_gender`, `user_date_joined`, `user_birthday`, `user_timezone_id`, `user_last_login`, `user_language`, `user_template`)
+INSERT INTO `iko_users` (`user_id`, `user_name`, `user_password`, `user_email`, `user_signature`, `user_about_user`, `user_location_id`, `user_gender`, `user_date_joined`, `user_birthday`, `user_timezone_id`, `user_last_login`, `user_language`, `user_template`)
 VALUES
-	(1, 'Administrator', '54d5ace062310f6f617d5f29d70ceb457441b1bbd3869334c9753ab68c8d0969', 'admin@ikobb.de', 1,
+	(1, 'Administrator', '3eb1e1c0e7045742a8e0bbe74a9cdaefcba8c1b80c3e4a994a0b7d3ae4d123de', 'admin@ikobb.de',
 		'signature', 'about me', 1, 1, 11021996, '0000-00-00', 1, 1478377625, 'german', 1);
 
 
@@ -29,27 +29,28 @@ INSERT INTO `iko_usergroups` VALUES ('1','Admin','<span class="color: red; ">%% 
 
 INSERT INTO `iko_user_assignment` VALUES ('1','1');
 
-/*
-INSERT INTO `iko_group_assignment` VALUES ('1','2'),
-('3','1'),
-('1','4');*/
-
-/*
-INSERT INTO `iko_template_assignment` VALUES ('1','2'),
-('3','1'),
-('1','4');
-*/
+INSERT INTO `iko_group_assignment` (`parent_group_id`, `child_group_id`) VALUES
+	(2, 1),
+	(3, 2);
 
 INSERT INTO `iko_permissions` VALUES ('*', 'iko', 'Can do what they want to do.'),
-	('iko.admin.user.delete', 'iko', 'Have the opportunity to delete an user'),
-	('iko.user.change.user_name', 'user', 'Change the Username'),
-	('iko.user.change.user_email', 'user', 'Change the User Email address');
+	('iko.user.set.user_name', 'user', 'Change the Username'),
+	('iko.user.set.user_email', 'user', 'Change the User Email address'),
+	('iko.user.set.user_avatar', 'user', 'Change the User Avatar'),
+	('iko.user.set.user_template', 'user', 'Change the User choosen Template'),
+	('iko.user.set.user_language', 'user', 'Change the User choosen Language'),
+	('iko.user.groups.add', 'user', 'Allows User to Add member to a group'),
+	('iko.user.groups.remove', 'user', 'Allows User to Remove member from a group'),
+	('iko.user.profile.fields.user.set', 'user', 'Change User Field value'),
+	('iko.user.profile.fields.user.property', 'user', 'Change User field property'),
+	('iko.user.profile.fields.set.name', 'user', 'Allows User to rename a Field'),
+	('iko.user.profile.fields.create', 'user', 'Allow User to create new Fields'),
+	('iko.user.permissions.add', 'user', 'Allows user to add Permissions from Group or User'),
+	('iko.user.permissions.remove', 'user', 'Allows user to remove Permissions from Group or User'),
+	('iko.language.keys.set.lang', 'language', 'Allows to change language value for a key');
 
-INSERT INTO `iko_user_permissions` VALUES ('1', '*'),
-	('1', 'iko.admin.user.delete');
 
-INSERT INTO `iko_group_permissions` VALUES ('1', '*'),
-	('1', 'iko.admin.user.delete');
+INSERT INTO `iko_group_permissions` VALUES ('1', '*');
 
 
 INSERT INTO `iko_translation` VALUES ('user_name','Benutzername','username'),
@@ -90,3 +91,7 @@ INSERT INTO `iko_bbcodes` (`bbcode_id`, `bbcode_tag`, `pattern`, `replacement`) 
 	(32, '[url=', '/\\[url=([^\\]]*?)\\](.*?)\\[\\/url\\]/uis', NULL),
 	(33, '[media=', '/\\[media=([^\\]]*?)\\](.*?)\\[\\/media\\]/uis', NULL),
 	(34, '[youtube]', '/\\[youtube\\](.*?)\\[\\/youtube\\]/uis', '<iframe width="560" height="315" src="//www.youtube.com/embed/$1?rel=0" frameborder="0" allowfullscreen></iframe>');
+
+INSERT INTO `iko_user_fields` (`user_field_name`, `user_field_options`, `user_field_display`, `user_field_owner`) VALUES
+	('Facebook', 'a:1:{i:0;a:1:{s:6:"prefix";s:25:"https://www.facebook.com/";}}', '{$prefix}{$value}', 1),
+	('Youtube', 'a:3:{i:0;a:1:{s:6:"prefix";s:26:"https://www.youtube.com/c/";}i:1;a:1:{s:6:"prefix";s:32:"https://www.youtube.com/channel/";}i:2;a:1:{s:6:"prefix";s:29:"https://www.youtube.com/user/";}}', '{$prefix}{$value}', 1);
