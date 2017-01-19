@@ -22,7 +22,7 @@ class instance
 {
 	private static $instance = NULL;
 
-	public static function get_instance ($args = NULL):instance
+	public static function get_instance ($args = NULL)
 	{
 		$class = get_called_class();
 		if ($class::$instance == NULL) {

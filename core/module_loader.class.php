@@ -231,7 +231,7 @@ abstract class module_loader
 	}
 
 	protected $ajax_file = "ajax.php";
-
+	protected $entity_file = "entities.html";
 	protected function set_ajax_file ($value)
 	{
 		if ($this->check_Files($value)) {
@@ -247,6 +247,10 @@ abstract class module_loader
 	public function is_load (): bool
 	{
 		return $this->is_load;
+	}
+
+	public function get_entity_file() {
+		return $this->get_module()->get_path() . $this->entity_file;
 	}
 
 	/**

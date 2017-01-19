@@ -11,102 +11,17 @@
  *
  */
 namespace iko;
-class module // TODO: Implemnt autoloading of Modules and posibility to load Modules simple over one function.
+use iko\lib\multiton\cache_string;
+
+class module extends cache_string// TODO: Implemnt autoloading of Modules and posibility to load Modules simple over one function.
 {
 	const table = "{prefix}modules";
+	const name = "module_name";
 	/*
 	 * Static Part Start
 	 */
-	private static $cache = array ();
-	private static $cache_exist = array ();
-
-	public static function get ($names = "", $reload = FALSE)
-	{
-		if ($names != "" && $names != NULL) {
-			if (is_array($names)) {
-				self::exist($names);
-			}
-			if (is_string($names)) {
-				$names = array ($names);
-			}
-			$modules = array ();
-			foreach ($names as $name) {
-				if (!isset(self::$cache[ $name ]) || self::$cache[ $name ] == NULL || $reload) {
-					if (self::exist($name, $reload)) {
-						$class = str_replace(__NAMESPACE__ . "/", "", __CLASS__);
-						self::$cache[ $name ] = new $class($name);
-						array_push($modules, self::$cache[ $name ]);
-					}
-				}
-				else {
-					array_push($modules, self::$cache[ $name ]);
-				}
-			}
-			if (count($modules) == 1) {
-				return $modules[0];
-			}
-			else {
-				return $modules;
-			}
-		}
-
-		return NULL;
-	}
-
-	/**
-	 * @param int  $names
-	 * @param bool $reload
-	 *
-	 * @return bool|mixed
-	 */
-	public static function exist ($names = "", $reload = FALSE): bool
-	{
-		if ($names != "" && $names != NULL) {
-			$statement = Core::$PDO->prepare("SELECT module_name FROM " . self::table . " WHERE module_name = :module_name");
-			if (is_string($names) || is_int($names)) {
-				if (!isset(self::$cache_exist[ $names ]) || $reload) {
-					$statement->bindParam(':module_name', $names);
-					$statement->execute();
-					if ($statement->rowCount() > 0) {
-						self::$cache_exist[ $names ] = TRUE;
-
-						return TRUE;
-					}
-					else {
-						self::$cache_exist[ $names ] = FALSE;
-
-						return FALSE;
-					}
-				}
-
-				return self::$cache_exist[ $names ];
-			}
-			else {
-				if (is_array($names)) {
-					foreach ($names as $name) {
-						if (!isset(self::$cache_exist[ $name ]) || $reload) {
-							$statement->bindParam(':module_name', $name);
-							$statement->execute();
-							if ($statement->rowCount() > 0) {
-								self::$cache_exist[ $name ] = TRUE;
-							}
-							else {
-								self::$cache_exist[ $name ] = FALSE;
-							}
-						}
-					}
-
-					return TRUE;
-				}
-				else {
-					return FALSE;
-				}
-			}
-		}
-		else {
-			return FALSE;
-		}
-	}
+	protected static $cache = array ();
+	protected static $cache_exist = array ();
 
 	public static function request ($name, $class = FALSE)
 	{
@@ -175,7 +90,7 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 	private $status = TRUE;
 	private $loader = NULL;
 
-	private function __construct ($name)
+	protected function __construct ($name)
 	{
 		$statement = Core::$PDO->query("SELECT * FROM " . self::table . " WHERE module_name = '" . $name . "'");
 		$fetch = $statement->fetch(PDO::FETCH_ASSOC);
@@ -331,6 +246,9 @@ class module // TODO: Implemnt autoloading of Modules and posibility to load Mod
 	public function get_version (): string
 	{
 		return $this->version;
+	}
+	public function get_entity_file():string {
+		return $this->get_loader()->get_entity_file();
 	}
 
 	public function __toString ()
