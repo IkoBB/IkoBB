@@ -67,7 +67,7 @@ class module extends cache_string// TODO: Implemnt autoloading of Modules and po
 
 	private static function pre_check ()
 	{
-		$statement = Core::$PDO->query("SELECT module_name FROM " . self::table . " ");
+		$statement = Core::PDO()->query("SELECT module_name FROM " . self::table . " ");
 		$fetch_all = $statement->fetchAll();
 		foreach ($fetch_all as $item) {
 			$module = module::get($item["module_name"]);
@@ -92,7 +92,7 @@ class module extends cache_string// TODO: Implemnt autoloading of Modules and po
 
 	protected function __construct ($name)
 	{
-		$statement = Core::$PDO->query("SELECT * FROM " . self::table . " WHERE module_name = '" . $name . "'");
+		$statement = Core::PDO()->query("SELECT * FROM " . self::table . " WHERE module_name = '" . $name . "'");
 		$fetch = $statement->fetch(PDO::FETCH_ASSOC);
 		foreach ($fetch as $key => $value) {
 			$temp_key = str_replace("module_", "", $key);

@@ -59,7 +59,7 @@ abstract class cache
 			$sql .= $string;
 		}
 		$sql .= " " . $suffix;
-		$statement = Core::$PDO->query($sql);
+		$statement = Core::PDO()->query($sql);
 		if ($statement !== FALSE) {
 			$fetch = $statement->fetch();
 			$value = $class::get($fetch[ $table_id ]);
@@ -116,7 +116,7 @@ abstract class cache
 		}
 		$sql .= " " . $suffix;
 		$ids = array ();
-		$statement = Core::$PDO->query($sql);
+		$statement = Core::PDO()->query($sql);
 		if ($statement !== FALSE) {
 			$fetch_all = $statement->fetchAll();
 			foreach ($fetch_all as $fetch) {
@@ -156,7 +156,7 @@ abstract class cache
 		}
 		if (isset($class::$cache_exist)) {
 			if ($ids !== NULL) {
-				$statement = Core::$PDO->prepare("SELECT " . $table_id . " FROM " . $class::table . " WHERE " . $table_id . " = :ids");
+				$statement = Core::PDO()->prepare("SELECT " . $table_id . " FROM " . $class::table . " WHERE " . $table_id . " = :ids");
 				if (is_string($ids) || is_int($ids)) {
 					if (!isset($class::$cache_exist[ $ids ]) || $reload) {
 						$statement->bindParam(':ids', $ids);
@@ -216,7 +216,7 @@ abstract class cache
 		else if ($reflection->getConstant("name") != FALSE) {
 			$table_id = $reflection->getConstant("name");
 		}
-		$statement = Core::$PDO->query("SELECT " . $table_id . " FROM " . $class::table);
+		$statement = Core::PDO()->query("SELECT " . $table_id . " FROM " . $class::table);
 		$fetchAll = $statement->fetchAll(PDO::FETCH_ASSOC);
 		$array = array ();
 		foreach ($fetchAll as $item) {

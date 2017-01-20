@@ -53,7 +53,7 @@ class config_loader_pdo extends config_loader
 		if ($this->module != "") {
 			$query .= " WHERE module_name = '" . $this->module . "'";
 		}
-		$statement = Core::$PDO->query($query);
+		$statement = Core::PDO()->query($query);
 		$fetch = $statement->fetchAll(PDO::FETCH_ASSOC);
 		foreach ($fetch as $item) {
 			try {
@@ -79,7 +79,7 @@ class config_loader_pdo extends config_loader
 			if ($comment != "") {
 				$value = serialize($value);
 				$query = "INSERT INTO " . self::table() . " (config_name, config_value, config_comment, module_name) VALUES ('" . $name . "','" . $value . "','" . $comment . "','" . $this->module . "')";
-				$statement = Core::$PDO->exec($query);
+				$statement = Core::PDO()->exec($query);
 				if ($statement == 1) {
 					return TRUE;
 				}
@@ -103,7 +103,7 @@ class config_loader_pdo extends config_loader
 			$query .= ", config_comment = '" . $comment . "'";
 		}
 		$query .= " WHERE config_name = '" . $name . "'";
-		$statement = Core::$PDO->query($query);
+		$statement = Core::PDO()->query($query);
 		if ($statement->rowCount() == 1) {
 			return TRUE;
 		}

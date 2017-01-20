@@ -46,7 +46,7 @@ class log
 				$extra = serialize($extra);
 			}
 			$sql = "INSERT INTO " . self::table . " (module_name, log_type, log_code, log_message, log_time, log_extra) VALUES('$module', '$type', '$code', :log_message, '$time', :log_extra )";
-			$statement = Core::$PDO->prepare($sql);
+			$statement = Core::PDO()->prepare($sql);
 			$statement->bindParam(":log_message", $msg);
 			$statement->bindParam(":log_extra", $extra);
 			$statement->execute();
@@ -123,7 +123,7 @@ class log
 		}
 		$sql .= " " . $suffix;
 		$ids = array ();
-		$statement = Core::$PDO->query($sql);
+		$statement = Core::PDO()->query($sql);
 		if ($statement !== FALSE) {
 			$fetch_all = $statement->fetchAll();
 			foreach ($fetch_all as $fetch) {
@@ -148,7 +148,7 @@ class log
 	{
 		$class = get_called_class();
 		if ($ids != 0 && $ids != NULL) {
-			$statement = Core::$PDO->prepare("SELECT " . $class::id . " FROM " . $class::table . " WHERE " . $class::id . " = :ids");
+			$statement = Core::PDO()->prepare("SELECT " . $class::id . " FROM " . $class::table . " WHERE " . $class::id . " = :ids");
 			if (is_string($ids) || is_int($ids)) {
 				if (!isset(self::$cache_exist[ $ids ]) || $reload) {
 					$statement->bindParam(':ids', $ids);
@@ -209,9 +209,9 @@ class log
 
 	public function __construct ($id)
 	{
-		$id = Core::$PDO->quote($id);
+		$id = Core::PDO()->quote($id);
 		$sql = "SELECT * FROM " . self::table . " WHERE " . self::id . " = " . $id;
-		$statement = Core::$PDO->query($sql);
+		$statement = Core::PDO()->query($sql);
 		$fetch = $statement->fetch(PDO::FETCH_ASSOC);
 		foreach ($fetch as $key => $value) {
 			$temp_key = str_replace("log_", "", $key);
@@ -247,7 +247,7 @@ class log
 
 	public function get_message ()
 	{
-		return $this->msg;
+		return $this->message;
 	}
 
 	public function get_extra ()

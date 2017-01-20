@@ -29,7 +29,7 @@ class Core
 	public static $corepath;
 	public static $modulepath;
 	public static $currentfile;
-	public static $PDO;
+	private static $PDO;
 	public static $templatepath;
 
 	/**
@@ -186,6 +186,9 @@ class Core
 
 			return include($file);
 		}
+	}
+	public static function PDO():\PDO {
+		return self::$PDO;
 	}
 }
 

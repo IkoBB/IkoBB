@@ -92,7 +92,7 @@ abstract class module_loader
 				$var = str_replace("{!prefix}", '', $var);
 			}
 			$query = "SELECT 1 FROM " . $var . " WHERE 1;";
-			$sql = Core::$PDO->query($query);
+			$sql = Core::PDO()->query($query);
 			if ($sql === FALSE) {
 				$result = FALSE;
 			}
@@ -222,9 +222,9 @@ abstract class module_loader
 			if (strpos($var, "create") !== FALSE || strpos($var, "CREATE") !== FALSE || strpos($var,
 					"ALTER TABLE") !== FALSE || strpos($var, "alter table") !== FALSE
 			) {
-				$state = Core::$PDO->query($var);
+				$state = Core::PDO()->query($var);
 				if ($state === FALSE) {
-					throw new \Exception(Core::$PDO->errorInfo());
+					throw new \Exception(Core::PDO()->errorInfo());
 				}
 			}
 		}
