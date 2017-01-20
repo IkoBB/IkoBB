@@ -19,16 +19,22 @@
  */
 namespace iko\user;
 
-use iko\Core;
-use iko\PDO;
+use iko\{
+	Core, PDO
+};
 
 class Group extends operators implements iGroup //Todo: Complete
 {
 	protected static $cache = array ();
 	protected static $cache_exist = array ();
 
+	public static function get ($id = 0, $reload = FALSE): iGroup
+	{
+		return parent::get($id, $reload);
+	}
+
 	private $style;
-	private $group_rang;
+	private $rang;
 	private $parents = NULL;
 	private $parents_all = NULL;
 	private $childes = NULL;
@@ -44,7 +50,7 @@ class Group extends operators implements iGroup //Todo: Complete
 	protected function __construct ($group_id)
 	{
 		if (self::exist($group_id)) {
-			$statement = Core::$PDO->query("SELECT * FROM " . self::table . " WHERE " . self::id . " = " . $group_id);
+			$statement = Core::PDO()->query("SELECT * FROM " . self::table . " WHERE " . self::id . " = " . $group_id);
 			$fetch = $statement->fetch(PDO::FETCH_ASSOC);
 			foreach ($fetch as $key => $value) {
 				$temp_key = str_replace("usergroup_", "", $key);
@@ -62,7 +68,7 @@ class Group extends operators implements iGroup //Todo: Complete
 		$this->parents = array ();
 		$this->parents_all = array ();
 		$sql = "SELECT * FROM " . self::assignment . " WHERE child_group_id = " . $this->get_id();
-		$statement = Core::$PDO->query($sql);
+		$statement = Core::PDO()->query($sql);
 		if ($statement !== FALSE) {
 			foreach ($statement->fetchAll() as $row) {
 				$parent = self::get($row["parent_group_id"]);
@@ -86,7 +92,7 @@ class Group extends operators implements iGroup //Todo: Complete
 		$this->childes = array ();
 		$this->childes_all = array ();
 		$sql = "SELECT * FROM " . self::assignment . " WHERE parent_group_id = " . $this->get_id();
-		$statement = Core::$PDO->query($sql);
+		$statement = Core::PDO()->query($sql);
 		if ($statement !== FALSE) {
 			foreach ($statement->fetchAll() as $row) {
 				$child = self::get($row["child_group_id"]);
@@ -109,7 +115,7 @@ class Group extends operators implements iGroup //Todo: Complete
 	{
 		$this->members = array ();
 		$this->members_all = array ();
-		$statement = Core::$PDO->query("SELECT " . User::id . " FROM " . Permissions::user_assignment . " WHERE " . self::id . " = " . $this->get_id() . "");
+		$statement = Core::PDO()->query("SELECT " . User::id . " FROM " . Permissions::user_assignment . " WHERE " . self::id . " = " . $this->get_id() . "");
 		$fetch_all = $statement->fetchAll();
 		if ($statement !== FALSE) {
 			foreach ($fetch_all as $item) {
@@ -190,10 +196,12 @@ class Group extends operators implements iGroup //Todo: Complete
 
 	/**
 	 * @param mixed $group_rang
+	 *
+	 * @return bool
 	 */
 	public function set_rang ($group_rang): bool
 	{
-		$this->group_rang = $group_rang;
+		$this->rang = $group_rang;
 
 		return FALSE;
 	}

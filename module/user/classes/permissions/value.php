@@ -19,6 +19,7 @@
 namespace iko\user\permissions;
 
 use iko\lib\multiton\cache_string;
+use iko\module;
 use iko\user\Permissions;
 use iko\Core as Core;
 use iko\PDO as PDO;
@@ -39,7 +40,7 @@ class Value extends cache_string
 	{
 		if (is_string($name) && self::exist($name)) {
 			$sql = "SELECT * FROM " . self::table . " WHERE " . self::name . " = '" . $name . "'";
-			$statement = Core::$PDO->query($sql);
+			$statement = Core::PDO()->query($sql);
 			$fetch = $statement->fetch(PDO::FETCH_ASSOC);
 			foreach ($fetch as $key => $value) {
 				$temp_key = str_replace("permission_", "", $key);
@@ -54,11 +55,13 @@ class Value extends cache_string
 		return $this->name;
 	}
 
-	public function get_module () {
+	public function get_module ():module {
+		if(!$this->module instanceof module)
+			$this->module = module::get($this->module);
 		return $this->module;
 	}
 
-	public function get_comment ()
+	public function get_comment ():string
 	{
 		return $this->comment;
 	}

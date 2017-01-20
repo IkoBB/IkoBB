@@ -18,16 +18,16 @@
  */
 namespace iko\user;
 
-use iko\Core;
-use iko\Event\Handler;
-use iko\log;
-use Iko\user\permissions\User as users;
-use Iko\user\permissions\Group as groups;
-use Iko\user\permissions\Value as Value;
+use iko\{
+	Core, Event\Handler, Exception, log
+};
+use Iko\user\permissions\{
+	User as users, Group as groups, Value as Value
+};
 
 abstract class Permissions implements iPermissions
 {
-	public static function get ($class)
+	public static function get ($class):Permissions
 	{
 		if ($class instanceof User) {
 			return self::get_user($class);
@@ -66,26 +66,27 @@ abstract class Permissions implements iPermissions
 	}
 
 
-	public static function get_user ($class)
+	public static function get_user ($class):users
 	{
 		return users::get($class);
 	}
 
-	public static function get_group ($class)
+	public static function get_group ($class):groups
 	{
 		$group = groups::get($class);
 
 		return $group;
 	}
 
-	private static function get_value ($name) //
+	public static function has (string $permission, $class):bool
 	{
-		return Value::get($name);
-	}
-
-	private static function has ($permission, $class)
-	{
-		// TODO: Add has_permission static function for simple resolution.
+		if($class instanceof iOperators) {
+			return $class->has_permission($permission, null, null);
+		}
+		else if($class instanceof Permissions) {
+			return $class->has_permission($permission);
+		}
+		return false;
 	}
 
 
@@ -185,16 +186,6 @@ abstract class Permissions implements iPermissions
 			}
 		}
 
-		/*
-		 *  iko.admin.user.edit.username - Spezifisch
-			iko.admin.user.edit.*		- Kategorie
-			iko.admin.user		- Spezifisch
-			iko.admin           - Spezifisch
-			iko.admin.* - Kategorie
-			*
-
-		 */
-
 		return $result;
 	}
 
@@ -223,6 +214,7 @@ abstract class Permissions implements iPermissions
 	 */
 	private function change_permission ($permission, $func)
 	{
+		$handler_value = "";
 		$func = str_replace("_permission", "", $func);
 		if ($this instanceof users) {
 			$handler_value = "iko.user.permissions.user.";
@@ -233,7 +225,7 @@ abstract class Permissions implements iPermissions
 		$handler_value .= $func;
 		if (Handler::event($handler_value, $this->get_class()->get_id(),
 				User::get_session()->get_id()) || Handler::event("iko.user.permissions." . $func,
-				$this->get_class()->get_id(), users::get_session()->get_id())
+				$this->get_class()->get_id(), User::get_session()->get_id())
 		) {
 			if (!$permission instanceof Value) {
 				$permission = Value::get($permission);
@@ -245,16 +237,17 @@ abstract class Permissions implements iPermissions
 
 					if (($func == "add" && !$this->get_class()->has_permission($permission)) || ($func == "remove" && $this->get_class()->has_permission($permission))) {
 						$class = get_called_class();
+						$sql = "";
 						if ($func == "add") {
 							$sql = "INSERT INTO " . $class::permissions . " (" . $class::id . "," . Permissions::name . ") VALUE('" . $this->get_class()->get_id() . "', '" . $permission->get_name() . "')";
 						}
 						else if ($func == "remove") {
 							$sql = "DELETE FROM " . $class::permissions . " WHERE " . $class::id . " = " . $this->get_class()->get_id() . " AND " . Permissions::name . " = '" . $permission->get_name() . "'";
 						}
-						$statement = Core::$PDO->exec($sql);
+						$statement = Core::PDO()->exec($sql);
 						if ($statement > 0) {
 							if ($this->{$func . "_permission_value"}($permission)) {
-								Log::add("user", "info", "200",
+								log::add("user", "info", "200",
 									"User(" . User::get_session()->get_id() . ") " . $func . " Permission \"" . $permission->get_name() . "\" to " . get_class($this->get_class()) . "(" . $this->get_class()->get_id() . ")",
 									array (
 										"permission_name"             => $permission->get_name(),
@@ -298,6 +291,6 @@ abstract class Permissions implements iPermissions
 		return $this->change_permission($permission, __FUNCTION__);
 	}
 
-	abstract public function get_class (): operators;
+	abstract public function get_class ();
 
 }

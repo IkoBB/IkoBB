@@ -122,4 +122,7 @@ interface iUser extends iOperators
 	 */
 	public function set_language ($language): bool;
 
+	public function compare_password(string $pass):bool;
+
+	public function get_email():string;
 }

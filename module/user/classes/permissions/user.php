@@ -33,7 +33,7 @@ class User extends Permissions
 
 	private static $cache = array ();
 
-	public static function get ($class, $reload = FALSE)
+	public static function get ($class, $reload = FALSE):Permissions
 	{
 		if ($class instanceof users) {
 			$id = intval($class->get_id());
@@ -92,7 +92,7 @@ class User extends Permissions
 	protected function load_permission ()
 	{
 		$sql = "SELECT * FROM " . self::user_permissions . " WHERE " . users::id . " = " . $this->user_class->get_Id();
-		$statement = Core::$PDO->query($sql);
+		$statement = Core::PDO()->query($sql);
 		$fetch_All = $statement->fetchAll();
 		foreach ($fetch_All as $fetch) {
 			$per = Value::get($fetch["permission_name"]);
@@ -100,7 +100,7 @@ class User extends Permissions
 		}
 	}
 
-	public function get_class (): operators
+	public function get_class (): iUser
 	{
 		return $this->user_class;
 	}

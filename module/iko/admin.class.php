@@ -22,7 +22,7 @@ class admin
 		$modules = '';
 		try {
 			$data = "SELECT * FROM " . module::table . " ORDER BY module_name";
-			foreach (Core::$PDO->query($data) as $value) {
+			foreach (Core::PDO()->query($data) as $value) {
 				if ($value["module_status"]) {
 					$status = '<span class="label label-success">Active</span>';
 				}

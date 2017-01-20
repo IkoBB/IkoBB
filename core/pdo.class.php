@@ -24,18 +24,14 @@ use \PDO as DB;
  */
 class PDO extends DB
 {
-	/**
-	 * {@inheritDoc}
-	 * @see PDO::query()
-	 */
-	public function query ($statement)
+
+	public function query ($statement, $mode = DB::ATTR_DEFAULT_FETCH_MODE, $arg3 = NULL, array $ctorargs = array ())
 	{
 		$statement = $this->convert($statement);
-
-		return parent::query($statement);
+		return parent::query($statement, $mode, $arg3, $ctorargs);
 	}
 
-	public function prepare ($statement, $driver_options = array ())
+	public function prepare ($statement, array $driver_options = array ())
 	{
 		$statement = $this->convert($statement);
 

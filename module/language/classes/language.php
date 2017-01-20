@@ -18,11 +18,9 @@
  */
 namespace iko\language;
 
-use iko\config;
-use iko\Core;
-use iko\lib\singleton\instance;
-use iko\session;
-use iko\user\User;
+use iko\{
+	config, Core, lib\singleton\instance, session, user\User
+};
 
 class language extends instance implements iLanguage
 {
@@ -30,6 +28,10 @@ class language extends instance implements iLanguage
 	const table = "{prefix}translation";
 	const name = "translation_key";
 	protected static $instance = NULL;
+	public static function get_instance ($args = NULL):language
+	{
+		return parent::get_instance($args);
+	}
 
 	private $current = NULL;
 	private $languages = array ();
@@ -47,7 +49,7 @@ class language extends instance implements iLanguage
 		$this->current = $lang;
 
 		$sql = "SHOW COLUMNS FROM " . self::table;
-		$statement = Core::$PDO->query($sql);
+		$statement = Core::PDO()->query($sql);
 		$fetch_all = $statement->fetchAll();
 		foreach ($fetch_all as $item) {
 			if ($item["Field"] != self::name) {

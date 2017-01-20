@@ -18,11 +18,10 @@
  */
 namespace iko\user\permissions;
 
-use iko\PDO as PDO;
-use iko\Core as Core;
-use iko\user\Group as groups;
-use iko\user\operators;
-use iko\user\Permissions;
+use PDO;
+use iko\{
+	Core, user\Group as groups, user\iGroup, user\iOperators, user\operators, user\Permissions
+};
 
 class Group extends Permissions
 {
@@ -32,7 +31,7 @@ class Group extends Permissions
 
 	private static $cache = array ();
 
-	public static function get ($class, $reload = FALSE)
+	public static function get ($class, $reload = FALSE): Permissions
 	{
 		if ($class instanceof groups) {
 			$id = intval($class->get_id());
@@ -58,6 +57,7 @@ class Group extends Permissions
 
 	public function __construct ($group)
 	{
+		$id = 0;
 		if ($group instanceof groups) {
 			$id = $group->get_id();
 		}
@@ -77,7 +77,7 @@ class Group extends Permissions
 	protected function load_permission ()
 	{
 		$sql = "SELECT * FROM " . self::permissions . " WHERE " . groups::id . " = " . $this->get_class()->get_Id();
-		$statement = Core::$PDO->query($sql);
+		$statement = Core::PDO()->query($sql);
 		if ($statement !== FALSE) {
 			foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $fetch) {
 				$this->add_permission_value($fetch["permission_name"]);
@@ -97,7 +97,7 @@ class Group extends Permissions
 		}
 	}
 
-	public function get_class (): operators
+	public function get_class (): iGroup
 	{
 		return $this->group_class;
 	}

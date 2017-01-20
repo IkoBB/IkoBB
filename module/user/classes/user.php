@@ -12,29 +12,23 @@
  */
 namespace iko\user;
 
-use iko\cms\template;
-use iko\Core;
-use iko\language\languageConfigs;
-use iko\module;
-use iko\PDO;
-use iko\Event\Handler;
-use iko\log;
-use iko\session;
-use function iko\set_session;
-use function iko\check_mail;
-use function iko\define_session;
-use function iko\get_hash;
-use function iko\read_session;
-use iko\user\profile\Avatar;
-use iko\user\profile\Field;
-use iko\user\profile\iAvatar;
-use iko\user\profile\iContent;
+use iko\{
+	cms\template, Core, Exception, language\language, module, PDO, Event\Handler, log, session, user\profile\Avatar, user\profile\iAvatar, user\profile\iContent
+};
+use function iko\{
+	set_session, check_mail, define_session, get_hash, read_session
+};
 
-class User extends operators implements iUser //TODO: Complete
+class User extends operators implements iUser
 {
 
 	protected static $cache = array ();
 	protected static $cache_exist = array ();
+
+	public static function get ($id = 0, $reload = FALSE): iUser
+	{
+		return parent::get($id, $reload);
+	}
 
 	/**
 	 *
@@ -75,7 +69,6 @@ class User extends operators implements iUser //TODO: Complete
 		}
 		$class = self::search($search);
 		if ($class !== FALSE) {
-			$class = $class;
 			$pass_hash = $class->salt($password);
 			if ($pass_hash == $class->get_password()) {
 				set_session("user_id", $class->get_ID());
@@ -106,20 +99,20 @@ class User extends operators implements iUser //TODO: Complete
 		}
 		if (!self::search(array (self::name => $array["user_name"])) instanceof User && !self::search(array (self::mail => $array["mail"])) instanceof User) {
 			if (Handler::event("iko.user.registration", $array)) {
-				Core::$PDO->beginTransaction();
+				Core::PDO()->beginTransaction();
 				$time = time();
-				$statement = Core::$PDO->exec("INSERT INTO " . self::table . "(" . self::name . ", " . self::mail . ", " . "user_date_joined) VALUES('" . $array["user_name"] . "', '" . $array["mail"] . "', '" . $time . "')");
+				$statement = Core::PDO()->exec("INSERT INTO " . self::table . "(" . self::name . ", " . self::mail . ", " . "user_date_joined) VALUES('" . $array["user_name"] . "', '" . $array["mail"] . "', '" . $time . "')");
 				if ($statement > 0) {
-					Core::$PDO->commit();
+					Core::PDO()->commit();
 					$user = self::search(array (
 						self::name => $array["user_name"],
 						self::mail => $array["mail"]));
-					Core::$PDO->beginTransaction();
+					Core::PDO()->beginTransaction();
 					if ($user instanceof User) {
 						$gen_password = $user->salt($password);
-						$statement_two = Core::$PDO->exec("UPDATE " . self::table . " Set user_password = '" . $gen_password . "' WHERE " . self::id . " = " . $user->get_id());
+						$statement_two = Core::PDO()->exec("UPDATE " . self::table . " Set user_password = '" . $gen_password . "' WHERE " . self::id . " = " . $user->get_id());
 						if ($statement_two > 0) {
-							Core::$PDO->commit();
+							Core::PDO()->commit();
 							$array["user_id"] = $user->get_id();
 							Handler::event_Final("iko.user.registration", $array);
 							log::add("user", 0, 0,
@@ -128,7 +121,7 @@ class User extends operators implements iUser //TODO: Complete
 							return TRUE;
 						}
 						else {
-							Core::$PDO->rollBack();
+							Core::PDO()->rollBack();
 						}
 					}
 					else {
@@ -136,7 +129,7 @@ class User extends operators implements iUser //TODO: Complete
 					}
 				}
 				else {
-					Core::$PDO->rollBack();
+					Core::PDO()->rollBack();
 				}
 			}
 		}
@@ -150,8 +143,10 @@ class User extends operators implements iUser //TODO: Complete
 		$permissions = Permissions\Value::searches(array ("permission_name" => array ("LIKE" => "iko.user.set.%")));
 		if ($permissions !== FALSE) {
 			foreach ($permissions as $item) {
-				Handler::add_event(module::get("user"), $item->get_name(), get_called_class(), "own_permission", NULL,
-					FALSE, "get");
+				if ($item instanceof Permissions\Value) {
+					Handler::add_event(module::get("user"), $item->get_name(), get_called_class(), "own_permission",
+						NULL, FALSE, "get");
+				}
 			}
 		}
 		$permissions = Permissions\Value::searches(array (
@@ -160,8 +155,10 @@ class User extends operators implements iUser //TODO: Complete
 				"NOT LIKE" => "iko.user.set.%")));
 		if ($permissions !== FALSE) {
 			foreach ($permissions as $item) {
-				Handler::add_event(module::get("user"), $item->get_name(), get_called_class(), "session_has_permission",
-					NULL, TRUE);
+				if ($item instanceof Permissions\Value) {
+					Handler::add_event(module::get("user"), $item->get_name(), get_called_class(),
+						"session_has_permission", NULL, TRUE);
+				}
 			}
 		}
 	}
@@ -193,7 +190,7 @@ class User extends operators implements iUser //TODO: Complete
 	protected function __construct ($user_id)
 	{
 		if (self::exist($user_id)) {
-			$statement = Core::$PDO->query("SELECT * FROM " . self::table . " WHERE " . self::id . " = $user_id");
+			$statement = Core::PDO()->query("SELECT * FROM " . self::table . " WHERE " . self::id . " = $user_id");
 			$fetch = $statement->fetch(PDO::FETCH_ASSOC);
 			foreach ($fetch as $key => $value) {
 				$temp_key = str_replace("user_", "", $key);
@@ -219,7 +216,7 @@ class User extends operators implements iUser //TODO: Complete
 		$this->groups_all = array ();
 		$this->groups = array ();
 		$sql = "SELECT * FROM " . Permissions::user_assignment . " WHERE " . self::id . " = " . $this->get_id();
-		$statement = Core::$PDO->query($sql);
+		$statement = Core::PDO()->query($sql);
 		$fetch_all = $statement->fetchAll(PDO::FETCH_ASSOC);
 		foreach ($fetch_all as $fetch) {
 			$group = group::get($fetch[ Group::id ]);
@@ -251,6 +248,7 @@ class User extends operators implements iUser //TODO: Complete
 			return FALSE;
 		}
 	}
+
 	public function own_permission ($permission, $args = NULL, $pre = NULL): bool
 	{
 		if ($this->get_id() == $args) {
@@ -327,7 +325,13 @@ class User extends operators implements iUser //TODO: Complete
 		$s_sec = $this->salt($sec);
 		if ($this->get_password() == $s_old && $s_new == $s_sec) {
 			if ($this->is_own()) {
+				$sql = "UPDATE " . self::table . " Set user_password = '" . $s_new . "' WHERE " . self::id . " = " . $this->get_id();
+				$statement = Core::PDO()->exec($sql);
+				if ($statement == 1) {
+					$this->password = $s_new;
 
+					return TRUE;
+				}
 			}
 		}
 
@@ -335,36 +339,84 @@ class User extends operators implements iUser //TODO: Complete
 	}
 
 	/**
+	 * @return mixed
+	 */
+	public function get_signature ()
+	{
+		return $this->signature;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_about_user ()
+	{
+		return $this->about_user;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_location_id ()
+	{
+		return $this->location_id;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_gender ()
+	{
+		return $this->gender;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_birthday ()
+	{
+		return $this->birthday;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_timezone_id ()
+	{
+		return $this->timezone_id;
+	}
+
+	/**
 	 * @param $pass
 	 */
-	private function update_last_login ($pass)
+	protected function update_last_login ($pass)
 	{
 		if ($this->is_own()) {
 			$s_pass = $this->salt($pass);
 			if ($s_pass == $this->get_password()) {
-				Core::$PDO->beginTransaction();
+				Core::PDO()->beginTransaction();
 				$new_last_login = time();
-				$statement = Core::$PDO->exec("UPDATE " . self::table . " Set user_last_login = " . $new_last_login . " WHERE " . self::id . " = " . $this->get_id());
+				$statement = Core::PDO()->exec("UPDATE " . self::table . " Set user_last_login = " . $new_last_login . " WHERE " . self::id . " = " . $this->get_id());
 				if ($statement > 0) {
 					$this->last_login = $new_last_login;
 					$new_pass = $this->salt($pass);
-					$statement_two = Core::$PDO->exec("UPDATE " . self::table . " Set user_password = '" . $new_pass . "' WHERE " . self::id . " = " . $this->get_id());
+					$statement_two = Core::PDO()->exec("UPDATE " . self::table . " Set user_password = '" . $new_pass . "' WHERE " . self::id . " = " . $this->get_id());
 					if ($statement_two > 0) {
 						$this->password = $new_pass;
-						Core::$PDO->commit();
+						Core::PDO()->commit();
 					}
 					else {
-						Core::$PDO->rollBack();
+						Core::PDO()->rollBack();
 					}
 				}
 				else {
-					Core::$PDO->rollBack();
+					Core::PDO()->rollBack();
 				}
 			}
 		}
 	}
 
-	public function compare_password ($pass)
+	public function compare_password (string $pass):bool
 	{
 		if ($this->salt($pass) == $this->get_password()) {
 			return TRUE;
@@ -374,7 +426,7 @@ class User extends operators implements iUser //TODO: Complete
 	}
 
 	/**
-	 * @return int
+	 * @return string
 	 */
 	public function get_language (): string
 	{
@@ -398,11 +450,11 @@ class User extends operators implements iUser //TODO: Complete
 	}
 
 	/**
-	 * @param string $value
+	 *
 	 *
 	 * @return \iko\user\User_profile
 	 */
-	public function get_profile (string $value = ""): User_profile
+	public function get_profile (): User_profile
 	{
 		if ($this->profile == NULL) {
 			$this->profile = new User_profile($this);
@@ -414,7 +466,7 @@ class User extends operators implements iUser //TODO: Complete
 	/**
 	 * @param string $value
 	 *
-	 * @return \iko\user\profile\Content
+	 * @return \iko\user\profile\iContent
 	 */
 	public function get_profile_field (string $value): iContent
 	{
@@ -483,17 +535,17 @@ class User extends operators implements iUser //TODO: Complete
 		$class_name = str_replace("user_", "", $table_name);
 		if (Handler::event($handler_name, $this->get_id(), User::get_session()->get_id())) {
 			if ($value !== NULL && $value != $this->{$class_name}) {
-				Core::$PDO->beginTransaction();
+				Core::PDO()->beginTransaction();
 				$sql = "UPDATE " . self::table . " Set " . $table_name . " = :value";
 
 				$sql .= " WHERE user_id = " . $this->get_id();
-				$statement = Core::$PDO->prepare($sql);
+				$statement = Core::PDO()->prepare($sql);
 				$statement->bindParam(":value", $value);
 				$statement->execute();
 				if ($statement > 0) {
 					$old = $this->{$class_name};
 					$this->{$class_name} = $value;
-					Core::$PDO->commit();
+					Core::PDO()->commit();
 					log::add("user", "info", 2, "Changed " . $class_name . " from " . $old . " to " . $value . "",
 						array (
 							"old" => $old,
@@ -503,7 +555,7 @@ class User extends operators implements iUser //TODO: Complete
 					return TRUE;
 				}
 				else {
-					Core::$PDO->rollBack();
+					Core::PDO()->rollBack();
 				}
 			}
 		}
@@ -572,8 +624,7 @@ class User extends operators implements iUser //TODO: Complete
 	 */
 	public function set_language ($value): bool
 	{
-		$language = new languageConfigs();
-		if ($language->supportedLanguageExist($value)) {
+		if (language::get_instance()->is_supported_language($value)) {
 			return $this->set(__FUNCTION__, $value);
 		}
 		else {
@@ -634,13 +685,14 @@ class User extends operators implements iUser //TODO: Complete
 				if (Handler::event("iko.user.group." . $group->get_id() . "." . $func, $this->get_id(),
 					User::get_session()->get_id())
 				) {
+					$sql = "";
 					if ($func == "add") {
 						$sql = "INSERT INTO " . Permissions::user_assignment . " (" . self::id . "," . Group::id . ") VALUE('" . $this->get_id() . "', '" . $group->get_id() . "')";
 					}
 					else if ($func == "remove") {
 						$sql = "DELETE FROM " . Permissions::user_assignment . " WHERE " . self::id . " = " . $this->get_id() . " AND " . Group::id . " = " . $group->get_id();
 					}
-					$statement = Core::$PDO->exec($sql);
+					$statement = Core::PDO()->exec($sql);
 					if ($statement == 1) {
 						$this->load_groups();
 						$group->reload_members();

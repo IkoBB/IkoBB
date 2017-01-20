@@ -30,14 +30,11 @@ $user_1->add_group($admin);
 
 var_dump(Handler::isset_event("iko.cms.register.module"));
 var_dump(Handler::isset_event_module("iko.cms.register.module", "cms"));*/
+var_dump(module::load_status("user"));
 Handler::test();
-$user = User::get_session();
-var_dump(User::get_session()->has_permission("iko.language.keys.set.lang"));
-print_r($user->get_permission_class()->get_permissions());
-$key = key::get("user_name");
-var_dump($key->set_lang("english", "usermituser"));
-$key->get_lang("english");
-print_r($key);
+$user = User::get(1);
+echo $user->salt("test1234");
+var_dump(module::load_status("user"));
 
 /*$all_user = User::get_all();
 foreach($all_user as $item) {
