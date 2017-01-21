@@ -28,9 +28,6 @@ class session
 	private static $user_id;
 	private static $user_salt;
 
-	/**
-	 *
-	 */
 	public static function init($phase)
 	{
 		switch ($phase) {

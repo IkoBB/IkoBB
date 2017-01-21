@@ -18,7 +18,9 @@
  */
 namespace iko;
 
-class log
+use iko\lib\multiton\cache_int;
+
+class log extends cache_int
 {
 	const table = "{prefix}log";
 	const id = "log_id";
@@ -61,137 +63,9 @@ class log
 	protected static $cache = array ();
 	protected static $cache_exist = array ();
 
-	public static function get ($ids = 0, $reload = FALSE)
+	public static function get ($id = 0, $reload = FALSE):log
 	{
-		$class = get_called_class();
-		if (is_numeric($ids)) {
-			$ids = intval($ids);
-		}
-		if (is_array($ids) || is_int($ids)) {
-			if (is_array($ids)) {
-				self::exist($ids);
-			}
-			if (is_int($ids)) {
-				$ids = array ($ids);
-			}
-			$array = array ();
-			foreach ($ids as $id) {
-				if (!isset(self::$cache[ $id ]) || self::$cache[ $id ] == NULL || $reload) {
-					if (self::exist($id, $reload)) {
-						self::$cache[ $id ] = new $class($id);
-						array_push($array, self::$cache[ $id ]);
-					}
-				}
-				else {
-					array_push($array, self::$cache[ $id ]);
-				}
-			}
-			if (count($array) == 1) {
-				return $array[0];
-			}
-			else {
-				return $array;
-			}
-		}
-
-		return NULL;
-	}
-
-	public static function search ($args = array (), $or = FALSE, $suffix = "") // TODO: Complete Function for Searching after single and Mutliple user
-	{
-		$class = get_called_class();
-		$sql = "SELECT " . self::id . " FROM " . $class::table . "";
-		$equal = ($or) ? "OR" : "AND";
-		if (count($args) > 0) {
-			$i = count($args);
-			$string = " WHERE";
-			foreach ($args as $key => $var) {
-				if (is_array($var)) {
-					foreach ($var as $operator => $value) {
-						$string .= ' ' . $key . " " . $operator . " '" . $value . "'";
-					}
-				}
-				else {
-					$string .= ' ' . $key . " = '" . $var . "'";
-				}
-				if ($i > 1) {
-					$string .= " " . $equal;
-				}
-				$i--;
-			}
-			$sql .= $string;
-		}
-		$sql .= " " . $suffix;
-		$ids = array ();
-		$statement = Core::PDO()->query($sql);
-		if ($statement !== FALSE) {
-			$fetch_all = $statement->fetchAll();
-			foreach ($fetch_all as $fetch) {
-				array_push($ids, intval($fetch[ self::id ]));
-			}
-			$user_array = self::get($ids);
-
-			return $user_array;
-		}
-		else {
-			return NULL;
-		}
-	}
-
-	/**
-	 * @param int  $ids
-	 * @param bool $reload
-	 *
-	 * @return bool|mixed
-	 */
-	public static function exist ($ids = 0, $reload = FALSE)
-	{
-		$class = get_called_class();
-		if ($ids != 0 && $ids != NULL) {
-			$statement = Core::PDO()->prepare("SELECT " . $class::id . " FROM " . $class::table . " WHERE " . $class::id . " = :ids");
-			if (is_string($ids) || is_int($ids)) {
-				if (!isset(self::$cache_exist[ $ids ]) || $reload) {
-					$statement->bindParam(':ids', $ids);
-					$statement->execute();
-					if ($statement->rowCount() > 0) {
-						self::$cache_exist[ $ids ] = TRUE;
-
-						return TRUE;
-					}
-					else {
-						self::$cache_exist[ $ids ] = FALSE;
-
-						return FALSE;
-					}
-				}
-
-				return self::$cache_exist[ $ids ];
-			}
-			else {
-				if (is_array($ids)) {
-					foreach ($ids as $id) {
-						if (!isset(self::$cache_exist[ $id ]) || $reload) {
-							$statement->bindParam(':ids', $id);
-							$statement->execute();
-							if ($statement->rowCount() > 0) {
-								self::$cache_exist[ $id ] = TRUE;
-							}
-							else {
-								self::$cache_exist[ $id ] = FALSE;
-							}
-						}
-					}
-
-					return TRUE;
-				}
-				else {
-					return FALSE;
-				}
-			}
-		}
-		else {
-			return FALSE;
-		}
+		return parent::get($id, $reload);
 	}
 
 	public static function get_last_log ($LIMIT = 1)
@@ -225,14 +99,17 @@ class log
 		return $this->id;
 	}
 
-	public function get_module ()
+	public function get_module ():module
 	{
+		if(!$this->module instanceof module) {
+			$this->module = module::get($this->module);
+		}
 		return $this->module;
 	}
 
 	public function get_module_name ()
 	{
-		return $this->get_module()->getName();
+		return $this->get_module()->get_name();
 	}
 
 	public function get_type ($string = FALSE)
@@ -274,7 +151,15 @@ class log
 
 	public function __toString ()
 	{
-		return ucfirst($this->get_type(TRUE)) . " | " . $this->msg . " | " . $this->get_date() . "";
+		return ucfirst($this->get_type(TRUE)) . " | " . $this->message . " | " . $this->get_date() . "";
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_code ()
+	{
+		return $this->code;
 	}
 }
 

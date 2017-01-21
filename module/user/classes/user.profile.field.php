@@ -24,7 +24,7 @@ use iko\{
 };
 use iko\lib\multiton\cache_int;
 use iko\user\{
-	iUser, User, User_profile
+	iUser, User
 };
 
 class Field extends cache_int implements iField
@@ -53,7 +53,7 @@ class Field extends cache_int implements iField
 	{
 		$this->id = $id;
 		if (self::exist($id)) {
-			$statement = Core::$PDO->query("SELECT * FROM " . self::table . " WHERE " . self::id . " = $id");
+			$statement = Core::PDO()->query("SELECT * FROM " . self::table . " WHERE " . self::id . " = $id");
 			$fetch = $statement->fetch(PDO::FETCH_ASSOC);
 			foreach ($fetch as $key => $value) {
 				$temp_key = str_replace("user_field_", "", $key);
@@ -101,7 +101,7 @@ class Field extends cache_int implements iField
 	}
 
 	/**
-	 * @return \iko\user\User
+	 * @return \iko\user\iUser
 	 */
 	public function get_owner (): iUser
 	{
@@ -148,7 +148,7 @@ class Field extends cache_int implements iField
 				$this) || $this->get_owner()->get_id() == $user->get_id()
 		) {
 			if ($value != $this->get_name()) {
-				$statement = Core::$PDO->prepare("UPDATE " . self::table . " Set " . self::name . " = :value WHERE " . self::id . " = " . $this->get_id());
+				$statement = Core::PDO()->prepare("UPDATE " . self::table . " Set " . self::name . " = :value WHERE " . self::id . " = " . $this->get_id());
 				$statement->bindParam(":value", $value);
 				$statement->execute();
 				if ($statement > 0) {

@@ -175,8 +175,10 @@ class Core
 		if (!defined($file)) {
 			define($file, 1);
 
+			/** @noinspection PhpIncludeInspection */
 			return require($file);
 		}
+		return false;
 	}
 
 	public static function file_incl ($file)
@@ -184,8 +186,10 @@ class Core
 		if (!defined($file)) {
 			define($file, 1);
 
+			/** @noinspection PhpIncludeInspection */
 			return include($file);
 		}
+		return false;
 	}
 	public static function PDO():\PDO {
 		return self::$PDO;

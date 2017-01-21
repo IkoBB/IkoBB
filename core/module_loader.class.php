@@ -138,7 +138,7 @@ abstract class module_loader
 			$files = array ($files);
 		}
 		if (is_array($files)) {
-			$result = $this->check_files_exist($files, $this->class_module->get_path());
+			$result = $this->check_files_exist($files, $this->get_module()->get_path());
 		}
 
 		return $result;
@@ -185,7 +185,7 @@ abstract class module_loader
 			$files = array ($files);
 		}
 		if (is_array($files)) {
-			$this->load_file($files, $this->class_module->get_path());
+			$this->load_file($files, $this->get_module()->get_path());
 		}
 
 		return $this->is_load();
@@ -201,7 +201,7 @@ abstract class module_loader
 				$files = array ($files);
 			}
 			foreach ($files as $var) {
-				$filename = $this->class_module->get_path() . $var;
+				$filename = $this->get_module()->get_path() . $var;
 				if (!file_exists($filename)) {
 					throw new \Exception("Code #1236 " . $filename);
 				}
@@ -253,10 +253,6 @@ abstract class module_loader
 		return $this->get_module()->get_path() . $this->entity_file;
 	}
 
-	/**
-	 * @param $callable
-	 * @param $args
-	 */
 	public function final_load ()
 	{
 		if ($this->final_load != NULL) {

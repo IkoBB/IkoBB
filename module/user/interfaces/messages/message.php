@@ -24,6 +24,10 @@ use iko\user\iOperators;
 
 interface iMessage
 {
+	/*
+	 * Conversations are like chats only with the difference a new subject will open a new chat
+	 * Like TangoBB
+	 */
 	/**
 	 * @return \iko\user\iOperators
 	 */

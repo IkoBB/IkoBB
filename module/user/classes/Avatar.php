@@ -19,6 +19,7 @@
 namespace iko\user\profile;
 
 use iko\module;
+use iko\user\iUser;
 use iko\user\User;
 
 class Avatar implements iAvatar// ToDo: Create a concept for User Avatar and how to save the needed data over the user class
@@ -30,7 +31,7 @@ class Avatar implements iAvatar// ToDo: Create a concept for User Avatar and how
 		"mm",
 		"wavatar");
 	private $data;
-
+	private $user;
 	public function __construct (User $user, string $data)
 	{
 		$this->user = $user;
@@ -50,10 +51,10 @@ class Avatar implements iAvatar// ToDo: Create a concept for User Avatar and how
 	public function get (): string
 	{
 		if ($this->data["type"] != NULL) {
-			$name = $this->data["value"] ?? $this->user->get_name();
+			$name = $this->data["value"] ?? $this->get_user()->get_name();
 			switch ($this->data["type"]) {
 				case "gravatar":
-					$string = $this->get_gravatar($this->user->get_email());
+					$string = $this->get_gravatar($this->get_user()->get_email());
 				break;
 				case "identicon":
 					$string = $this->get_gravatar($name, 80, "identicon");
@@ -148,6 +149,9 @@ class Avatar implements iAvatar// ToDo: Create a concept for User Avatar and how
 	public function __toString ()
 	{
 		return $this->get();
+	}
+	public function get_user():iUser {
+		return $this->user;
 	}
 
 }

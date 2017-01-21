@@ -18,10 +18,9 @@
  */
 namespace iko\language;
 
-use iko\Core;
-use iko\Event\Handler;
-use iko\lib\multiton\cache_string;
-use iko\user\User;
+use iko\{
+	Core, Event\Handler, lib\multiton\cache_string, user\User
+};
 use PDO;
 
 class key extends cache_string implements iKey
@@ -30,9 +29,56 @@ class key extends cache_string implements iKey
 	const name = language::name;
 	protected static $cache = array ();
 	protected static $cache_exist = array ();
+	public static function get ($id = 0, $reload = FALSE):key
+	{
+		return parent::get($id, $reload);
+	}
 
+	/**
+	 * @param $name
+	 *
+	 * @return bool
+	 * @permission iko.language.keys.delete
+	 *             Allows User to delete language keys
+	 */
+	public static function delete($name) {
+		if(!$name instanceof key) {
+			$name = self::get($name);
+		}
+		if(User::get_session()->has_permission("iko.language.keys.delete")) {
+			$key = Core::PDO()->quote($name->get_key());
+			$sql = "DELETE FROM " . self::table . " WHERE " . self::name . " = " . $key;
+			$statement = Core::PDO()->exec($sql);
+			if ($statement == 1) {
+				unset(self::$cache[$name->get_key()], self::$cache_exist[$name->get_key()]);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return bool
+	 * @permission iko.language.keys.create
+	 *             Allows User to create new Keys
+	 */
+	public static function create(string $name) {
+		if($name != "" && !self::exist($name)) {
+			if(User::get_session()->has_permission("iko.language.keys.create")){
+				$name = Core::PDO()->quote($name);
+				$sql = "INSERT INTO " . self::table . " (" . self::name . ") VALUE('" . $name . "')";
+				$statement = Core::PDO()->exec($sql);
+				if ($statement == 1) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	private $key;
-	private $langs = array ();
+	private $languages = array ();
 	private $all = FALSE;
 
 	protected function __construct (string $name)
@@ -53,12 +99,13 @@ class key extends cache_string implements iKey
 			$lang = language::get_instance()->get_current();
 		}
 		if ($lang != "") {
-			if (!isset($this->langs[ $lang ])) {
+			if (!isset($this->languages[ $lang ])) {
 				$this->load_lang($lang);
 			}
 
-			return $this->langs[ $lang ] ?? "";
+			return $this->languages[ $lang ] ?? "";
 		}
+		return "";
 	}
 
 	public function get_lang_all (): array
@@ -67,7 +114,7 @@ class key extends cache_string implements iKey
 			$this->all = TRUE;
 			$languages = language::get_instance()->get_languages();
 			foreach ($languages as $item) {
-				if (!isset($this->langs[ $item ])) {
+				if (!isset($this->languages[ $item ])) {
 					$this->all = FALSE;
 					break;
 				}
@@ -76,9 +123,7 @@ class key extends cache_string implements iKey
 				$this->load_lang_all();
 			}
 		}
-		if ($this->all) {
-			return $this->langs;
-		}
+		return $this->languages;
 	}
 
 	private function load_lang_all ()
@@ -89,7 +134,7 @@ class key extends cache_string implements iKey
 		foreach ($fetch_all as $fetch) {
 			foreach ($fetch as $key => $item) {
 				if ($key != self::name) {
-					$this->langs[ $key ] = $item;
+					$this->languages[ $key ] = $item;
 				}
 			}
 		}
@@ -102,7 +147,7 @@ class key extends cache_string implements iKey
 			$sql = "SELECT " . $lang . " FROM " . self::table . " WHERE " . self::name . " = '" . $this->get_key() . "'";
 			$statement = Core::PDO()->query($sql);
 			$fetch = $statement->fetch(PDO::FETCH_ASSOC);
-			$this->langs[ $lang ] = $fetch[ $lang ];
+			$this->languages[ $lang ] = $fetch[ $lang ];
 		}
 	}
 
@@ -133,7 +178,7 @@ class key extends cache_string implements iKey
 						$sql_value = Core::PDO()->quote($value);
 						$statement = Core::PDO()->exec("UPDATE " . self::table . " Set " . $lang . " = " . $sql_value . " WHERE " . self::name . " = '" . self::get_key() . "' ");
 						if ($statement == 1) {
-							$this->langs[ $lang ] = $value;
+							$this->languages[ $lang ] = $value;
 
 							return TRUE;
 						}

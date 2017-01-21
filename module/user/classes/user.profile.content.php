@@ -44,14 +44,14 @@ class Content implements iContent
 		$this->create = $create;
 		$this->field = $field;
 		$this->field_id = $this->get_field()->get_id();
-		$statement = Core::$PDO->query("SELECT * FROM " . self::table . " WHERE " . self::id . " = " . $this->user_id . " AND " . Field::id . " = " . $this->field_id);
+		$statement = Core::PDO()->query("SELECT * FROM " . self::table . " WHERE " . self::id . " = " . $this->user_id . " AND " . Field::id . " = " . $this->field_id);
 		$fetch = $statement->fetch(PDO::FETCH_ASSOC);
 		if ($fetch !== FALSE) {
 			$this->property = $fetch[ self::value ];
 			$this->value = $fetch[ self::property ];
 		}
 		else {
-			$create_statement = Core::$PDO->exec("INSERT INTO " . self::table . "(" . self::id . ", " . Field::id . ", " . self::property . ", " . self::value . ") VALUE('" . $this->user_id . "', '" . $this->field_id . "', '0', '')");
+			$create_statement = Core::PDO()->exec("INSERT INTO " . self::table . "(" . self::id . ", " . Field::id . ", " . self::property . ", " . self::value . ") VALUE('" . $this->user_id . "', '" . $this->field_id . "', '0', '')");
 			if ($create_statement !== FALSE && $create_statement == 1) {
 				$this->property = 0;
 				$this->value = "";
@@ -124,7 +124,7 @@ class Content implements iContent
 	{
 		$name = str_replace("set_", "", $name);
 		if (Handler::event("iko.user.profile.fields.user." . $name, $this->user_class->get_id(),
-				User::get_session()->get_id()) && Handler::event("iko.user.profile.field." . $this->get_field_id() . ".user." . $name,
+				User::get_session()->get_id()) && Handler::event("iko.user.profile.field." . $this->get_field()->get_id() . ".user." . $name,
 				$this->user_class->get_id(), User::get_session()->get_id())
 		) {
 			try {
@@ -133,7 +133,7 @@ class Content implements iContent
 				}
 				$table = (new \ReflectionClass($this))->getConstant($name);
 				$sql = "UPDATE " . self::table . " Set " . $table . " = '" . $value . "' WHERE " . self::id . " = " . $this->get_user()->get_id() . " AND " . Field::id . " = " . $this->get_field()->get_id();
-				$statement = Core::$PDO->exec($sql);
+				$statement = Core::PDO()->exec($sql);
 				if ($statement > 0) {
 					$this->{$name} = $value;
 

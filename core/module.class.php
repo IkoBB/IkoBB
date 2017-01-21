@@ -13,7 +13,7 @@
 namespace iko;
 use iko\lib\multiton\cache_string;
 
-class module extends cache_string// TODO: Implemnt autoloading of Modules and posibility to load Modules simple over one function.
+class module extends cache_string
 {
 	const table = "{prefix}modules";
 	const name = "module_name";
@@ -22,6 +22,10 @@ class module extends cache_string// TODO: Implemnt autoloading of Modules and po
 	 */
 	protected static $cache = array ();
 	protected static $cache_exist = array ();
+	public static function get ($id = 0, $reload = FALSE):module
+	{
+		return parent::get($id, $reload);
+	}
 
 	public static function request ($name, $class = FALSE)
 	{
@@ -46,6 +50,7 @@ class module extends cache_string// TODO: Implemnt autoloading of Modules and po
 		if (self::exist($name)) {
 			return self::get($name)->get_status();
 		}
+		return false;
 	}
 
 	public static function load_status ($name): bool
@@ -53,6 +58,7 @@ class module extends cache_string// TODO: Implemnt autoloading of Modules and po
 		if (self::exist($name)) {
 			return self::get($name)->is_load();
 		}
+		return false;
 	}
 	public static function init ()
 	{
@@ -203,7 +209,7 @@ class module extends cache_string// TODO: Implemnt autoloading of Modules and po
 
 	public function install ()
 	{
-		$this->loader->create_PDO_Tables();
+		$this->get_loader()->create_PDO_Tables();
 	}
 
 	public function get_status (): bool
@@ -261,5 +267,21 @@ class module extends cache_string// TODO: Implemnt autoloading of Modules and po
 		if ($this->get_loader() instanceof module_loader) {
 			$this->get_loader()->event_handler_init();
 		}
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_author ():string
+	{
+		return $this->author;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_display_name ()
+	{
+		return $this->displayname;
 	}
 }
