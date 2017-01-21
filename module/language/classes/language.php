@@ -47,7 +47,7 @@ class language extends instance implements iLanguage
 		$this->current = $lang;
 
 		$sql = "SHOW COLUMNS FROM " . self::table;
-		$statement = Core::$PDO->query($sql);
+		$statement = Core::PDO()->query($sql);
 		$fetch_all = $statement->fetchAll();
 		foreach ($fetch_all as $item) {
 			if ($item["Field"] != self::name) {

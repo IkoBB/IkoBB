@@ -84,7 +84,7 @@ class key extends cache_string implements iKey
 	private function load_lang_all ()
 	{
 		$sql = "SELECT * FROM " . self::table . " WHERE " . self::name . " = '" . $this->get_key() . "'";
-		$statement = Core::$PDO->query($sql);
+		$statement = Core::PDO()->query($sql);
 		$fetch_all = $statement->fetchAll(PDO::FETCH_ASSOC);
 		foreach ($fetch_all as $fetch) {
 			foreach ($fetch as $key => $item) {
@@ -100,7 +100,7 @@ class key extends cache_string implements iKey
 	{
 		if (language::get_instance()->is_supported_language($lang)) {
 			$sql = "SELECT " . $lang . " FROM " . self::table . " WHERE " . self::name . " = '" . $this->get_key() . "'";
-			$statement = Core::$PDO->query($sql);
+			$statement = Core::PDO()->query($sql);
 			$fetch = $statement->fetch(PDO::FETCH_ASSOC);
 			$this->langs[ $lang ] = $fetch[ $lang ];
 		}
@@ -130,8 +130,8 @@ class key extends cache_string implements iKey
 			if ($value != "" && $value != $this->get_lang($lang)) {
 				if (User::get_session()->has_permission("iko.language.keys.set.lang")) {
 					if (Handler::event("iko.language.keys.set.lang", $this, NULL, TRUE)) {
-						$sql_value = Core::$PDO->quote($value);
-						$statement = Core::$PDO->exec("UPDATE " . self::table . " Set " . $lang . " = " . $sql_value . " WHERE " . self::name . " = '" . self::get_key() . "' ");
+						$sql_value = Core::PDO()->quote($value);
+						$statement = Core::PDO()->exec("UPDATE " . self::table . " Set " . $lang . " = " . $sql_value . " WHERE " . self::name . " = '" . self::get_key() . "' ");
 						if ($statement == 1) {
 							$this->langs[ $lang ] = $value;
 
@@ -150,8 +150,8 @@ class key extends cache_string implements iKey
 		if ($name != "" && $name != $this->get_key()) {
 			if (User::get_session()->has_permission("iko.language.keys.set.name")) {
 				if (Handler::event("iko.language.keys.set.name", $name)) {
-					$sql_name = Core::$PDO->quote($name);
-					$statement = Core::$PDO->exec("UPDATE " . self::table . " Set " . self::table . " = " . $sql_name . " WHERE " . self::name . " = '" . self::get_key() . "' ");
+					$sql_name = Core::PDO()->quote($name);
+					$statement = Core::PDO()->exec("UPDATE " . self::table . " Set " . self::table . " = " . $sql_name . " WHERE " . self::name . " = '" . self::get_key() . "' ");
 					if ($statement == 1) {
 						$this->key = $name;
 
