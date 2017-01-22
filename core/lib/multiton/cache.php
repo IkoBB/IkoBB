@@ -135,12 +135,6 @@ abstract class cache
 		}
 	}
 
-	/**
-	 * @param int  $ids
-	 * @param bool $reload
-	 *
-	 * @return bool|mixed
-	 */
 	public static function exist ($ids = 0, $reload = FALSE)
 	{
 		$class = get_called_class();

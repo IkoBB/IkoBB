@@ -9,7 +9,7 @@ INSERT INTO `iko_configs` VALUES ('site_name', 's:10:"Test Value";', 'The name o
 	('site_template', "i:1;", 'Insert the ID of the template which should be the default template.', 'cms'),
 	('site_email', 's:13:"test@test.com";', 'The contact email of the forum. Also used for sending emails.', 'iko'),
 	('site_maintenance', "i:0;", 'Indicates if the site is maintenance. 1 - Maintenance Mode on; 2 - Maintenance Mode off','iko'),
-	('date_format', 's9:"d-m-Y H:i";', 'Default date format', 'iko');
+	('date_format', 's:9:"d-m-Y H:i";', 'Default date format', 'iko');
 
 
 

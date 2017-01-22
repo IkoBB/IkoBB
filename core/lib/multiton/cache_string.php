@@ -25,7 +25,9 @@ class cache_string extends cache
 	{
 		$class = get_called_class();
 		if (is_string($id)) {
+			/** @noinspection PhpUndefinedVariableInspection */
 			if (!isset($class::$cache[ $id ]) || $class::$cache[ $id ] == NULL || $reload) {
+				/** @noinspection PhpUndefinedMethodInspection */
 				if ($class::exist($id, $reload)) {
 					$class::$cache[ $id ] = new $class($id);
 				}
@@ -45,6 +47,7 @@ class cache_string extends cache
 		$class = get_called_class();
 		if (is_array($ids) || is_string($ids)) {
 			if (is_array($ids)) {
+				/** @noinspection PhpUndefinedMethodInspection */
 				$class::exist($ids);
 			}
 			if (is_string($ids)) {
@@ -52,7 +55,9 @@ class cache_string extends cache
 			}
 			$array = array ();
 			foreach ($ids as $id) {
+				/** @noinspection PhpUndefinedVariableInspection */
 				if (!isset($class::$cache[ $id ]) || $class::$cache[ $id ] == NULL || $reload) {
+					/** @noinspection PhpUndefinedMethodInspection */
 					if ($class::exist($id, $reload)) {
 						$class::$cache[ $id ] = new $class($id);
 						array_push($array, $class::$cache[ $id ]);

@@ -178,7 +178,9 @@ class Core
 			/** @noinspection PhpIncludeInspection */
 			return require($file);
 		}
-		return false;
+		else {
+			return true;
+		}
 	}
 
 	public static function file_incl ($file)
@@ -189,7 +191,9 @@ class Core
 			/** @noinspection PhpIncludeInspection */
 			return include($file);
 		}
-		return false;
+		else {
+			return true;
+		}
 	}
 	public static function PDO():\PDO {
 		return self::$PDO;
@@ -206,6 +210,7 @@ Core::init(0);
  *  Load Config Loader
  */
 //require_once Core::$corepath . "permission/module.class.php";
+Core::file_req(Core::$corepath . "lib.php");
 Core::file_req(Core::$corepath . "log.class.php");
 Core::file_req(Core::$corepath . "exception.class.php");
 Core::file_req(Core::$corepath . "pdo.class.php");
@@ -214,7 +219,7 @@ Core::file_req(Core::$corepath . "event.php");
 Core::file_req(Core::$corepath . 'config.php');
 Core::file_req(Core::$corepath . "sessions.php");
 
-Core::file_req(Core::$corepath . "lib.php");
+
 
 /**
  *  Load Phase 2

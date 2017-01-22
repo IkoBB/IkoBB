@@ -27,7 +27,9 @@ class cache_int extends cache
 			$id = intval($id);
 		}
 		if (is_int($id)) {
+			/** @noinspection PhpUndefinedVariableInspection */
 			if (!isset($class::$cache[ $id ]) || $class::$cache[ $id ] == NULL || $reload) {
+				/** @noinspection PhpUndefinedMethodInspection */
 				if ($class::exist($id, $reload)) {
 					$class::$cache[ $id ] = new $class($id);
 				}
@@ -53,6 +55,7 @@ class cache_int extends cache
 		}
 		if (is_array($ids) || is_int($ids)) {
 			if (is_array($ids)) {
+				/** @noinspection PhpUndefinedMethodInspection */
 				$class::exist($ids);
 			}
 			if (is_int($ids)) {
@@ -60,7 +63,9 @@ class cache_int extends cache
 			}
 			$array = array ();
 			foreach ($ids as $id) {
+				/** @noinspection PhpUndefinedVariableInspection */
 				if (!isset($class::$cache[ $id ]) || $class::$cache[ $id ] == NULL || $reload) {
+					/** @noinspection PhpUndefinedMethodInspection */
 					if ($class::exist($id, $reload)) {
 						$class::$cache[ $id ] = new $class($id);
 						array_push($array, $class::$cache[ $id ]);
