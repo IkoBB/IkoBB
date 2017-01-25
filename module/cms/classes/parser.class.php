@@ -14,8 +14,9 @@
 namespace iko\cms;
 
 use Emojione;
-use iko\Core;
-use iko\PDO;
+use iko\{
+	Core, Exception, PDO
+};
 
 class parser
 {
@@ -140,7 +141,7 @@ class parser
 	public function __construct ()
 	{
 		try {
-			$statement = Core::$PDO->prepare("SELECT * FROM " . self::table . " ORDER BY bbcode_id ASC");
+			$statement = Core::PDO()->prepare("SELECT * FROM " . self::table . " ORDER BY bbcode_id ASC");
 			$statement->execute();
 			$result = $statement->fetchAll(PDO::FETCH_ASSOC);
 			foreach ($result as $BBcode) {
@@ -157,7 +158,7 @@ class parser
 	public function add_BBCode ($tag, $pattern, $replacement)
 	{
 		try {
-			$statement = Core::$PDO->prepare("INSERT INTO " . self::table . " (BBCode, pattern, replacement) VALUE (:tag, :pattern, :replacement)");
+			$statement = Core::PDO()->prepare("INSERT INTO " . self::table . " (BBCode, pattern, replacement) VALUE (:tag, :pattern, :replacement)");
 			$statement->bindParam(':tag', $tag);
 			$statement->bindParam(':pattern', $pattern);
 			$statement->bindParam(':replacement', $replacement);

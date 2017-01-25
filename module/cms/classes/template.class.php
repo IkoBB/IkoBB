@@ -13,11 +13,9 @@
 
 namespace iko\cms;
 
-use iko\Core;
-use iko\PDO;
-use iko\config;
-use iko\module;
-use iko\Exception;
+use iko\{
+	Core, PDO, config, module, Exception, session, user\User
+};
 
 /**
  * Class template
@@ -25,6 +23,9 @@ use iko\Exception;
  */
 class template
 {
+	/**
+	 *
+	 */
 	const table = "{prefix}templates";
 
 	/**
@@ -58,13 +59,13 @@ class template
 	public static function template_exists ($id)
 	{
 		try {
-			$statement = Core::$PDO->prepare("SELECT template_id FROM " . self::table . " WHERE template_id = :template_id");
+			$statement = Core::PDO()->prepare("SELECT template_id FROM " . self::table . " WHERE template_id = :template_id");
 			$statement->bindParam(':template_id', $id);
 			$statement->execute();
 			$result = $statement->fetch(PDO::FETCH_ASSOC);
 			$return = $result['template_id'];
 		}
-		catch (\PDOException $exception) {
+		catch (Exception $exception) {
 			throw new Exception("Error #1234: " . $exception);
 		}
 		if (is_int($return) && $return > 0) {
@@ -100,6 +101,8 @@ class template
 				$resource = $zip->open('templates/' . $directory . '/' . $filename);
 
 				if ($resource === TRUE) {
+					$file_template = FALSE;
+					$file_entity = FALSE;
 					for ($i = 0; $i < $zip->numFiles; $i++) {
 						if (basename($zip->getNameIndex($i)) == 'template.html') {
 							$file_template = TRUE;
@@ -118,7 +121,7 @@ class template
 
 
 				try {
-					$statement = Core::$PDO->prepare("INSERT INTO " . self::table . " (template_name, template_author, template_directory, template_core_version) VALUE (:template_name, :template_author, :template_directory, :template_core_version)");
+					$statement = Core::PDO()->prepare("INSERT INTO " . self::table . " (template_name, template_author, template_directory, template_core_version) VALUE (:template_name, :template_author, :template_directory, :template_core_version)");
 					$statement->bindParam(':template_name', $name);
 					$statement->bindParam(':template_author', $author);
 					$statement->bindParam(':template_version', $version);
@@ -128,16 +131,32 @@ class template
 					$statement->execute();
 
 				}
-				catch (\PDOException $exception) {
-					throw new Exception("Error #1234: " . $exception);
+				catch (Exception $exception) {
+					$template = template::get_instance();
+					$template->error .= "Error CMS-0001: Failed to insert new template into database";
 				}
 			}
 		}
 	}
 
-	public static function add_sidebar() {
-		$template = self::get_instance();
-		$template->entity("sidebar", array ());
+	public static function add_sidebar(string $sidebar = "user_sidebar", string $module = NULL) {
+		$entity = new entity();
+		$entity->get_template_entity($sidebar, $module);
+		/*
+		if (session::is_logged_in() !== FALSE) {
+			// Check if user is logged in
+			$user = User::get_session();
+			if ($user !== FALSE) {
+				$template->entity("user-sidebar", array ());
+			}
+			else {
+				$template->entity("login-sidebar", array ());
+			}
+		}
+		else {
+			$template->entity("login-sidebar", array ());
+		}*/
+		$template = template::get_instance();
 		$template->width_content = '9';
 	}
 
@@ -146,12 +165,17 @@ class template
 		$template->width_content = '12';
 	}
 
-	public static function add_breadcrumb($name, $link) {
+	/**
+	 * @param $name
+	 * @param $link
+	 */
+	public static function add_breadcrumb ($name, $link)
+	{
 		$template = self::get_instance();
-		$template->breadcrumbs .= $template->entity("breadcrumb", array(
+		$entity = new entity();
+		$template->breadcrumbs .= $entity->return_entity("cms.breadcrumb", array (
 			"breadcrumb_name" => $name,
-			"breadcrumb_link" => $link
-		), TRUE);
+			"breadcrumb_link" => $link));
 	}
 
 	/**
@@ -191,6 +215,7 @@ class template
 	 */
 	private $entity = array ();
 
+
 	/**
 	 * Template constructor
 	 * - Defines template_id
@@ -203,21 +228,29 @@ class template
 	{
 		if (strpos(Core::$currentfile, Core::$adminpath) === FALSE) {
 			// Check if the user module is loaded
-			if (module::load_status("user")) {
+
+			if (session::is_logged_in() !== FALSE) {
 				// Check if user is logged in
-				$user = \iko\user\User::get_session();
+				$user = User::get_session();
+
 				if ($user !== FALSE) {
 					// Get the template of the user
 					$this->set_template($user->get_template());
+					$this->current_user_avatar = $user->get_avatar();
+					$this->current_user_name = $user->get_name();
 				}
 				else {
 					// if user is not logged in load default template
 					$this->set_template(0);
+					$this->current_user_name = "Gast";
+					$this->current_user_avatar = User::get(1)->get_avatar();
 				}
 			}
 			else {
 				// load default template when no user module is activated
 				$this->set_template(0);
+				$this->current_user_name = "Guest";
+				$this->current_user_avatar = User::get(1)->get_avatar();
 			}
 		}
 		else {
@@ -235,7 +268,7 @@ class template
 			if (!isset($this->template_directory) || $this->template_directory == '') {
 				// Get all template variables from table
 				try {
-					$statement = Core::$PDO->prepare("SELECT * FROM " . self::table . " WHERE template_id = :template_id");
+					$statement = Core::PDO()->prepare("SELECT * FROM " . self::table . " WHERE template_id = :template_id");
 					$statement->bindParam(':template_id', $this->template_id);
 					$statement->execute();
 					$result = $statement->fetch(PDO::FETCH_ASSOC);
@@ -271,12 +304,21 @@ class template
 	 * - %% %% is used for parameters like title %% title %%
 	 * - §§ §§ is used for entities like sidebar §§ sidebar §§
 	 *
-	 * @param $string
+	 * @param string       $string
+	 * @param array | NULL $params
 	 *
 	 * @return mixed|string
 	 */
-	private function bladeSyntax ($string)
+	public function bladeSyntax (string $string, $params = NULL, $entities = array())
 	{
+		if ($params === NULL) {
+			$params = $this->param;
+		}
+		if ($entities === NULL) {
+			$entities = $this->entity;
+		}
+
+
 		$syntax_blade = array (
 			'/{{ (.*) }}/U',
 			// text or variable
@@ -285,9 +327,11 @@ class template
 			'/(\s*)@(endif|endforeach|endfor|endwhile)(\s*)/',
 			'/(\s*)@(else)(\s*)/',
 			'/(\s*)@unless(\s*\(.*\))/',
-			'/%% (.*) %%/U',
-			// Param
-			'/§§ (.*) §§/U'); // Entity
+			'/§§ (.*) §§/U',
+			// Entity
+			'/%% (.*) %%/U');// Param
+
+
 		$syntax_php = array (
 			'<?php echo $1; ?>',
 			'<?php $1 = $2; ?>',
@@ -295,8 +339,16 @@ class template
 			'$1<?php $2; ?>',
 			'$1<?php $2: ?>$3',
 			'$1<?php if( ! ($2)): ?>',
-			'<?php echo (isset($this->param["$1"]))?$this->param["$1"]:""; ?>',
-			'<?php echo (isset($this->entity["$1"]))?$this->entity["$1"]:""; ?>');
+			'<?php echo (isset($this->entity["$1"]))?$this->entity["$1"]:""; ?>',
+			'<?php echo (isset($params["$1"]))?$params["$1"]:""; ?>');
+
+			foreach ($entities as $name => $content) {
+				var_dump(preg_match('/%% (.*) %%/U', $content));
+				if (preg_match('/§§ (.*) §§/U', $content) != 0 || preg_match('/%% (.*) %%/U', $content) != 0) {
+					$this->entity[ $name ] = $this->bladeSyntax($content, NULL, array());
+				}
+			}
+
 		$string = preg_replace($syntax_blade, $syntax_php, $string);
 		//@empty
 		$string = str_replace('@empty', '<?php endforeach; ?><?php else: ?>', $string);
@@ -304,6 +356,11 @@ class template
 		$string = str_replace('@endforelse', '<?php endif; ?>', $string);
 		//@endunless
 		$string = str_replace('@endunless', '<?php endif; ?>', $string);
+		/*
+		if($params == $this->param){
+			var_dump($params);
+			var_dump($this->entity);
+		}*/
 
 		ob_start();
 		eval('namespace iko; ?>' . $string . '');
@@ -314,6 +371,14 @@ class template
 	}
 
 	/**
+	 * @param $entity
+	 * @param $content
+	 */
+	public function add_entity ($entity, $content)
+	{
+		$this->entity[ $entity ] = $content;
+	}
+	/**
 	 * Adds an entity to the template
 	 *
 	 * @param       $entity
@@ -322,7 +387,7 @@ class template
 	 *
 	 * @return bool
 	 */
-	public function entity ($entity, $parameters = array (), $return = FALSE)
+	/*public function entity ($entity, $parameters = array (), $return = FALSE)
 	{
 		if (file_exists(Core::$basepath . 'template/' . $this->template_directory . '/entities.html')) {
 			$entities = file_get_contents(Core::$basepath . 'template/' . $this->template_directory . '/entities.html');
@@ -342,7 +407,7 @@ class template
 		}
 
 		return FALSE;
-	}
+	}*/
 
 	/**
 	 * Sets the template to the wanted template
@@ -365,6 +430,11 @@ class template
 	 */
 	public function __toString ()
 	{
+		$entity = new entity();
+		if ($this->error != "") $entity->get_template_entity("cms.error");
+		if ($this->warning != "") $entity->get_template_entity("cms.warning");
+		if ($this->notice != "") $entity->get_template_entity("cms.notice");
+
 		return $this->bladeSyntax($this->template);
 	}
 
@@ -377,12 +447,7 @@ class template
 	 */
 	public function __get ($var)
 	{
-		if (isset($this->param[ $var ])) {
-			return $this->param[ $var ];
-		}
-		else {
-			return "";
-		}
+		return $this->output_parameter($var);
 	}
 
 	/**
@@ -394,5 +459,24 @@ class template
 	public function __set ($var, $value)
 	{
 		$this->param[ $var ] = $value;
+	}
+
+	public function output_parameter (string $parameter)
+	{
+		if (array_key_exists($parameter, $this->param)) {
+			return $this->param[ $parameter ];
+		}
+		else {
+			return FALSE;
+		}
+
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_directory (): string
+	{
+		return $this->template_directory;
 	}
 }

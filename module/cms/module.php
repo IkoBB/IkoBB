@@ -11,55 +11,47 @@
  *
  */
 namespace iko\cms;
+
 use iko\Event\Handler;
 
 class template_loader extends \iko\module_loader
 {
-	public function __construct($modul)
+
+	private $files = array (
+		"classes" => array (
+			"cms.class.php",
+			"page.class.php",
+			"template.class.php",
+			"parser.class.php",
+			"entity.class.php"),
+		"lib"   => array (
+			"EmojiOne" => array (
+				"autoload.php",),
+			"GeSHi"    => array (
+				"geshi.php")));
+
+
+	public function __construct ($modul)
 	{
 		parent::__construct($modul);
 
 		Handler::add_event('cms', 'iko.cms.register.module', '\iko\cms\page', 'init_page');
 	}
 
-	protected function pre_check_PDO_Tables()
+	protected function pre_check_PDO_Tables ()
 	{
 		$tables = array ("templates");
-
 		return $this->check_PDO_Tables($tables);
 	}
 
-	protected function pre_check_Files()
+	protected function pre_check_Files ()
 	{
-		$files = array (
-			"cms.class.php",
-			"page.class.php",
-			"template.class.php",
-			"parser.class.php",
-			"lib" => array (
-				"EmojiOne" => array (
-					"autoload.php",
-					"src" => array (
-						"Client.php",
-						"ClientInterface.php",
-						"Emojione.php",
-						"Ruleset.php",
-						"RulesetInterface.php")),
-				"GeSHi"    => array (
-					"geshi.php")));
-
-		return $this->check_Files($files);
+		return $this->check_Files($this->files);
 	}
 
 	public function pre_load ()
 	{
-		$files = array (
-			"cms.class.php",
-			"page.class.php",
-			"template.class.php",
-			"parser.class.php",
-			"lib/EmojiOne/autoload.php",
-			"lib/GeSHi/geshi.php",);
-		return parent::load($files);
+
+		return parent::load($this->files);
 	}
 }

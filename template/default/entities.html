@@ -1,209 +1,194 @@
 <!-- start:TEST -->
-<div class="panel panel-danger">
-	<div class="panel-heading">
-		<h3 class="panel-title">%% sub_title %%</h3>
+<div class = "panel panel-danger">
+	<div class = "panel-heading">
+		<h3 class = "panel-title">%% sub_title %%</h3>
 	</div>
-	<b>Welcome to the IkoBB debug page</b><br>
-	You can try smileys and BBCodes in the textbox below.<br>
-	<form action="index.php?module=debug" method="post">
-		<textarea style="height: 200px; width: 100%" name="text">{{ @$_POST['text'] }}</textarea><br><br>
-		<div style="border: 1px black solid;">
+	<b>Welcome to the IkoBB debug page</b><br> You can try smileys and BBCodes in the textbox below.<br>
+	<form action = "index.php?module=debug" method = "post">
+		<textarea style = "height: 200px; width: 100%" name = "text">{{ @$_POST['text'] }}</textarea><br><br>
+		<div style = "border: 1px black solid;">
 			<h4>Result:</h4>
 			%% output %%
 		</div>
 		<br>
-		<div style="border: dashed black 1px;">
+		<div style = "border: dashed black 1px;">
 			<h4>Code Output:</h4>
 			%% code_output %%
 		</div>
-		<input class="btn btn-block btn-danger" type="submit">
+		<input class = "btn btn-block btn-danger" type = "submit">
 	</form>
-</div>
-<!-- end:TEST -->
+</div><!-- end:TEST -->
 
-<!-- start:cms_page -->
-<div class="panel panel-danger">
-	<div class="panel-heading">
-		<h3 class="panel-title">%% sub_title %%</h3>
+<!-- start:cms.page -->
+<div class = "panel panel-danger">
+	<div class = "panel-heading">
+		<h3 class = "panel-title">%% sub_title %%</h3>
 	</div>
-	<div class="content">
-		<div style="margin: 5px 10px;">
+	<div class = "content">
+		<div style = "margin: 5px 10px;">
 			%% page_content %%
 		</div>
 	</div>
-</div>
-<!-- end:cms_page -->
+</div><!-- end:cms.page -->
 
-<!-- start:404_error -->
-<div style="text-align: center; padding-top: 50px;">
-	<span style="font-size: 150px;">404</span><br><br><br>
-	<b style="font-size: 35px;">Oooops...</b><br>
-	<span style="font-size: 25px;">It seems that the page you are looking for does not exists or has been moved.</span>
-</div>
-<!-- end:404_error -->
-<!-- start:forum-list -->
-<div class="panel panel-danger">
-	<div class="panel-heading">
-		<h3 class="panel-title">%% forum_category_name %%</h3>
+<!-- start:cms.error404 -->
+<div style = "text-align: center; padding-top: 50px;">
+	<span style = "font-size: 150px;">404</span><br><br><br> <b style = "font-size: 35px;">Oooops...</b><br>
+	<span style = "font-size: 25px;">It seems that the page you are looking for does not exists or has been moved.</span>
+</div><!-- end:cms.error404 -->
+
+<!-- start:cms.error -->
+<div class="alert alert-danger">
+	<div class="container-fluid">
+		<div class="alert-icon">
+			<i class="material-icons">error_outline</i>
+		</div>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true"><i class="material-icons">clear</i></span>
+		</button>
+		<b>Error Alert:</b> <br />
+		%% error %% %%
 	</div>
-	<table class="table table-hover">
-		<thead>
-		<tr>
-			<th style="width: 1%;"></th>
-			<th class="col-md-6">Forum</th>
-			<th class="col-md-1 text-center">Topics</th>
-			<th class="col-md-1 text-center">Posts</th>
-			<th class="col-md-4">Last Post</th>
-		</tr>
-		</thead>
-		<tbody>
-		%% forum-entries %%
-		</tbody>
-	</table>
 </div>
-<!-- end:forum-list -->
-<!-- start:forum-entries -->
-<tr>
-	<td style="width: 1%;"><i class="material-icons" style="font-size: 30px;">comment</i></td>
-	<td class="col-md-6"><a href="#">%% forum_name %%</a> <br />
-		<small>%% forum_description %%</small>
-	</td>
-	<td class="col-md-1 text-center">0</td>
-	<td class="col-md-1 text-center">0</td>
-	<td class="col-md-4">
-		<!--<img src="http://67.media.tumblr.com/a60d091d405bdf86e90d910cfba9303c/tumblr_nyox9ijjfZ1rpwm80o1_250.png"
-		     class="img-thumbnail pull-left hidden-xs" style="width:42px;height:42px;margin-right:5px;"> <a
-			href="#">Test Topic</a><br>
-		<small><a href="#">%% username %%</a>, <span title="9. October 2016">Like, tomorrow !?</span>
-		</small>--> None
-	</td>
-</tr>
-<!-- end:forum-entries -->
+<!-- end:cms.error -->
+
+<!-- start:cms.warning -->
+<div class="alert alert-warning">
+	<div class="container-fluid">
+		<div class="alert-icon">
+			<i class="material-icons">warning</i>
+		</div>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true"><i class="material-icons">clear</i></span>
+		</button>
+		<b>Warning Alert:</b> <br />
+		%% warning %%
+	</div>
+</div>
+<!-- end:cms.warning -->
+
+<!-- start:cms.notice -->
+<div class="alert alert-info">
+	<div class="container-fluid">
+		<div class="alert-icon">
+			<i class="material-icons">info_outline</i>
+		</div>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true"><i class="material-icons">clear</i></span>
+		</button>
+		<b>Info alert:</b> <br />
+		%% notice %%
+	</div>
+</div>
+<!-- end:cms.notice -->
+
+<!-- start:cms.success -->
+<div class="alert alert-success">
+	<div class="container-fluid">
+		<div class="alert-icon">
+			<i class="material-icons">check</i>
+		</div>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true"><i class="material-icons">clear</i></span>
+		</button>
+		<b>Success Alert:</b> <br /> %% success %%
+	</div>
+</div>
+<!-- end:cms.success -->
+
+<!-- start:cms.breadcrumb -->
+<li>
+	<a class = "active" href = "%% breadcrumb_link %%">%% breadcrumb_name %%</a>
+</li><!-- end:cms.breadcrumb -->
 
 <!-- start:sidebar_old -->
-<div class="col-md-3 pull-right">
-	<div class="card card-signup" style=" border-top: 20px solid #DB3431; ">
-		<form class="form" method="" action="">
-			<h3 class="text-divider">Sign Up</h3>
-			<div class="content">
+<div class = "col-md-3 pull-right">
+	<div class = "card card-signup" style = " border-top: 20px solid #DB3431; ">
+		<form class = "form" method = "" action = "">
+			<h3 class = "text-divider">Sign Up</h3>
+			<div class = "content">
 
-				<div class="input-group">
-	                <span class="input-group-addon">
-												<i class="material-icons">face</i>
+				<div class = "input-group">
+	                <span class = "input-group-addon">
+												<i class = "material-icons">face</i>
 											</span>
-					<div class="form-group label-floating">
-						<label class="control-label">First Name...</label> <input type="text" class="form-control"><span
-							class="material-input"></span></div>
+					<div class = "form-group label-floating">
+						<label class = "control-label">First Name...</label>
+						<input type = "text" class = "form-control"><span class = "material-input"></span></div>
 				</div>
 
-				<div class="input-group">
-	                <span class="input-group-addon">
-												<i class="material-icons">email</i>
+				<div class = "input-group">
+	                <span class = "input-group-addon">
+												<i class = "material-icons">email</i>
 											</span>
-					<div class="form-group label-floating">
-						<label class="control-label">E-mail...</label> <input type="text" class="form-control"><span
-							class="material-input"></span></div>
+					<div class = "form-group label-floating">
+						<label class = "control-label">E-mail...</label>
+						<input type = "text" class = "form-control"><span class = "material-input"></span></div>
 				</div>
 
-				<div class="input-group">
-	                <span class="input-group-addon">
-												<i class="material-icons">lock_outline</i>
+				<div class = "input-group">
+	                <span class = "input-group-addon">
+												<i class = "material-icons">lock_outline</i>
 											</span>
-					<div class="form-group label-floating">
-						<label class="control-label">Password...</label> <input type="password" class="form-control"><span
-							class="material-input"></span></div>
+					<div class = "form-group label-floating">
+						<label class = "control-label">Password...</label>
+						<input type = "password" class = "form-control"><span class = "material-input"></span></div>
 				</div>
 			</div>
-			<p class="text-center">Or use the following</p>
-			<div class="social-line">
-				<a href="#pablo" class="btn btn-simple btn-just-icon"> <i class="fa fa-facebook-square"></i> </a> <a
-					href="#pablo" class="btn btn-simple btn-just-icon"> <i class="fa fa-twitter"></i> </a> <a href="#pablo"
-				                                                                                              class="btn btn-simple btn-just-icon">
-				<i class="fa fa-google-plus"></i> </a>
+			<p class = "text-center">Or use the following</p>
+			<div class = "social-line">
+				<a href = "#pablo" class = "btn btn-simple btn-just-icon"> <i class = "fa fa-facebook-square"></i> </a>
+				<a href = "#pablo" class = "btn btn-simple btn-just-icon"> <i class = "fa fa-twitter"></i> </a>
+				<a href = "#pablo" class = "btn btn-simple btn-just-icon"> <i class = "fa fa-google-plus"></i> </a>
 			</div>
-			<div class="footer text-center">
-				<a href="#pablo" class="btn btn-simple btn-danger btn-lg">Get Started</a>
+			<div class = "footer text-center">
+				<a href = "#pablo" class = "btn btn-simple btn-danger btn-lg">Get Started</a>
 			</div>
 		</form>
 	</div>
-</div><!-- end:sidebar_old --><!-- start:sidebar -->
-<div class="col-md-3 pull-right">
-	<div class="card card-signup" style=" border-top: 20px solid #DB3431; ">
-		<form class="form" method="post" action="javascript:iko.login();" class="login-box" name="login">
-			<h3 class="text-divider">Sign Up</h3>
-			<div class="content">
-				<div class="info-box-content">
-					<div class="info-box-text">
+</div><!-- end:sidebar_old -->
+
+<!-- start:login-sidebar -->
+<div class = "col-md-3 pull-right">
+	<div class = "card card-signup" style = " border-top: 20px solid #DB3431; ">
+		<form class = "form" method = "post" action = "javascript:iko.login();" class = "login-box" name = "login">
+			<h3 class = "text-divider">Sign Up</h3>
+			<div class = "content">
+				<div class = "info-box-content">
+					<div class = "info-box-text">
 
 					</div>
 				</div>
 
-				<div class="input-group">
-	                <span class="input-group-addon">
-												<i class="material-icons">face</i>
-											</span>
-					<div class="form-group label-floating">
-						<label class="control-label">Username / E-mail</label> <input type="text" name="username"
-						                                                              class="form-control iko_username"
-						                                                              id="username"><span
-							class="material-input"></span></div>
+				<div class = "input-group">
+					<span class = "input-group-addon">
+						<i class = "material-icons">face</i>
+					</span>
+					<div class = "form-group label-floating">
+						<label class = "control-label">Username / E-mail</label>
+						<input type = "text" name = "username" class = "form-control iko_username" id = "username"><span class = "material-input"></span>
+					</div>
 				</div>
 
-				<div class="input-group">
-	                <span class="input-group-addon">
-												<i class="material-icons">lock_outline</i>
-											</span>
-					<div class="form-group label-floating">
-						<label class="control-label">Password</label> <input type="password" name="password"
-						                                                     class="form-control iko_password"><span
-							class="material-input"></span></div>
+				<div class = "input-group">
+					<span class = "input-group-addon">
+						<i class = "material-icons">lock_outline</i>
+					</span>
+					<div class = "form-group label-floating">
+						<label class = "control-label">Password</label>
+						<input type = "password" name = "password" class = "form-control iko_password"><span class = "material-input"></span>
+					</div>
 				</div>
 			</div>
-			<p class="text-center">Or use the following</p>
-			<div class="social-line">
-				<a href="#pablo" class="btn btn-simple btn-just-icon"> <i class="fa fa-facebook-square"></i> </a> <a
-					href="#pablo" class="btn btn-simple btn-just-icon"> <i class="fa fa-twitter"></i> </a> <a
-					href="#pablo" class="btn btn-simple btn-just-icon"> <i class="fa fa-google-plus"></i> </a>
+			<p class = "text-center">Or use the following</p>
+			<div class = "social-line">
+				<a href = "#pablo" class = "btn btn-simple btn-just-icon"> <i class = "fa fa-facebook-square"></i> </a>
+				<a href = "#pablo" class = "btn btn-simple btn-just-icon"> <i class = "fa fa-twitter"></i> </a>
+				<a href = "#pablo" class = "btn btn-simple btn-just-icon"> <i class = "fa fa-google-plus"></i> </a>
 			</div>
-			<div class="footer text-center">
-				<input type="submit" class="btn btn-simple btn-danger btn-lg" value="Get started">
+			<div class = "footer text-center">
+				<input type = "submit" class = "btn btn-simple btn-danger btn-lg" value = "Get started">
 			</div>
 		</form>
 	</div>
-</div>
-<!-- end:sidebar -->
-
-<!-- start:breadcrumb -->
-<li>
-	<a class="active" href="%% breadcrumb_link %%">%% breadcrumb_name %%</a>
-</li>
-<!-- end:breadcrumb -->
-
-<!-- start:user-list -->
-<div class="panel panel-danger">
-	<div class="panel-heading">
-		<h3 class="panel-title">User List</h3>
-	</div>
-	<table class="table table-hover">
-		<thead>
-		<tr>
-			<th style="width: 1%;"></th>
-			<th class="col-md-6">Name</th>
-			<th class="col-md-1 text-center">Online</th>
-			<th class="col-md-1 text-center">Posts</th>
-			<th class="col-md-4">Group</th>
-		</tr>
-		</thead>
-		<tbody>
-		%% user-entries %%
-		</tbody>
-	</table>
-</div><!-- end:user-list --><!-- start:user-entries -->
-<tr>
-	<td style="width: 1%;"><img src="%% user_avatar %%" height="50"></td>
-	<td class="col-md-6"><a href="%% user_link %%">%% user_name %%</a> <br />
-	</td>
-	<td class="col-md-1 text-center">Offline</td>
-	<td class="col-md-1 text-center">0</td>
-	<td class="col-md-4">%% group %%</td>
-</tr><!-- end:user-entries -->
+</div><!-- end:login-sidebar -->

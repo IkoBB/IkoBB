@@ -13,9 +13,9 @@
 
 namespace iko\cms;
 
-use iko\Core;
-use iko\PDO;
-use iko\Exception;
+use iko\{
+	Core, PDO, Exception
+};
 
 class page
 {
@@ -43,7 +43,7 @@ class page
 	public static function exists ($site_id): bool
 	{
 		if (is_numeric($site_id) && $site_id != 0 && $site_id != NULL) {
-			$statement = Core::$PDO->prepare("SELECT " . self::column_id . " FROM " . self::table . " WHERE " . self::column_id . " = :id");
+			$statement = Core::PDO()->prepare("SELECT " . self::column_id . " FROM " . self::table . " WHERE " . self::column_id . " = :id");
 			$statement->bindParam(':id', $site_id);
 			$statement->execute();
 			if ($statement->rowCount() > 0) {
@@ -69,9 +69,10 @@ class page
 	{
 
 		$template = template::get_instance();
+		$entity = new entity();
 		if ($site_id != 0) {
 			try {
-				$statement = Core::$PDO->prepare("SELECT * FROM " . self::table . " WHERE " . self::column_id . " = :id");
+				$statement = Core::PDO()->prepare("SELECT * FROM " . self::table . " WHERE " . self::column_id . " = :id");
 				$statement->bindParam(':id', $site_id);
 				$statement->execute();
 				$site = $statement->fetch(PDO::FETCH_ASSOC);
@@ -80,12 +81,11 @@ class page
 				throw new Exception("Error #1234: " . $exception);
 			}
 
-			if ($site != FALSE) {
-				$site['page_sidebar'] == "1" ? template::add_sidebar() : template::no_sidebar();
+			if ($site !== FALSE) {
+				//$site['page_sidebar'] == "1" ? template::add_sidebar() : template::no_sidebar();
 				$template->sub_title = $site['page_title'];
 				$parser = new parser();
-				$template->content = $template->entity("cms_page", array (
-					"page_content" => $parser->parse($site["page_content"]),), TRUE);
+				$template->content = $entity->return_entity("cms.page", array("page_content" => $parser->parse($site["page_content"])));
 				template::add_breadcrumb($site['page_title'],"?module=cms&id=".$site_id);
 			}
 			else {
@@ -94,7 +94,7 @@ class page
 		}
 		else {
 			$template->sub_title = 'Page not found';
-			$template->content = $template->entity("404_error", array (), TRUE);
+			$template->content = $entity->return_entity("cms.error404");
 			template::add_breadcrumb("Error 404","#");
 		}
 

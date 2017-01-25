@@ -18,6 +18,7 @@
  */
 namespace iko\user;
 
+use iko\cms\entity;
 use iko\cms\template;
 
 class cms
@@ -32,18 +33,19 @@ class cms
 	{
 		$users = User::get_all();
 		$string = "";
+		$entity= new entity();
 		$template = template::get_instance();
 		template::add_breadcrumb("List", "?module=user&page=user_list");
 		template::add_sidebar();
 		$user_string = "";
 		foreach ($users as $user) {
-			$user_string .= $template->entity("user-entries", array (
+			$user_string .= $entity->return_entity("user-entries", array (
 				"user_name" => $user->get_name(),
 				"user_avatar" => $user->get_avatar(),
 				"group" => "Member",
-				"user_link" => "?module=user&user=" . $user->get_id()), TRUE);
+				"user_link" => "?module=user&user=" . $user->get_id()), 'user');
 		}
-		$template->content = $template->entity("user-list", array ("user-entries" => $user_string), TRUE);
+		$template->content = $entity->return_entity("user-list", array ("user-entries" => $user_string), 'user');
 	}
 
 	function std ()
@@ -73,16 +75,6 @@ class cms
 	}
 	function init_page ($event_name, $args, $var = NULL)
 	{
-		$template = template::get_instance();
-		if(User::get_session() !== FALSE) {
-			$user = User::get_session();
-			$template->current_user_avatar = $user->get_avatar();
-			$template->current_user_name = $user->get_name();
-		}
-		else {
-			$template->current_user_name = "Gast";
-			$template->current_user_avatar = User::get(1)->get_avatar();
-		}
 		template::add_breadcrumb("User", "?module=user");
 		if (isset($args["page"])) {
 			$func = $args["page"];

@@ -1,6 +1,5 @@
 <?php
 /**
- *
  * This file is part of IkoBB Forum and belongs to the module <CMS>.
  *
  * @copyright (c) 2017 IkoBB <https://www.ikobb.de>
@@ -13,9 +12,9 @@
 
 namespace iko\cms;
 
-use iko\Event\Handler;
-use iko\module;
-use iko\config;
+use iko\{
+	Event\Handler, module, config
+};
 
 /**
  * Class cms
