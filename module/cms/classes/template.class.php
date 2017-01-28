@@ -276,7 +276,7 @@ class template
 						$this->{$key} = $value;
 					}
 				}
-				catch (\PDOException $exception) {
+				catch (Exception $exception) {
 					throw new Exception("Error #1234: " . $exception);
 				}
 			}
@@ -412,8 +412,9 @@ class template
 	/**
 	 * Sets the template to the wanted template
 	 * If template does not exist, default template will be loaded
+	 * @param int $id
 	 */
-	private function set_template ($id)
+	private function set_template (int $id)
 	{
 		if (self::template_exists($id) === TRUE) {
 			$this->template_id = $id;

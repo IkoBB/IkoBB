@@ -63,9 +63,9 @@ class cms
 			$parser = new parser();
 			template::no_sidebar();
 			$template->sub_title = "Debug page";
-			$template->content .= $template->entity("TEST", array (
+			$template->content .= entity::return_entity("TEST", array (
 				"output"      => $parser->parse(\iko\define_post("text", "")),
-				"code_output" => $parser->parse('[code]' . \iko\define_post("text", "") . '[/code]')), TRUE);
+				"code_output" => $parser->parse('[code]' . \iko\define_post("text", "") . '[/code]')));
 			echo $template;
 		}
 		else {

@@ -69,7 +69,6 @@ class page
 	{
 
 		$template = template::get_instance();
-		$entity = new entity();
 		if ($site_id != 0) {
 			try {
 				$statement = Core::PDO()->prepare("SELECT * FROM " . self::table . " WHERE " . self::column_id . " = :id");
@@ -85,7 +84,7 @@ class page
 				//$site['page_sidebar'] == "1" ? template::add_sidebar() : template::no_sidebar();
 				$template->sub_title = $site['page_title'];
 				$parser = new parser();
-				$template->content = $entity->return_entity("cms.page", array("page_content" => $parser->parse($site["page_content"])));
+				$template->content = entity::return_entity("cms.page", array("page_content" => $parser->parse($site["page_content"])));
 				template::add_breadcrumb($site['page_title'],"?module=cms&id=".$site_id);
 			}
 			else {
@@ -94,7 +93,7 @@ class page
 		}
 		else {
 			$template->sub_title = 'Page not found';
-			$template->content = $entity->return_entity("cms.error404");
+			$template->content = entity::return_entity("cms.error404");
 			template::add_breadcrumb("Error 404","#");
 		}
 

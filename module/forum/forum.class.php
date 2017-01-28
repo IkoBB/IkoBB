@@ -82,7 +82,6 @@ class forum
 			$categories = $this->get_structure(self::table_category);
 			$template->sub_title = "Forum";
 		}
-		$entity = new entity();
 
 		foreach ($categories as $key_category => $category) {
 			$forum_entries = "";
@@ -92,13 +91,13 @@ class forum
 			foreach ($forums as $key => $forum) {
 
 
-				$forum_entries .= $entity->return_entity("forum-entries", array (
+				$forum_entries .= entity::return_entity("forum-entries", array (
 					"forum_name"        => $forum[ self::column_forum_name ],
 					"forum_description" => $forum[ self::column_forum_description ]), 'forum');
 
 			}
 
-			$template->content .= $entity->return_entity("forum-list", array (
+			$template->content .= entity::return_entity("forum-list", array (
 				"forum-entries"       => $forum_entries,
 				"forum_category_name" => $category[ self::column_category_name ],
 				"forum_category_id" => $category[ self::column_category_id ]), 'forum');
