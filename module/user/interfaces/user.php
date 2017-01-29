@@ -18,6 +18,8 @@
  */
 namespace iko\user;
 
+use iko\user\profile\iAvatar;
+
 interface iUser extends iOperators
 {
 	const table = "{prefix}users";
@@ -125,4 +127,6 @@ interface iUser extends iOperators
 	public function compare_password(string $pass):bool;
 
 	public function get_email():string;
+
+	public function get_avatar():iAvatar;
 }
