@@ -13,7 +13,7 @@
 namespace iko\user;
 
 use iko\{
-	cms\template, Core, Exception, language\language, module, PDO, Event\Handler, log, session, user\profile\iAvatar, user\profile\iContent
+	cms\template, Core, Exception, language\language, module, PDO, Event\Handler, log, session, user\profile\Avatar, user\profile\iAvatar, user\profile\iContent
 };
 use function iko\{
 	set_session, check_mail, define_session, get_hash, read_session
