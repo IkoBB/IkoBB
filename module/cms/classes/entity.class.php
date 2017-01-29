@@ -34,10 +34,10 @@ class entity
 	 *
 	 * @return bool
 	 */
-	private function exist_entity (string $entity, string $module = NULL): bool
+	private static function exist_entity (string $entity, string $module = NULL): bool
 	{
 		$return = FALSE;
-		$entity_file = $this->get_entity_file($module);
+		$entity_file = self::get_entity_file($module);
 		if (file_exists($entity_file)) {
 			$file_content = file_get_contents($entity_file);
 			if (strpos($file_content, "<!-- start:" . $entity . " -->") !== FALSE && strpos($file_content,
@@ -55,7 +55,7 @@ class entity
 	 *
 	 * @return string
 	 */
-	private function get_entity_file (string $module = NULL): string
+	private static function get_entity_file (string $module = NULL): string
 	{
 		if ($module != NULL) {
 			$entity_file = module::get($module)->get_entity_file();
@@ -76,11 +76,11 @@ class entity
 	 *
 	 * @return string
 	 */
-	private function get_entity (string $entity, string $module = NULL): string
+	private static function get_entity (string $entity, string $module = NULL): string
 	{
 		$entity_content = "";
-		$file = $this->get_entity_file($module);
-		if ($this->exist_entity($entity, $module)) {
+		$file = self::get_entity_file($module);
+		if (self::exist_entity($entity, $module)) {
 			$file_content = file_get_contents($file);
 			preg_match("/<!-- start:" . $entity . " -->(.*)<!-- end:" . $entity . " -->/is", $file_content,
 				$entity_content);
@@ -98,10 +98,10 @@ class entity
 	 * @param string      $entity
 	 * @param string|NULL $module
 	 */
-	public function get_template_entity (string $entity, string $module = NULL)
+	public static function get_template_entity (string $entity, string $module = NULL)
 	{
-		$unparsed_entity = $this->get_entity($entity, $module);
-		$this->send_to_template($entity, $unparsed_entity);
+		$unparsed_entity = self::get_entity($entity, $module);
+		self::send_to_template($entity, $unparsed_entity);
 
 	}
 
@@ -112,9 +112,9 @@ class entity
 	 *
 	 * @return string
 	 */
-	public function return_entity (string $entity, array $params = array (), string $module = NULL): string
+	public static function return_entity (string $entity, array $params = array (), string $module = NULL): string
 	{
-		$unparsed_entity = $this->get_entity($entity, $module);
+		$unparsed_entity = self::get_entity($entity, $module);
 		$template = template::get_instance();
 		$parsed_entity = $template->bladeSyntax($unparsed_entity, $params);
 
@@ -126,7 +126,7 @@ class entity
 	 * @param string $entity
 	 * @param string $content
 	 */
-	private function send_to_template (string $entity, string $content = "")
+	private static function send_to_template (string $entity, string $content = "")
 	{
 		$template = template::get_instance();
 		$template->add_entity($entity, $content);
