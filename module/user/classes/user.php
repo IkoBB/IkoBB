@@ -13,7 +13,7 @@
 namespace iko\user;
 
 use iko\{
-	cms\template, Core, Exception, language\language, module, PDO, Event\Handler, log, session, user\profile\Avatar, user\profile\iAvatar, user\profile\iContent
+	cms\template, Core, Exception, language\language, module, PDO, Event\Handler, log, session, user\profile\iAvatar, user\profile\iContent
 };
 use function iko\{
 	set_session, check_mail, define_session, get_hash, read_session
@@ -473,7 +473,7 @@ class User extends operators implements iUser
 		return $this->get_profile()->{$value};
 	}
 
-	public function get_avatar (): Avatar
+	public function get_avatar (): iAvatar
 	{
 		if ($this->avatar == NULL || !$this->avatar instanceof iAvatar) {
 			$this->avatar = new Avatar($this, strval($this->avatar));

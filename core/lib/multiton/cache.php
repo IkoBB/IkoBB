@@ -131,7 +131,7 @@ abstract class cache
 			return $array;
 		}
 		else {
-			return FALSE;
+			return array();
 		}
 	}
 
