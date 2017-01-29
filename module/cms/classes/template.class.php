@@ -139,7 +139,8 @@ class template
 		}
 	}
 
-	public static function add_sidebar(string $sidebar = "user_sidebar", string $module = NULL) {
+	public static function add_sidebar (string $sidebar = "user_sidebar", string $module = NULL)
+	{
 		$entity = new entity();
 		$entity->get_template_entity($sidebar, $module);
 		/*
@@ -160,7 +161,8 @@ class template
 		$template->width_content = '9';
 	}
 
-	public static function no_sidebar() {
+	public static function no_sidebar ()
+	{
 		$template = self::get_instance();
 		$template->width_content = '12';
 	}
@@ -309,7 +311,7 @@ class template
 	 *
 	 * @return mixed|string
 	 */
-	public function bladeSyntax (string $string, $params = NULL, $entities = array())
+	public function bladeSyntax (string $string, $params = NULL, $entities = array ())
 	{
 		if ($params === NULL) {
 			$params = $this->param;
@@ -342,12 +344,11 @@ class template
 			'<?php echo (isset($this->entity["$1"]))?$this->entity["$1"]:""; ?>',
 			'<?php echo (isset($params["$1"]))?$params["$1"]:""; ?>');
 
-			foreach ($entities as $name => $content) {
-				var_dump(preg_match('/%% (.*) %%/U', $content));
-				if (preg_match('/§§ (.*) §§/U', $content) != 0 || preg_match('/%% (.*) %%/U', $content) != 0) {
-					$this->entity[ $name ] = $this->bladeSyntax($content, NULL, array());
-				}
+		foreach ($entities as $name => $content) {
+			if (preg_match('/§§ (.*) §§/U', $content) != 0 || preg_match('/%% (.*) %%/U', $content) != 0) {
+				$this->entity[ $name ] = $this->bladeSyntax($content, NULL, array ());
 			}
+		}
 
 		$string = preg_replace($syntax_blade, $syntax_php, $string);
 		//@empty
@@ -356,11 +357,6 @@ class template
 		$string = str_replace('@endforelse', '<?php endif; ?>', $string);
 		//@endunless
 		$string = str_replace('@endunless', '<?php endif; ?>', $string);
-		/*
-		if($params == $this->param){
-			var_dump($params);
-			var_dump($this->entity);
-		}*/
 
 		ob_start();
 		eval('namespace iko; ?>' . $string . '');
@@ -378,40 +374,11 @@ class template
 	{
 		$this->entity[ $entity ] = $content;
 	}
-	/**
-	 * Adds an entity to the template
-	 *
-	 * @param       $entity
-	 * @param array $parameters
-	 * @param bool  $return
-	 *
-	 * @return bool
-	 */
-	/*public function entity ($entity, $parameters = array (), $return = FALSE)
-	{
-		if (file_exists(Core::$basepath . 'template/' . $this->template_directory . '/entities.html')) {
-			$entities = file_get_contents(Core::$basepath . 'template/' . $this->template_directory . '/entities.html');
-			preg_match("/<!-- start:" . $entity . " -->(.*)<!-- end:" . $entity . " -->/is", $entities,
-				$unparsed_entity);
-			foreach ($parameters as $parameter => $value) {
-				$this->param[ $parameter ] = $value;
-			}
-			$parsed_entity = $this->bladeSyntax($unparsed_entity[1]);
-			if ($return === FALSE) {
-				$this->entity[ $entity ] = $parsed_entity;
-			}
-			else {
-				return $parsed_entity;
-			}
-
-		}
-
-		return FALSE;
-	}*/
 
 	/**
 	 * Sets the template to the wanted template
 	 * If template does not exist, default template will be loaded
+	 *
 	 * @param int $id
 	 */
 	private function set_template (int $id)
@@ -436,7 +403,22 @@ class template
 		if ($this->warning != "") $entity->get_template_entity("cms.warning");
 		if ($this->notice != "") $entity->get_template_entity("cms.notice");
 
+		if (Core::Config()->get("show_memory")) {
+			$value = memory_get_usage(TRUE);
+			$unit = array (
+				'B',
+				'KB',
+				'MB',
+				'GB',
+				'TB',
+				'PB');
+
+			$value = @round($value / pow(1024, ($i = floor(log($value, 1024)))), 2) . ' ' . $unit[ $i ];
+			$this->used_memory = "Memory: ".$value;
+		}
+
 		return $this->bladeSyntax($this->template);
+
 	}
 
 	/**
