@@ -18,15 +18,6 @@ use iko\cms\template;
 
 class cms
 {
-
-	const table_category = "{prefix}forum_categories";
-	const column_category_id = "forum_category_id";
-	const column_category_name = "forum_category_name";
-	const table_node = "{prefix}forum_node";
-	const column_forum_id = "forum_id";
-	const column_forum_name = "forum_name";
-	const column_forum_description = "forum_description";
-
 	function __construct ()
 	{
 	}
