@@ -31,6 +31,7 @@ class Core
 	public static $currentfile;
 	private static $PDO;
 	public static $templatepath;
+	public static $config;
 
 	/**
 	 * @param int $phase
@@ -42,6 +43,7 @@ class Core
 				self::load_paths();
 			break;
 			case 1:
+				self::$config = config::load("file", self::$corepath . "config.php");
 				session::init(0);
 				self::load_PDO();
 			break;
@@ -198,6 +200,9 @@ class Core
 	public static function PDO():\PDO {
 		return self::$PDO;
 	}
+	public static function Config():config {
+		return self::$config;
+	}
 }
 
 /**
@@ -215,8 +220,8 @@ Core::file_req(Core::$corepath . "log.class.php");
 Core::file_req(Core::$corepath . "exception.class.php");
 Core::file_req(Core::$corepath . "pdo.class.php");
 Core::file_req(Core::$corepath . "functions.php");
-Core::file_req(Core::$corepath . "event.php");
-Core::file_req(Core::$corepath . 'config.php');
+Core::file_req(Core::$corepath . "load_event.php");
+Core::file_req(Core::$corepath . 'load_config.php');
 Core::file_req(Core::$corepath . "sessions.php");
 
 

@@ -115,7 +115,7 @@ class module extends cache_string
 	{
 		$filename = Core::$modulepath . $this->name . "/module.php";
 		if (!file_exists($filename)) {
-			throw new \Exception("Needed File module.php to implement the Module " . $this->name . " does not exist.");
+			throw new Exception("Iko | error | 1002 | Need File module.php to implement the Module " . $this->name . " does not exist.");
 		}
 		$handle = fopen($filename, "r");
 		$namespace = "";
@@ -138,7 +138,7 @@ class module extends cache_string
 		fclose($handle);
 		$include = Core::file_incl($filename);
 		if ($include === FALSE) {
-			throw new \Exception("Need File module.php to implement the Module " . $this->name . " does not exist.");
+			throw new Exception("Iko | error | 1002 | Need File module.php to implement the Module " . $this->name . " does not exist.");
 		}
 		else {
 			$class = '' . $namespace . '\\' . $this->get_loader_name();
@@ -146,7 +146,7 @@ class module extends cache_string
 				$this->loader = new $class($this);
 			}
 			else {
-				throw new \Exception("#1238 " . $class . " not found in " . $filename . "");
+				throw new Exception("#1238 " . $class . " not found in " . $filename . "");
 			}
 
 		}

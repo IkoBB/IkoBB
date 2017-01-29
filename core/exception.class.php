@@ -26,7 +26,8 @@ class Exception extends Exi
 				$type = $exploder[1];
 				$msg_code = $exploder[2];
 				$msg = $exploder[3];
-				$extra = "Exception";
+				$extra = debug_backtrace();
+				$extra = array("line" => $extra[1]["line"], "file" => $extra[1]["file"], "function" => $extra[1]["function"]);
 				log::add($module, $type, $msg_code, $msg, $extra);
 			}
 		}
