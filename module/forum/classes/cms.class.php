@@ -31,6 +31,8 @@ class cms
 
 		if ($id !== NULL) {
 			$categories[0] = new category($id);
+			$template->sub_title = $categories[0]->get_name();
+			template::add_breadcrumb($categories[0]->get_name(), "?module=forum&page=category&id=".$categories[0]->get_id());
 		}
 		else {
 			// Get all categories
