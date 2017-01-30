@@ -1,0 +1,3 @@
+[submodule "module/user"]
+	path = module/user
+	url = https://github.com/IkoBB/User.git
