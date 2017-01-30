@@ -1,0 +1,6 @@
+[submodule "module/user"]
+	path = module/user
+	url = git://github.com/IkoBB/User.git
+[submodule "module/language"]
+	path = module/language
+	url = git://github.com/IkoBB/Language.git
