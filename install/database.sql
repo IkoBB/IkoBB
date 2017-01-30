@@ -35,7 +35,7 @@ CREATE TABLE `iko_users` (
 	`user_name`        VARCHAR(30)  NOT NULL,
 	`user_password`    TEXT         NOT NULL,
 	`user_email`       VARCHAR(255) NOT NULL,
-	`user_avatar`   TEXT               DEFAULT '',
+	`user_avatar`      TEXT                  DEFAULT '',
 	`user_signature`   VARCHAR(255)          DEFAULT NULL,
 	`user_about_user`  TEXT,
 	`user_location_id` INT(11)               DEFAULT NULL,
@@ -152,32 +152,35 @@ CREATE TABLE `iko_forum_categories` (
 	`forum_category_id`          INT           NOT NULL AUTO_INCREMENT,
 	`forum_category_name`        VARCHAR(200)  NOT NULL,
 	`forum_category_description` VARCHAR(2000) NOT NULL,
+	`forum_category_parent`      INT           NULL,
+	`forum_category_parent_type` INT           NULL,
 	`forum_category_order`       INT           NOT NULL,
 	PRIMARY KEY (`forum_category_id`)
 );
-CREATE TABLE `iko_forum_node` (
-	`forum_id`          INT           NOT NULL AUTO_INCREMENT,
-	`forum_category_id` INT           NOT NULL,
-	`forum_name`        VARCHAR(200)  NOT NULL,
-	`forum_description` VARCHAR(2000) NOT NULL,
-	`forum_order`       INT           NULL,
-	PRIMARY KEY (`forum_id`)
+CREATE TABLE `iko_forum_board` (
+	`forum_board_id`          INT           NOT NULL AUTO_INCREMENT,
+	`forum_board_name`        VARCHAR(200)  NOT NULL,
+	`forum_board_description` VARCHAR(2000) NOT NULL,
+	`forum_board_parent`      INT           NULL,
+	`forum_board_parent_type` INT           NULL,
+	`forum_board_order`       INT           NULL,
+	PRIMARY KEY (`forum_board_id`)
 );
 CREATE TABLE `iko_user_fields` (
-  `user_field_id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_field_name` varchar(255) DEFAULT NULL,
-  `user_field_options` text,
-  `user_field_display` text NOT NULL,
-  `user_field_owner` int(11) DEFAULT NULL,
-  PRIMARY KEY(`user_field_id`)
+	`user_field_id`      INT(11) NOT NULL AUTO_INCREMENT,
+	`user_field_name`    VARCHAR(255)     DEFAULT NULL,
+	`user_field_options` TEXT,
+	`user_field_display` TEXT    NOT NULL,
+	`user_field_owner`   INT(11)          DEFAULT NULL,
+	PRIMARY KEY (`user_field_id`)
 );
 
 
 CREATE TABLE `iko_user_profiles` (
-  `user_id` int(11) NOT NULL,
-  `user_field_id` int(11) NOT NULL,
-  `user_profile_property` text,
-  `user_profile_value` text
+	`user_id`               INT(11) NOT NULL,
+	`user_field_id`         INT(11) NOT NULL,
+	`user_profile_property` TEXT,
+	`user_profile_value`    TEXT
 );
 
 /*Relation between Tables */
@@ -273,16 +276,22 @@ REFERENCES `iko_users` (`user_id`)
 	ON UPDATE CASCADE;
 
 ALTER TABLE `iko_user_fields`
-  ADD KEY `iko_user_fields_ibfk_1_idx` (`user_field_owner`);
+	ADD KEY `iko_user_fields_ibfk_1_idx` (`user_field_owner`);
 
 ALTER TABLE `iko_user_profiles`
-  ADD PRIMARY KEY (`user_id`,`user_field_id`),
-  ADD KEY `iko_user_profile_field_id` (`user_field_id`),
-  ADD KEY `iko_user_profile_user_id` (`user_id`);
+	ADD PRIMARY KEY (`user_id`, `user_field_id`),
+	ADD KEY `iko_user_profile_field_id` (`user_field_id`),
+	ADD KEY `iko_user_profile_user_id` (`user_id`);
 
 ALTER TABLE `iko_user_fields`
-  ADD CONSTRAINT `iko_user_fields_ibfk_1` FOREIGN KEY (`user_field_owner`) REFERENCES `iko_users` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+	ADD CONSTRAINT `iko_user_fields_ibfk_1` FOREIGN KEY (`user_field_owner`) REFERENCES `iko_users` (`user_id`)
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION;
 
 ALTER TABLE `iko_user_profiles`
-  ADD CONSTRAINT `iko_user_profile_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `iko_users` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `iko_user_profile_ibfk_2` FOREIGN KEY (`user_field_id`) REFERENCES `iko_user_fields` (`user_field_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+	ADD CONSTRAINT `iko_user_profile_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `iko_users` (`user_id`)
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION,
+	ADD CONSTRAINT `iko_user_profile_ibfk_2` FOREIGN KEY (`user_field_id`) REFERENCES `iko_user_fields` (`user_field_id`)
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION;

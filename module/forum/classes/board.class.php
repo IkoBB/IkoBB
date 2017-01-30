@@ -21,6 +21,7 @@ class board extends structure
 	const column_name = "forum_board_name";
 	const column_description = "forum_board_description";
 	const column_parent = "forum_board_parent";
+	const column_parent_type = "forum_board_parent_type";
 
 	protected static $cache = array ();
 	protected static $cache_exist = array ();

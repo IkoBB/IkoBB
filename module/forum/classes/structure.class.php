@@ -33,6 +33,9 @@ abstract class structure extends cache_int
 	const column_name = NULL;
 	const column_description = NULL;
 	const column_parent = NULL;
+	const column_parent_type = NULL;
+	const PARENT_CATEGORY = 1;
+	const PARENT_BOARD = 2;
 
 	protected static $cache = array ();
 	protected static $cache_exist = array ();
@@ -41,9 +44,12 @@ abstract class structure extends cache_int
 	public static function create (string $name, string $description, int $parent = NULL)
 	{
 		$class = get_called_class();
+		$temp_class = explode("\\", $class);
+		$temp_class = $temp_class[ count($temp_class) - 1 ];
 
 		if ($name != "" && $description != "") {
-			if (User::get_session()->has_permission("iko.forum." . $class . ".create")) {
+
+			if (User::get_session()->has_permission("iko.forum." . $temp_class . ".create")) {
 				if ($parent !== NULL) {
 					$columns = $class::column_name . ", " . $class::column_description . ", " . $class::column_parent;
 					$values = $name . "', '" . $description . "', '" . $parent;
@@ -69,8 +75,10 @@ abstract class structure extends cache_int
 			$id = self::get($id);
 		}
 		$class = get_called_class();
+		$temp_class = explode("\\", $class);
+		$temp_class = $temp_class[ count($temp_class) - 1 ];
 
-		if (User::get_session()->has_permission("iko.forum." . $class . ".delete")) {
+		if (User::get_session()->has_permission("iko.forum." . $temp_class . ".delete")) {
 			$key = Core::PDO()->quote($id->get_Id());
 			$sql = "DELETE FROM " . $class::table . " WHERE " . $class::id . " = " . $key;
 			$statement = Core::PDO()->exec($sql);
@@ -105,8 +113,8 @@ abstract class structure extends cache_int
 			}
 			if (isset($fetch)) {
 				foreach ($fetch as $key => $value) {
-					$temp_class = explode("\\",$class);
-					$temp_class = $temp_class[count($temp_class)-1];
+					$temp_class = explode("\\", $class);
+					$temp_class = $temp_class[ count($temp_class) - 1 ];
 					$temp_key = str_replace("forum_" . $temp_class . "_", "", $key);
 					$this->{$temp_key} = $value;
 				}
@@ -115,15 +123,15 @@ abstract class structure extends cache_int
 	}
 
 
-	public function get_child_boards (): array
+	public function get_child_boards ($type = self::PARENT_CATEGORY): array
 	{
 		$results = array ();
-		$sql = "SELECT " . board::id . " FROM " . board::table . " WHERE " . board::column_parent . " = " . $this->id;
+		$sql = "SELECT " . board::id . " FROM " . board::table . " WHERE " . board::column_parent . " = " . $this->id . " AND " . board::column_parent_type . " = " . $type;
 		$statement = Core::PDO()->query($sql);
 		$fetch = $statement->fetchAll(\PDO::FETCH_ASSOC);
 		foreach ($fetch as $row => $id) {
 
-			$results[ $id[board::id] ] = board::get($id[board::id]);
+			$results[ $id[ board::id ] ] = board::get($id[ board::id ]);
 		}
 
 		return $results;
@@ -135,7 +143,7 @@ abstract class structure extends cache_int
 	 */
 	public function get_id (): int
 	{
-		return (int) $this->id;
+		return (int)$this->id;
 	}
 
 	/**

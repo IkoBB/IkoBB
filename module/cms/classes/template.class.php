@@ -341,7 +341,7 @@ class template
 			'$1<?php $2; ?>',
 			'$1<?php $2: ?>$3',
 			'$1<?php if( ! ($2)): ?>',
-			'<?php echo (isset($this->entity["$1"]))?$this->entity["$1"]:""; ?>',
+			'<?php echo (isset($entity["$1"]))?$entity["$1"]:""; ?>',
 			'<?php echo (isset($params["$1"]))?$params["$1"]:""; ?>');
 
 		foreach ($entities as $name => $content) {
