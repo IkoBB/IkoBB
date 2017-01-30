@@ -4,3 +4,9 @@
 [submodule "module/language"]
 	path = module/language
 	url = git://github.com/IkoBB/Language.git
+[submodule "module/cms"]
+	path = module/cms
+	url = git://github.com/IkoBB/CMS.git
+[submodule "module/forum"]
+	path = module/forum
+	url = git://github.com/IkoBB/Forum.git
