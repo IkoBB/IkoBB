@@ -32,7 +32,8 @@ class cms
 		if ($id !== NULL) {
 			$categories[0] = new category($id);
 			$template->sub_title = $categories[0]->get_name();
-			template::add_breadcrumb($categories[0]->get_name(), "?module=forum&page=category&id=".$categories[0]->get_id());
+			template::add_breadcrumb($categories[0]->get_name(),
+				"?module=forum&page=category&id=" . $categories[0]->get_id());
 		}
 		else {
 			// Get all categories
@@ -41,28 +42,43 @@ class cms
 		}
 
 		foreach ($categories as $key_category => $category) {
-			if($category instanceof category) {
+			if ($category instanceof category) {
 				$board_entries = "";
 				$boards = $category->get_child_boards();
 				foreach ($boards as $board) {
 					if ($board instanceof board) {
+						$subboards = $board->get_child_boards(board::PARENT_BOARD);
+						foreach ($subboards as $subboard) {
+							if ($subboard instanceof board) {
+								$links[] = "<a href='?module=forum&page=forum&id=" . $subboard->get_id() . "'>" . $subboard->get_name() . "</a>";
+							}
+						}
+						if (isset($links)) {
+							$link_list = implode(",", $links);
+							$subboard_entries = entity::return_entity("forum.sub-forums", array (
+								"links" => $link_list,
+							), 'forum');
+						}
 
-						$board_entries .= entity::return_entity("forum-entries", array (
+						$board_entries .= entity::return_entity("forum.entries", array (
 							"forum_name"        => $board->get_name(),
-							"forum_description" => $board->get_description()), 'forum');
+							"forum_description" => $board->get_description(),
+							"sub_forums"        => isset($subboard_entries)?$subboard_entries:"",
+						), 'forum');
 					}
 				}
-				$template->content .= entity::return_entity("forum-list", array (
+				$template->content .= entity::return_entity("forum.forum-list", array (
 					"forum-entries"       => $board_entries,
 					"forum_category_name" => $category->get_name(),
-					"forum_category_id" => $category->get_id()), 'forum');
+					"forum_category_id"   => $category->get_id()), 'forum');
 			}
 		}
 
 		echo $template;
 	}
 
-	private function list_threads($args) {
+	private function list_threads ($args)
+	{
 
 	}
 

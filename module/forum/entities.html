@@ -1,4 +1,4 @@
-<!-- start:forum-list -->
+<!-- start:forum.forum-list -->
 <div class = "panel panel-danger">
 	<div class = "panel-heading">
 		<h3 class = "panel-title"><a href = "?module=forum&page=category&id=%% forum_category_id %%">%% forum_category_name %%</a></h3>
@@ -17,13 +17,13 @@
 		%% forum-entries %%
 		</tbody>
 	</table>
-</div><!-- end:forum-list -->
+</div><!-- end:forum.forum-list -->
 
-<!-- start:forum-entries -->
+<!-- start:forum.entries -->
 <tr>
 	<td style = "width: 1%;"><i class = "material-icons" style = "font-size: 30px;">comment</i></td>
 	<td class = "col-md-6"><a href = "#">%% forum_name %%</a> <br />
-		<small>%% forum_description %%</small>
+		<small>%% forum_description %% <br>%% sub_forums %%</small>
 	</td>
 	<td class = "col-md-1 text-center">0</td>
 	<td class = "col-md-1 text-center">0</td>
@@ -34,4 +34,8 @@
 		<small><a href="#">%% username %%</a>, <span title="9. October 2016">Like, tomorrow !?</span>
 		</small>--> None
 	</td>
-</tr><!-- end:forum-entries -->
+</tr><!-- end:forum.entries -->
+
+<!-- start:forum.sub-forums -->
+<b>Subforums:</b> %% links %%
+<!-- end:forum.sub-forums -->
